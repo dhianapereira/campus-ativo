@@ -1,0 +1,12 @@
+services:
+  postgres:
+    container_name: ifal-arapiraca-pg
+    image: bitnami/postgresql
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: docker
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: ifal-arapiraca
+    volumes:
+      - ./data/pg:/bitnami/postgresql
