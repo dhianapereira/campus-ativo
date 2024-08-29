@@ -18,8 +18,10 @@
 ---
 
 ## 1. Pré-Requisitos
-- [Git](https://git-scm.com/downloads) - versionamento de código;  
-- [NodeJS](https://nodejs.org/en/) - desenvolvimento do site;
+- [Git](https://git-scm.com/downloads);  
+- [NodeJS](https://nodejs.org/en/);
+- [NestJS](https://nestjs.com/);
+- [Docker](https://www.docker.com/);
 - Editor de código (ex.: [Visual Studio Code](https://code.visualstudio.com/Download)).
 
 ## 2. Siga os passos do [Guia de Instalação](../../README.md#guia-de-instalação)

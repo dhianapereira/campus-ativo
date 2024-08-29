@@ -9,6 +9,8 @@ Para que todos tenham o ambiente de desenvolvimento o mais parecido possível e 
 | --- | --- |
 | Git | A mais recente |
 | NodeJS | v18.18.0 |
+| NestJS | v10.4.4 |
+| Docker | v27.1.2 |
 
 Para instalar as devidas versões, siga o passo a passo do arquivo [`dev_environment.md`](./.github/docs/dev_environment.md).
 
@@ -30,6 +32,20 @@ cd ifal-arapiraca-backend
 npm install
 ```
 
-## Documentação
-- [Diagramas](https://drive.google.com/drive/folders/1j9qgPuKarvA1nC_ENN9uqlVKudQ6QQ9E?usp=drive_link)
-- [Requisitos](https://drive.google.com/drive/folders/10SS73Wrp74aUtYibI5-ZNBCGgKGHgSER?usp=drive_link)
+### **3. Executar o docker compose**
+```bash
+docker compose up -d
+```
+Para verificar se o docker está rodando, basta listar os containers com o comando:
+```bash
+docker ps
+```
+Se quiser parar de rodar o docker utilize o comando abaixo:
+```bash
+docker compose stop
+```
+
+### **3. Executar a aplicação**
+```bash
+npm run start:dev
+```
