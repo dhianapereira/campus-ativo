@@ -8,9 +8,9 @@ Para que todos tenham o ambiente de desenvolvimento o mais parecido possível e 
 | Ferramenta | Versão |
 | --- | --- |
 | Git | A mais recente |
-| NodeJS | v18.18.0 |
+| NodeJS | v22.14.0 |
 | NestJS | v10.4.4 |
-| Docker | v27.1.2 |
+| Docker | v28.0.4 |
 
 Para instalar as devidas versões, siga o passo a passo do arquivo [`dev_environment.md`](./.github/docs/dev_environment.md).
 
