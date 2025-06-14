@@ -32,3 +32,9 @@ Authorization: Bearer {{authToken}}
   "title": "Ar-condicionado da Sala 01 com defeito",
   "description": "O ar-condicionado da sala 01 não está ligando."
 }
+
+###
+# @name fetch_problems
+GET {{baseUrl}}/problems?page=2
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
