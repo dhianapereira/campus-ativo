@@ -32,7 +32,10 @@ cd ifal-arapiraca-backend
 npm install
 ```
 
-### **3. Executar o docker compose**
+### **4. Configurar variáveis de ambiente**
+Para que a aplicação rode, é necessário configurar as variáveis de ambiente. Para isso crie uma cópia do arquivo [.env.example](./.env.example) e adicione os valores corretos nas variáveis.
+
+### **5. Executar o docker compose**
 ```bash
 docker compose up -d
 ```
@@ -45,7 +48,7 @@ Se quiser parar de rodar o docker utilize o comando abaixo:
 docker compose stop
 ```
 
-### **3. Executar a aplicação**
+### **6. Executar a aplicação**
 ```bash
 npm run start:dev
 ```
