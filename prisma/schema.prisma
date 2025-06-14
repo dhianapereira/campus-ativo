@@ -14,12 +14,26 @@ datasource db {
 }
 
 model User {
-  id       String  @id @default(uuid())
+  id       String    @id @default(uuid())
   name     String
   position String
-  email    String  @unique
+  email    String    @unique
   password String
-  isActive Boolean @default(true) @map("is_active")
+  isActive Boolean   @default(true) @map("is_active")
+  problems Problem[]
 
   @@map("users")
+}
+
+model Problem {
+  id          String    @id @default(uuid())
+  title       String
+  description String
+  userId      String    @map("user_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("problems")
 }
