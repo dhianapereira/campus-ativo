@@ -7,6 +7,7 @@ import { ReporterAlreadyExistsError } from './errors/reporter-already-exists-err
 
 interface RegisterReporterUseCaseRequest {
   name: string
+  position: string
   email: string
   password: string
 }
@@ -27,6 +28,7 @@ export class RegisterReporterUseCase {
 
   async execute({
     name,
+    position,
     email,
     password,
   }: RegisterReporterUseCaseRequest): Promise<RegisterReporterUseCaseResponse> {
@@ -41,6 +43,7 @@ export class RegisterReporterUseCase {
 
     const reporter = Reporter.create({
       name,
+      position,
       email,
       password: hashedPassword,
     })

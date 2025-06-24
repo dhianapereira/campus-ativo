@@ -6,15 +6,23 @@ import { FetchProblemsController } from './controllers/fetch-problems.controller
 import { DatabaseModule } from '../database/database.module'
 import { CreateProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/create-problem'
 import { FetchRecentProblemsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-problems'
+import { RegisterReporterUseCase } from '@/domain/accounts/application/use-cases/register-reporter'
+import { AuthenticateReporterUseCase } from '@/domain/accounts/application/use-cases/authenticate-reporter'
+import { CryptographyModule } from '../cryptography/cryptography.module'
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, CryptographyModule],
   controllers: [
     CreateAccountController,
     AuthenticateController,
     CreateProblemController,
     FetchProblemsController,
   ],
-  providers: [CreateProblemUseCase, FetchRecentProblemsUseCase],
+  providers: [
+    RegisterReporterUseCase,
+    AuthenticateReporterUseCase,
+    CreateProblemUseCase,
+    FetchRecentProblemsUseCase,
+  ],
 })
 export class HttpModule {}

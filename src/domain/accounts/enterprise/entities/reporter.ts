@@ -3,6 +3,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 export interface ReporterProps {
   name: string
+  position: string
   email: string
   password: string
 }
@@ -10,6 +11,10 @@ export interface ReporterProps {
 export class Reporter extends Entity<ReporterProps> {
   get name() {
     return this.props.name
+  }
+
+  get position() {
+    return this.props.position
   }
 
   get email() {
