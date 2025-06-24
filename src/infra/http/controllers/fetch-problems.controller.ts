@@ -1,8 +1,9 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { z } from 'zod'
+import { FetchRecentProblemsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-problems'
+import { ProblemPresenter } from '../presenters/problem-presenter'
 
 const pageQueryParamSchema = z
   .string()
@@ -18,20 +19,18 @@ type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 @Controller('/problems')
 @UseGuards(JwtAuthGuard)
 export class FetchProblemsController {
-  constructor(private prisma: PrismaService) {}
+  constructor(private fetchProblems: FetchRecentProblemsUseCase) {}
 
   @Get()
   async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
-    const perPage = 9
+    const result = await this.fetchProblems.execute({ page })
 
-    const problems = await this.prisma.problem.findMany({
-      take: perPage,
-      skip: (page - 1) * perPage,
-      orderBy: {
-        createdAt: 'desc',
-      },
-    })
+    if (result.isLeft()) {
+      throw new Error()
+    }
 
-    return { problems }
+    const problems = result.value.problems
+
+    return { problems: problems.map(ProblemPresenter.toHTTP) }
   }
 }

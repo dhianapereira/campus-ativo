@@ -35,6 +35,6 @@ Authorization: Bearer {{authToken}}
 
 ###
 # @name fetch_problems
-GET {{baseUrl}}/problems?page=2
+GET {{baseUrl}}/problems?page=1
 Content-Type: application/json
 Authorization: Bearer {{authToken}}

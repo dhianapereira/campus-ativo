@@ -5,6 +5,7 @@ import { CreateProblemController } from './controllers/create-problem.controller
 import { FetchProblemsController } from './controllers/fetch-problems.controller'
 import { DatabaseModule } from '../database/database.module'
 import { CreateProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/create-problem'
+import { FetchRecentProblemsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-problems'
 
 @Module({
   imports: [DatabaseModule],
@@ -14,6 +15,6 @@ import { CreateProblemUseCase } from '@/domain/maintenance-problems/application/
     CreateProblemController,
     FetchProblemsController,
   ],
-  providers: [CreateProblemUseCase],
+  providers: [CreateProblemUseCase, FetchRecentProblemsUseCase],
 })
 export class HttpModule {}
