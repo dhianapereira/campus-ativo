@@ -45,7 +45,7 @@ export class AuthenticateReporterUseCase {
     }
 
     const accessToken = await this.encrypter.encrypt({
-      sub: reporter.id.toString(),
+      sub: reporter.id.toValue(),
     })
 
     return right({
