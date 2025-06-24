@@ -3,7 +3,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import {
   Problem,
   ProblemProps,
-} from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
+} from 'problem'
 
 export function makeProblem(
   override: Partial<ProblemProps> = {},

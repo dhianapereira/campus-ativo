@@ -1,8 +1,8 @@
 import { AggregateRoot } from '@/core/entities/aggregate-root'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Optional } from '@/core/types/optional'
-import { ProblemAttachmentList } from './problem-attachment-list'
-import { Slug } from '../value-objects/slug'
+import { ProblemAttachmentList } from '@/domain/maintenance-problems/enterprise/entities/problems/problem-attachment-list'
+import { Slug } from '@/domain/maintenance-problems/enterprise/entities/value-objects/slug'
 
 export interface ProblemProps {
   reporterId: UniqueEntityID
@@ -11,7 +11,7 @@ export interface ProblemProps {
   description: string
   attachments: ProblemAttachmentList
   createdAt: Date
-  updatedAt?: Date
+  updatedAt?: Date | null
 }
 
 export class Problem extends AggregateRoot<ProblemProps> {

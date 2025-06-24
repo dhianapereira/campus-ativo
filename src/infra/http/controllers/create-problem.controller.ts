@@ -4,8 +4,8 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { z } from 'zod'
+import { CreateProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/create-problem'
 
 const createProblemBodySchema = z.object({
   title: z.string(),
@@ -19,7 +19,7 @@ type CreateProblemBodySchema = z.infer<typeof createProblemBodySchema>
 @Controller('/problems')
 @UseGuards(JwtAuthGuard)
 export class CreateProblemController {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly createProblem: CreateProblemUseCase) {}
 
   @Post()
   async handle(
@@ -29,12 +29,11 @@ export class CreateProblemController {
     const { title, description } = body
     const userId = user.sub
 
-    await this.prisma.problem.create({
-      data: {
-        userId,
-        title,
-        description,
-      },
+    await this.createProblem.execute({
+      title,
+      description,
+      reporterId: userId,
+      attachmentsIds: [],
     })
   }
 }

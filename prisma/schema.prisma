@@ -43,14 +43,15 @@ enum Status {
 
 model Problem {
   id          String    @id @default(uuid())
+  slug        String    @unique
   title       String
   description String
   status      Status    @default(TO_ANALYSIS)
-  userId      String    @map("user_id")
+  reporterId  String    @map("reporter_id")
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id])
+  reporter User @relation(fields: [reporterId], references: [id])
 
   @@map("problems")
 }

@@ -4,6 +4,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { right, Either } from '@/core/either'
 import { ProblemAttachment } from '../../enterprise/entities/problems/problem-attachment'
 import { ProblemAttachmentList } from '../../enterprise/entities/problems/problem-attachment-list'
+import { Injectable } from '@nestjs/common'
 
 interface CreateProblemUseCaseRequest {
   reporterId: string
@@ -19,6 +20,7 @@ type CreateProblemUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class CreateProblemUseCase {
   constructor(private problemsRepository: ProblemsRepository) {}
 
