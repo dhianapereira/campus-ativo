@@ -1,0 +1,11 @@
+-- CreateEnum
+CREATE TYPE "UserRole" AS ENUM ('REPORTER', 'MANAGER', 'DIRECTOR');
+
+-- CreateEnum
+CREATE TYPE "Status" AS ENUM ('TO_ANALYSIS', 'IN_ANALYSIS', 'ACCEPTED', 'REJECTED', 'IN_PROGRESS', 'FINISHED');
+
+-- AlterTable
+ALTER TABLE "problems" ADD COLUMN     "status" "Status" NOT NULL DEFAULT 'TO_ANALYSIS';
+
+-- AlterTable
+ALTER TABLE "users" ADD COLUMN     "role" "UserRole" NOT NULL DEFAULT 'REPORTER';
