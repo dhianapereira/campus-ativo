@@ -8,6 +8,8 @@ import { Injectable } from '@nestjs/common'
 
 interface CreateProblemUseCaseRequest {
   reporterId: string
+  locationId: string
+  categoryId: string
   title: string
   description: string
   attachmentsIds: string[]
@@ -26,12 +28,16 @@ export class CreateProblemUseCase {
 
   async execute({
     reporterId,
+    locationId,
+    categoryId,
     title,
     description,
     attachmentsIds,
   }: CreateProblemUseCaseRequest): Promise<CreateProblemUseCaseResponse> {
     const problem = Problem.create({
       reporterId: new UniqueEntityID(reporterId),
+      locationId: new UniqueEntityID(locationId),
+      categoryId: new UniqueEntityID(categoryId),
       title,
       description,
     })

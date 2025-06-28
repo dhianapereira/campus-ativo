@@ -30,7 +30,9 @@ Authorization: Bearer {{authToken}}
 
 {
   "title": "Ar-condicionado da Sala 01 com defeito",
-  "description": "O ar-condicionado da sala 01 não está ligando."
+  "description": "O ar-condicionado da sala 01 não está ligando.",
+  "location_id": "location-test",
+  "category_id": "category-test"
 }
 
 ###

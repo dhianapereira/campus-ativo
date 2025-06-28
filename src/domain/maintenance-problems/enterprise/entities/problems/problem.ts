@@ -6,6 +6,8 @@ import { Slug } from '@/domain/maintenance-problems/enterprise/entities/value-ob
 
 export interface ProblemProps {
   reporterId: UniqueEntityID
+  categoryId: UniqueEntityID
+  locationId: UniqueEntityID
   title: string
   slug: Slug
   description: string
@@ -17,6 +19,24 @@ export interface ProblemProps {
 export class Problem extends AggregateRoot<ProblemProps> {
   get reporterId() {
     return this.props.reporterId
+  }
+
+  get locationId() {
+    return this.props.locationId
+  }
+
+  set locationId(locationId: UniqueEntityID) {
+    this.props.locationId = this.locationId
+    this.touch()
+  }
+
+  get categoryId() {
+    return this.props.categoryId
+  }
+
+  set categoryId(categoryId: UniqueEntityID) {
+    this.props.categoryId = this.categoryId
+    this.touch()
   }
 
   get title() {

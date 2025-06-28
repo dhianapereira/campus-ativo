@@ -41,17 +41,60 @@ enum Status {
   FINISHED
 }
 
-model Problem {
-  id          String    @id @default(uuid())
-  slug        String    @unique
-  title       String
-  description String
-  status      Status    @default(TO_ANALYSIS)
-  reporterId  String    @map("reporter_id")
-  createdAt   DateTime  @default(now()) @map("created_at")
-  updatedAt   DateTime? @updatedAt @map("updated_at")
+enum MaintenanceType {
+  PREVENTIVE
+  CORRECTIVE
+}
 
-  reporter User @relation(fields: [reporterId], references: [id])
+model Problem {
+  id              String           @id @default(uuid())
+  slug            String           @unique
+  title           String
+  description     String
+  status          Status           @default(TO_ANALYSIS)
+  maintenanceType MaintenanceType? @map("maintenance_type")
+  reporterId      String           @map("reporter_id")
+  locationId      String           @map("location_id")
+  categoryId      String           @map("category_id")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  updatedAt       DateTime?        @updatedAt @map("updated_at")
+
+  reporter    User         @relation(fields: [reporterId], references: [id])
+  location    Location     @relation(fields: [locationId], references: [id])
+  category    Category     @relation(fields: [categoryId], references: [id])
+  attachments Attachment[]
 
   @@map("problems")
+}
+
+model Attachment {
+  id        String @id @default(uuid())
+  title     String
+  url       String
+  problemId String @map("problem_id")
+
+  problem Problem @relation(fields: [problemId], references: [id])
+
+  @@map("attachments")
+}
+
+model Location {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  code        String?
+  isActive    Boolean   @default(true) @map("is_active")
+  problem     Problem[]
+
+  @@map("locations")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  isActive    Boolean   @default(true) @map("is_active")
+  problem     Problem[]
+
+  @@map("categories")
 }

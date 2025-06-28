@@ -8,6 +8,8 @@ export class PrismaProblemMapper {
     return Problem.create(
       {
         reporterId: new UniqueEntityID(raw.reporterId),
+        locationId: new UniqueEntityID(raw.locationId),
+        categoryId: new UniqueEntityID(raw.categoryId),
         slug: Slug.create(raw.slug),
         title: raw.title,
         description: raw.description,
@@ -22,6 +24,8 @@ export class PrismaProblemMapper {
     return {
       id: problem.id.toValue(),
       reporterId: problem.reporterId.toValue(),
+      categoryId: problem.categoryId.toValue(),
+      locationId: problem.locationId.toValue(),
       title: problem.title,
       description: problem.description,
       slug: problem.slug.value,
