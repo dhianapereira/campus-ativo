@@ -9,6 +9,7 @@ import { CategoriesRepository } from '@/domain/maintenance-problems/application/
 import { PrismaCategoriesRepository } from './prisma/repositories/prisma-categories-repository'
 import { LocationsRepository } from '@/domain/maintenance-problems/application/repositories/locations-repository'
 import { PrismaLocationsRepository } from './prisma/repositories/prisma-locations-repository'
+import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/problem-attachments-repository'
 
 @Module({
   providers: [
@@ -29,7 +30,10 @@ import { PrismaLocationsRepository } from './prisma/repositories/prisma-location
       provide: LocationsRepository,
       useClass: PrismaLocationsRepository,
     },
-    PrismaProblemAttachmentsRepository,
+    {
+      provide: ProblemAttachmentsRepository,
+      useClass: PrismaProblemAttachmentsRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -37,7 +41,7 @@ import { PrismaLocationsRepository } from './prisma/repositories/prisma-location
     ReportersRepository,
     CategoriesRepository,
     LocationsRepository,
-    PrismaProblemAttachmentsRepository,
+    ProblemAttachmentsRepository,
   ],
 })
 export class DatabaseModule {}

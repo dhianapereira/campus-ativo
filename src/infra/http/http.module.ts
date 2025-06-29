@@ -19,6 +19,8 @@ import { CreateLocationController } from './controllers/create-location.controll
 import { CreateLocationUseCase } from '@/domain/maintenance-problems/application/use-cases/create-location'
 import { FetchLocationsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-locations'
 import { FetchLocationsController } from './controllers/fetch-locations.controller'
+import { EditProblemController } from './controllers/edit-problem.controller'
+import { EditProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/edit-problem'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -32,6 +34,7 @@ import { FetchLocationsController } from './controllers/fetch-locations.controll
     CreateCategoryController,
     CreateLocationController,
     FetchLocationsController,
+    EditProblemController,
   ],
   providers: [
     RegisterReporterUseCase,
@@ -43,6 +46,7 @@ import { FetchLocationsController } from './controllers/fetch-locations.controll
     CreateCategoryUseCase,
     CreateLocationUseCase,
     FetchLocationsUseCase,
+    EditProblemUseCase,
   ],
 })
 export class HttpModule {}

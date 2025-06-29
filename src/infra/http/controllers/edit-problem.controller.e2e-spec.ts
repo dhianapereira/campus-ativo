@@ -1,0 +1,85 @@
+import { AppModule } from '@/infra/app.module'
+import { DatabaseModule } from '@/infra/database/database.module'
+import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { INestApplication } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { Test } from '@nestjs/testing'
+import request from 'supertest'
+import { CategoryFactory } from 'test/factories/make-category'
+import { LocationFactory } from 'test/factories/make-location'
+import { ProblemFactory } from 'test/factories/make-problem'
+import { ReporterFactory } from 'test/factories/make-reporter'
+
+describe('Edit problem (E2E)', () => {
+  let app: INestApplication
+  let prisma: PrismaService
+  let reporterFactory: ReporterFactory
+  let problemFactory: ProblemFactory
+  let categoryFactory: CategoryFactory
+  let locationFactory: LocationFactory
+  let jwt: JwtService
+
+  beforeAll(async () => {
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule, DatabaseModule],
+      providers: [
+        ReporterFactory,
+        ProblemFactory,
+        CategoryFactory,
+        LocationFactory,
+      ],
+    }).compile()
+
+    app = moduleRef.createNestApplication()
+
+    prisma = moduleRef.get(PrismaService)
+    reporterFactory = moduleRef.get(ReporterFactory)
+    problemFactory = moduleRef.get(ProblemFactory)
+    categoryFactory = moduleRef.get(CategoryFactory)
+    locationFactory = moduleRef.get(LocationFactory)
+    jwt = moduleRef.get(JwtService)
+
+    await app.init()
+  })
+
+  test('[PUT] /problems/:id', async () => {
+    const user = await reporterFactory.makePrismaReporter()
+
+    const accessToken = jwt.sign({ sub: user.id.toValue() })
+
+    const category = await categoryFactory.makePrismaCategory({
+      name: 'Category 01',
+    })
+
+    const location = await locationFactory.makePrismaLocation({
+      name: 'Location 01',
+    })
+
+    const problem = await problemFactory.makePrismaProblem({
+      reporterId: user.id,
+      locationId: location.id,
+      categoryId: category.id,
+    })
+
+    const problemId = problem.id.toValue()
+
+    const response = await request(app.getHttpServer())
+      .put(`/problems/${problemId}`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        title: 'New title',
+        description: 'New description',
+      })
+
+    expect(response.statusCode).toBe(204)
+
+    const problemOnDatabase = await prisma.problem.findFirst({
+      where: {
+        title: 'New title',
+        description: 'New description',
+      },
+    })
+
+    expect(problemOnDatabase).toBeTruthy()
+  })
+})
