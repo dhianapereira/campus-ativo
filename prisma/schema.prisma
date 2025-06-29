@@ -20,13 +20,14 @@ enum UserRole {
 }
 
 model User {
-  id       String    @id @default(uuid())
-  role     UserRole  @default(REPORTER)
+  id       String   @id @default(uuid())
+  role     UserRole @default(REPORTER)
   name     String
   position String
-  email    String    @unique
+  email    String   @unique
   password String
-  isActive Boolean   @default(true) @map("is_active")
+  isActive Boolean  @default(true) @map("is_active")
+
   problems Problem[]
 
   @@map("users")
@@ -87,7 +88,7 @@ model Location {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
 
-  problem Problem[]
+  problems Problem[]
 
   @@map("locations")
 }
@@ -97,9 +98,10 @@ model Category {
   name        String
   description String?
   isActive    Boolean   @default(true) @map("is_active")
-  problem     Problem[]
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
+
+  problems Problem[]
 
   @@map("categories")
 }
