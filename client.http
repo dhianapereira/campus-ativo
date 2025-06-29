@@ -23,6 +23,23 @@ Content-Type: application/json
 }
 
 ###
+# @name create_category
+POST {{baseUrl}}/categories
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Infraestrutura",
+  "description": "Ex.: Rachaduras no teto"
+}
+
+###
+# @name fetch_categories
+GET {{baseUrl}}/categories?page=1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
 # @name create_problem
 POST {{baseUrl}}/problems
 Content-Type: application/json

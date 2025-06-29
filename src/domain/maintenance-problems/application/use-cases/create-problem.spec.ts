@@ -23,6 +23,8 @@ describe('Create Problem', () => {
       title: 'Novo problema',
       description: 'Descrição do problema',
       attachmentsIds: ['1', '2'],
+      locationId: 'location-id',
+      categoryId: 'category-id',
     })
 
     expect(result.isRight()).toBe(true)

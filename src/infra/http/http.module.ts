@@ -13,6 +13,8 @@ import { GetProblemBySlugUseCase } from '@/domain/maintenance-problems/applicati
 import { GetProblemBySlugController } from './controllers/get-problem-by-slug.controller'
 import { FetchCategoriesController } from './controllers/fetch-categories.controller'
 import { FetchCategoriesUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-categories'
+import { CreateCategoryController } from './controllers/create-category.controller'
+import { CreateCategoryUseCase } from '@/domain/maintenance-problems/application/use-cases/create-category'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -23,6 +25,7 @@ import { FetchCategoriesUseCase } from '@/domain/maintenance-problems/applicatio
     FetchProblemsController,
     GetProblemBySlugController,
     FetchCategoriesController,
+    CreateCategoryController,
   ],
   providers: [
     RegisterReporterUseCase,
@@ -31,6 +34,7 @@ import { FetchCategoriesUseCase } from '@/domain/maintenance-problems/applicatio
     FetchProblemsUseCase,
     GetProblemBySlugUseCase,
     FetchCategoriesUseCase,
+    CreateCategoryUseCase,
   ],
 })
 export class HttpModule {}
