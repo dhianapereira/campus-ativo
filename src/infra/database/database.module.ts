@@ -5,6 +5,8 @@ import { PrismaProblemAttachmentsRepository } from './prisma/repositories/prisma
 import { ProblemsRepository } from '@/domain/maintenance-problems/application/repositories/problems-repository'
 import { ReportersRepository } from '@/domain/accounts/application/repositories/reporters-repository'
 import { PrismaReportersRepository } from './prisma/repositories/prisma-reporters-repository'
+import { CategoriesRepository } from '@/domain/maintenance-problems/application/repositories/categories-repository'
+import { PrismaCategoriesRepository } from './prisma/repositories/prisma-categories-repository'
 
 @Module({
   providers: [
@@ -17,12 +19,17 @@ import { PrismaReportersRepository } from './prisma/repositories/prisma-reporter
       provide: ReportersRepository,
       useClass: PrismaReportersRepository,
     },
+    {
+      provide: CategoriesRepository,
+      useClass: PrismaCategoriesRepository,
+    },
     PrismaProblemAttachmentsRepository,
   ],
   exports: [
     PrismaService,
     ProblemsRepository,
     ReportersRepository,
+    CategoriesRepository,
     PrismaProblemAttachmentsRepository,
   ],
 })

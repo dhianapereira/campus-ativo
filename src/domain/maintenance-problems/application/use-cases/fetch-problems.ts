@@ -3,11 +3,11 @@ import { ProblemsRepository } from '../repositories/problems-repository'
 import { right, Either } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 
-interface FetchRecentProblemsUseCaseRequest {
+interface FetchProblemsUseCaseRequest {
   page: number
 }
 
-type FetchRecentProblemsUseCaseResponse = Either<
+type FetchProblemsUseCaseResponse = Either<
   null,
   {
     problems: Problem[]
@@ -15,12 +15,12 @@ type FetchRecentProblemsUseCaseResponse = Either<
 >
 
 @Injectable()
-export class FetchRecentProblemsUseCase {
+export class FetchProblemsUseCase {
   constructor(private problemsRepository: ProblemsRepository) {}
 
   async execute({
     page,
-  }: FetchRecentProblemsUseCaseRequest): Promise<FetchRecentProblemsUseCaseResponse> {
+  }: FetchProblemsUseCaseRequest): Promise<FetchProblemsUseCaseResponse> {
     const problems = await this.problemsRepository.findMany({ page })
 
     return right({

@@ -1,7 +1,7 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/problem-attachments-repository'
 import { ProblemsRepository } from '@/domain/maintenance-problems/application/repositories/problems-repository'
-import { Problem } from 'problem'
+import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 
 export class InMemoryProblemsRepository implements ProblemsRepository {
   public items: Problem[] = []

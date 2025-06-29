@@ -1,11 +1,11 @@
 import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems-repository'
 import { makeProblem } from 'test/factories/make-problem'
-import { FetchRecentProblemsUseCase } from './fetch-problems'
+import { FetchProblemsUseCase } from './fetch-problems'
 import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
-let sut: FetchRecentProblemsUseCase
+let sut: FetchProblemsUseCase
 
 describe('Fetch Recent Problems', () => {
   beforeEach(() => {
@@ -14,7 +14,7 @@ describe('Fetch Recent Problems', () => {
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
       inMemoryProblemAttachmentsRepository,
     )
-    sut = new FetchRecentProblemsUseCase(inMemoryProblemsRepository)
+    sut = new FetchProblemsUseCase(inMemoryProblemsRepository)
   })
 
   it('should be able to fetch recent problems', async () => {
