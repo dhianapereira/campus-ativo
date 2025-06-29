@@ -35,6 +35,12 @@ Authorization: Bearer {{authToken}}
 }
 
 ###
+# @name fetch_locations
+GET {{baseUrl}}/locations?page=1
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+###
 # @name create_category
 POST {{baseUrl}}/categories
 Content-Type: application/json
@@ -60,8 +66,8 @@ Authorization: Bearer {{authToken}}
 {
   "title": "Ar-condicionado da Sala 01 com defeito",
   "description": "O ar-condicionado da sala 01 não está ligando.",
-  "location_id": "location-test",
-  "category_id": "category-test"
+  "locationId": "708ec7c8-283d-4ece-a61d-accbf8bcfdda",
+  "categoryId": "7b247bcf-0071-4468-82d1-e1f1c3960c59"
 }
 
 ###

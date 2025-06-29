@@ -4,55 +4,55 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import { CategoryFactory } from 'test/factories/make-category'
+import { LocationFactory } from 'test/factories/make-location'
 import { ReporterFactory } from 'test/factories/make-reporter'
 
-describe('Fetch categories (E2E)', () => {
+describe('Fetch locations (E2E)', () => {
   let app: INestApplication
   let jwt: JwtService
 
   let reporterFactory: ReporterFactory
-  let categoryFactory: CategoryFactory
+  let locationFactory: LocationFactory
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [ReporterFactory, CategoryFactory],
+      providers: [ReporterFactory, LocationFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
 
     reporterFactory = moduleRef.get(ReporterFactory)
-    categoryFactory = moduleRef.get(CategoryFactory)
+    locationFactory = moduleRef.get(LocationFactory)
     jwt = moduleRef.get(JwtService)
 
     await app.init()
   })
 
-  test('[GET] /categories', async () => {
+  test('[GET] /locations', async () => {
     const user = await reporterFactory.makePrismaReporter()
 
     const accessToken = jwt.sign({ sub: user.id.toValue() })
 
     await Promise.all([
-      categoryFactory.makePrismaCategory({
-        name: 'Category 01',
+      locationFactory.makePrismaLocation({
+        name: 'Location 01',
       }),
-      categoryFactory.makePrismaCategory({
-        name: 'Category 02',
+      locationFactory.makePrismaLocation({
+        name: 'Location 02',
       }),
     ])
 
     const response = await request(app.getHttpServer())
-      .get('/categories')
+      .get('/locations')
       .set('Authorization', `Bearer ${accessToken}`)
       .send()
 
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual({
-      categories: expect.arrayContaining([
-        expect.objectContaining({ name: 'Category 01' }),
-        expect.objectContaining({ name: 'Category 02' }),
+      locations: expect.arrayContaining([
+        expect.objectContaining({ name: 'Location 01' }),
+        expect.objectContaining({ name: 'Location 02' }),
       ]),
     })
   })
