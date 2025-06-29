@@ -1,0 +1,31 @@
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { Location } from '@/domain/maintenance-problems/enterprise/entities/location'
+import { Location as PrismaLocation, Prisma } from '@prisma/client'
+
+export class PrismaLocationMapper {
+  static toDomain(raw: PrismaLocation): Location {
+    return Location.create(
+      {
+        name: raw.name,
+        description: raw.description,
+        code: raw.code,
+        isActive: raw.isActive,
+        createdAt: raw.createdAt,
+        updatedAt: raw.updatedAt,
+      },
+      new UniqueEntityID(raw.id),
+    )
+  }
+
+  static toPrisma(location: Location): Prisma.LocationUncheckedCreateInput {
+    return {
+      id: location.id.toValue(),
+      name: location.name,
+      description: location.description,
+      code: location.code,
+      isActive: location.isActive,
+      createdAt: location.createdAt,
+      updatedAt: location.updatedAt,
+    }
+  }
+}

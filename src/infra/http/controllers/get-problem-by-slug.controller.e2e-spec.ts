@@ -10,10 +10,9 @@ import { LocationFactory } from 'test/factories/make-location'
 import { ProblemFactory } from 'test/factories/make-problem'
 import { ReporterFactory } from 'test/factories/make-reporter'
 
-describe('Fetch problems (E2E)', () => {
+describe('Get problem by slug (E2E)', () => {
   let app: INestApplication
   let jwt: JwtService
-
   let reporterFactory: ReporterFactory
   let problemFactory: ProblemFactory
   let categoryFactory: CategoryFactory
@@ -41,7 +40,7 @@ describe('Fetch problems (E2E)', () => {
     await app.init()
   })
 
-  test('[GET] /problems', async () => {
+  test('[GET] /problems/:slug', async () => {
     const user = await reporterFactory.makePrismaReporter()
 
     const accessToken = jwt.sign({ sub: user.id.toValue() })
@@ -54,36 +53,23 @@ describe('Fetch problems (E2E)', () => {
       name: 'Location 01',
     })
 
-    await Promise.all([
-      problemFactory.makePrismaProblem({
-        title: 'Problem 01',
-        description: 'Problem content',
-        reporterId: user.id,
-        slug: Slug.create('problem-01'),
-        locationId: location.id,
-        categoryId: category.id,
-      }),
-      problemFactory.makePrismaProblem({
-        title: 'Problem 02',
-        description: 'Problem content',
-        reporterId: user.id,
-        slug: Slug.create('problem-02'),
-        locationId: location.id,
-        categoryId: category.id,
-      }),
-    ])
+    await problemFactory.makePrismaProblem({
+      title: 'Problem 01',
+      description: 'Problem content',
+      reporterId: user.id,
+      slug: Slug.create('problem-01'),
+      locationId: location.id,
+      categoryId: category.id,
+    })
 
     const response = await request(app.getHttpServer())
-      .get('/problems')
+      .get('/problems/problem-01')
       .set('Authorization', `Bearer ${accessToken}`)
       .send()
 
     expect(response.statusCode).toBe(200)
     expect(response.body).toEqual({
-      problems: expect.arrayContaining([
-        expect.objectContaining({ title: 'Problem 01' }),
-        expect.objectContaining({ title: 'Problem 02' }),
-      ]),
+      problem: expect.objectContaining({ title: 'Problem 01' }),
     })
   })
 })

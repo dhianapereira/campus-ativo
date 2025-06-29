@@ -2,6 +2,7 @@ import { ProblemsRepository } from '../repositories/problems-repository'
 import { Either, left, right } from '@/core/either'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Problem } from '../../enterprise/entities/problems/problem'
+import { Injectable } from '@nestjs/common'
 
 interface GetProblemBySlugUseCaseRequest {
   slug: string
@@ -14,6 +15,7 @@ type GetProblemBySlugUseCaseResponse = Either<
   }
 >
 
+@Injectable()
 export class GetProblemBySlugUseCase {
   constructor(private problemsRepository: ProblemsRepository) {}
 
