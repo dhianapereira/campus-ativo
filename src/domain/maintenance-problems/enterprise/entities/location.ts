@@ -41,12 +41,13 @@ export class Location extends Entity<LocationProps> {
   }
 
   static create(
-    props: Optional<LocationProps, 'createdAt'>,
+    props: Optional<LocationProps, 'createdAt' | 'isActive'>,
     id?: UniqueEntityID,
   ) {
     const location = new Location(
       {
         ...props,
+        isActive: props.isActive ?? true,
         createdAt: props.createdAt ?? new Date(),
       },
       id,

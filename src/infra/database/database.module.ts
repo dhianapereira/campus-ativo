@@ -7,6 +7,8 @@ import { ReportersRepository } from '@/domain/accounts/application/repositories/
 import { PrismaReportersRepository } from './prisma/repositories/prisma-reporters-repository'
 import { CategoriesRepository } from '@/domain/maintenance-problems/application/repositories/categories-repository'
 import { PrismaCategoriesRepository } from './prisma/repositories/prisma-categories-repository'
+import { LocationsRepository } from '@/domain/maintenance-problems/application/repositories/locations-repository'
+import { PrismaLocationsRepository } from './prisma/repositories/prisma-locations-repository'
 
 @Module({
   providers: [
@@ -23,6 +25,10 @@ import { PrismaCategoriesRepository } from './prisma/repositories/prisma-categor
       provide: CategoriesRepository,
       useClass: PrismaCategoriesRepository,
     },
+    {
+      provide: LocationsRepository,
+      useClass: PrismaLocationsRepository,
+    },
     PrismaProblemAttachmentsRepository,
   ],
   exports: [
@@ -30,6 +36,7 @@ import { PrismaCategoriesRepository } from './prisma/repositories/prisma-categor
     ProblemsRepository,
     ReportersRepository,
     CategoriesRepository,
+    LocationsRepository,
     PrismaProblemAttachmentsRepository,
   ],
 })

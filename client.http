@@ -23,6 +23,18 @@ Content-Type: application/json
 }
 
 ###
+# @name create_location
+POST {{baseUrl}}/locations
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "name": "Sala de aula",
+  "code": "001",
+  "description": "No primeiro andar do lado esquerdo"
+}
+
+###
 # @name create_category
 POST {{baseUrl}}/categories
 Content-Type: application/json
