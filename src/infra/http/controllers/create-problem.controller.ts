@@ -6,18 +6,12 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { CreateProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/create-problem'
 
-const createProblemBodySchema = z
-  .object({
-    title: z.string(),
-    description: z.string(),
-    location_id: z.string().transform((val) => val.trim()),
-    category_id: z.string().transform((val) => val.trim()),
-  })
-  .transform((data) => ({
-    ...data,
-    locationId: data.location_id,
-    categoryId: data.category_id,
-  }))
+const createProblemBodySchema = z.object({
+  title: z.string(),
+  description: z.string(),
+  locationId: z.string(),
+  categoryId: z.string(),
+})
 
 const bodyValidationPipe = new ZodValidationPipe(createProblemBodySchema)
 

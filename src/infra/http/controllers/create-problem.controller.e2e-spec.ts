@@ -53,8 +53,8 @@ describe('Create problem (E2E)', () => {
       .send({
         title: 'New problem',
         description: 'Problem description',
-        location_id: location.id.toValue(),
-        category_id: category.id.toValue(),
+        locationId: location.id.toValue(),
+        categoryId: category.id.toValue(),
       })
 
     expect(response.statusCode).toBe(201)
