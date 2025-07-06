@@ -18,6 +18,7 @@ describe('Register Reporter', () => {
   it('should be able to register a new reporter', async () => {
     const result = await sut.execute({
       name: 'John Doe',
+      position: 'Director',
       email: 'johndoe@example.com',
       password: '123456',
     })
@@ -31,6 +32,7 @@ describe('Register Reporter', () => {
   it('should hash reporter password upon registration', async () => {
     const result = await sut.execute({
       name: 'John Doe',
+      position: 'Director',
       email: 'johndoe@example.com',
       password: '123456',
     })
