@@ -17,6 +17,7 @@ enum UserRole {
   REPORTER
   MANAGER
   DIRECTOR
+  ADMIN
 }
 
 model User {

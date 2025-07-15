@@ -23,6 +23,8 @@ import { EditProblemController } from './controllers/edit-problem.controller'
 import { EditProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/edit-problem'
 import { DeleteProblemController } from './controllers/delete-problem.controller'
 import { DeleteProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/delete-problem'
+import { ChangeUserRoleController } from './controllers/change-user-role.controller'
+import { ChangeUserRoleUseCase } from '@/domain/accounts/application/use-cases/change-user-role'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -38,6 +40,7 @@ import { DeleteProblemUseCase } from '@/domain/maintenance-problems/application/
     FetchLocationsController,
     EditProblemController,
     DeleteProblemController,
+    ChangeUserRoleController,
   ],
   providers: [
     RegisterReporterUseCase,
@@ -51,6 +54,7 @@ import { DeleteProblemUseCase } from '@/domain/maintenance-problems/application/
     FetchLocationsUseCase,
     EditProblemUseCase,
     DeleteProblemUseCase,
+    ChangeUserRoleUseCase,
   ],
 })
 export class HttpModule {}
