@@ -50,7 +50,7 @@ describe('Delete Problem', () => {
     expect(inMemoryProblemAttachmentsRepository.items).toHaveLength(0)
   })
 
-  it('should not be able to delete a problem from another user', async () => {
+  it('should be able to delete a problem from another user (permission check handled by guard)', async () => {
     const newProblem = makeProblem(
       {
         reporterId: new UniqueEntityID('reporter-1'),
@@ -65,7 +65,7 @@ describe('Delete Problem', () => {
       reporterId: 'reporter-2',
     })
 
-    expect(result.isLeft()).toBe(true)
-    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryProblemsRepository.items).toHaveLength(0)
   })
 })

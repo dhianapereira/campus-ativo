@@ -1,8 +1,17 @@
-import { BadRequestException, Controller, Get, Query } from '@nestjs/common'
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  Query,
+  UseGuards,
+} from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { FetchCategoriesUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-categories'
 import { CategoryPresenter } from '../presenters/category-presenter'
+import { Roles } from '@/infra/auth/roles.decorator'
+import { RolesGuard } from '@/infra/auth/roles.guard'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 const pageQueryParamSchema = z
   .string()
@@ -20,6 +29,8 @@ export class FetchCategoriesController {
   constructor(private fetchCategories: FetchCategoriesUseCase) {}
 
   @Get()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.REPORTER, UserRole.MANAGER, UserRole.DIRECTOR, UserRole.ADMIN)
   async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
     const result = await this.fetchCategories.execute({ page })
 

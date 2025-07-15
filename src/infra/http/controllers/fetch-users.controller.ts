@@ -7,11 +7,11 @@ import {
 } from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
-import { FetchLocationsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-locations'
-import { LocationPresenter } from '../presenters/location-presenter'
-import { Roles } from '@/infra/auth/roles.decorator'
-import { RolesGuard } from '@/infra/auth/roles.guard'
+import { FetchUsersUseCase } from '@/domain/accounts/application/use-cases/fetch-users'
+import { RequireMinRole } from '@/infra/auth/role-hierarchy.decorator'
+import { RoleHierarchyGuard } from '@/infra/auth/role-hierarchy.guard'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
+import { UserPresenter } from '../presenters/user-presenter'
 
 const pageQueryParamSchema = z
   .string()
@@ -24,22 +24,22 @@ const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
 
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 
-@Controller('/locations')
-export class FetchLocationsController {
-  constructor(private fetchLocations: FetchLocationsUseCase) {}
+@Controller('/users')
+export class FetchUsersController {
+  constructor(private fetchUsers: FetchUsersUseCase) {}
 
   @Get()
-  @UseGuards(RolesGuard)
-  @Roles(UserRole.REPORTER, UserRole.MANAGER, UserRole.DIRECTOR, UserRole.ADMIN)
+  @UseGuards(RoleHierarchyGuard)
+  @RequireMinRole(UserRole.DIRECTOR)
   async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
-    const result = await this.fetchLocations.execute({ page })
+    const result = await this.fetchUsers.execute({ page })
 
     if (result.isLeft()) {
       throw new BadRequestException()
     }
 
-    const locations = result.value.locations
+    const users = result.value.users
 
-    return { locations: locations.map(LocationPresenter.toHTTP) }
+    return { users: users.map(UserPresenter.toHTTP) }
   }
 }

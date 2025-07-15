@@ -44,9 +44,7 @@ export class EditProblemUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    if (reporterId !== problem.reporterId.toValue()) {
-      return left(new NotAllowedError())
-    }
+    // Permission check is handled by ResourceOwnerGuard in the controller
 
     const currentProblemAttachments =
       await this.problemAttachmentsRepository.findManyByProblemId(problemId)

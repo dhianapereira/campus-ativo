@@ -1,4 +1,7 @@
-import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
+import {
+  UsersRepository,
+  FindManyUsersParams,
+} from '@/domain/accounts/application/repositories/users-repository'
 import { User } from '@/domain/accounts/enterprise/entities/user'
 
 export class InMemoryUsersRepository implements UsersRepository {
@@ -22,6 +25,14 @@ export class InMemoryUsersRepository implements UsersRepository {
     }
 
     return user
+  }
+
+  async findMany({ page }: FindManyUsersParams) {
+    const users = this.items
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .slice((page - 1) * 20, page * 20)
+
+    return users
   }
 
   async create(user: User) {

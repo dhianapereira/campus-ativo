@@ -5,12 +5,18 @@ import {
   HttpCode,
   Param,
   Put,
+  UseGuards,
 } from '@nestjs/common'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { EditProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/edit-problem'
+import { ResourceOwner } from '@/infra/auth/resource-owner.decorator'
+import { ResourceOwnerGuard } from '@/infra/auth/resource-owner.guard'
+import { Roles } from '@/infra/auth/roles.decorator'
+import { RolesGuard } from '@/infra/auth/roles.guard'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 const editProblemBodySchema = z.object({
   title: z.string(),
@@ -27,6 +33,9 @@ export class EditProblemController {
 
   @Put()
   @HttpCode(204)
+  @UseGuards(RolesGuard, ResourceOwnerGuard)
+  @Roles(UserRole.REPORTER, UserRole.MANAGER, UserRole.DIRECTOR, UserRole.ADMIN)
+  @ResourceOwner('problem')
   async handle(
     @Body(bodyValidationPipe) body: EditProblemBodySchema,
     @CurrentUser() user: UserPayload,

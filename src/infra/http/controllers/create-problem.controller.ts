@@ -1,10 +1,19 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+} from '@nestjs/common'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { CreateProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/create-problem'
+import { Roles } from '@/infra/auth/roles.decorator'
+import { RolesGuard } from '@/infra/auth/roles.guard'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 const createProblemBodySchema = z.object({
   title: z.string(),
@@ -22,6 +31,8 @@ export class CreateProblemController {
   constructor(private readonly createProblem: CreateProblemUseCase) {}
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.REPORTER, UserRole.MANAGER, UserRole.DIRECTOR, UserRole.ADMIN)
   async handle(
     @Body(bodyValidationPipe) body: CreateProblemBodySchema,
     @CurrentUser() user: UserPayload,

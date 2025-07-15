@@ -25,6 +25,10 @@ import { DeleteProblemController } from './controllers/delete-problem.controller
 import { DeleteProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/delete-problem'
 import { ChangeUserRoleController } from './controllers/change-user-role.controller'
 import { ChangeUserRoleUseCase } from '@/domain/accounts/application/use-cases/change-user-role'
+import { FetchUsersController } from './controllers/fetch-users.controller'
+import { FetchUsersUseCase } from '@/domain/accounts/application/use-cases/fetch-users'
+import { GetUserProfileController } from './controllers/get-user-profile.controller'
+import { GetUserProfileUseCase } from '@/domain/accounts/application/use-cases/get-user-profile'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
@@ -41,6 +45,8 @@ import { ChangeUserRoleUseCase } from '@/domain/accounts/application/use-cases/c
     EditProblemController,
     DeleteProblemController,
     ChangeUserRoleController,
+    FetchUsersController,
+    GetUserProfileController,
   ],
   providers: [
     RegisterReporterUseCase,
@@ -55,6 +61,8 @@ import { ChangeUserRoleUseCase } from '@/domain/accounts/application/use-cases/c
     EditProblemUseCase,
     DeleteProblemUseCase,
     ChangeUserRoleUseCase,
+    FetchUsersUseCase,
+    GetUserProfileUseCase,
   ],
 })
 export class HttpModule {}

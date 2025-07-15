@@ -5,31 +5,32 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
-import { ReporterFactory } from 'test/factories/make-reporter'
+import { UserFactory } from 'test/factories/make-user-factory'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 describe('Create location (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let jwt: JwtService
-  let reporterFactory: ReporterFactory
+  let userFactory: UserFactory
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [ReporterFactory],
+      providers: [UserFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
 
     prisma = moduleRef.get(PrismaService)
-    reporterFactory = moduleRef.get(ReporterFactory)
+    userFactory = moduleRef.get(UserFactory)
     jwt = moduleRef.get(JwtService)
 
     await app.init()
   })
 
   test('[POST] /locations', async () => {
-    const user = await reporterFactory.makePrismaReporter()
+    const user = await userFactory.makePrismaUser({ role: UserRole.MANAGER })
 
     const accessToken = jwt.sign({ sub: user.id.toValue() })
 
