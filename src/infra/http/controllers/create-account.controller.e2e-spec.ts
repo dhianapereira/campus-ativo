@@ -20,11 +20,11 @@ describe('Create Account (E2E)', () => {
     await app.init()
   })
 
-  test('[POST] /accounts', async () => {
+  test('[POST] /accounts - should create account with valid IFAL email', async () => {
     const response = await request(app.getHttpServer()).post('/accounts').send({
       name: 'John Doe',
       position: 'Director',
-      email: 'johndoe@example.com',
+      email: 'johndoe@ifal.edu.br',
       password: '123456',
     })
 
@@ -32,10 +32,70 @@ describe('Create Account (E2E)', () => {
 
     const userOnDatabase = await prisma.user.findUnique({
       where: {
-        email: 'johndoe@example.com',
+        email: 'johndoe@ifal.edu.br',
       },
     })
 
     expect(userOnDatabase).toBeTruthy()
+  })
+
+  test('[POST] /accounts - should create account with valid student IFAL email', async () => {
+    const response = await request(app.getHttpServer()).post('/accounts').send({
+      name: 'Jane Doe',
+      position: 'Student',
+      email: 'janedoe@aluno.ifal.edu.br',
+      password: '123456',
+    })
+
+    expect(response.statusCode).toBe(201)
+
+    const userOnDatabase = await prisma.user.findUnique({
+      where: {
+        email: 'janedoe@aluno.ifal.edu.br',
+      },
+    })
+
+    expect(userOnDatabase).toBeTruthy()
+  })
+
+  test('[POST] /accounts - should reject account with invalid email domain', async () => {
+    const response = await request(app.getHttpServer()).post('/accounts').send({
+      name: 'Invalid User',
+      position: 'Director',
+      email: 'invalid@gmail.com',
+      password: '123456',
+    })
+
+    expect(response.statusCode).toBe(400)
+    expect(response.body.message).toContain('domain is not allowed')
+
+    const userOnDatabase = await prisma.user.findUnique({
+      where: {
+        email: 'invalid@gmail.com',
+      },
+    })
+
+    expect(userOnDatabase).toBeNull()
+  })
+
+  test('[POST] /accounts - should reject account with various invalid domains', async () => {
+    const invalidEmails = [
+      'user@outlook.com',
+      'user@ifal.com',
+      'user@aluno.ifal.com',
+      'user@fake.ifal.edu.br',
+    ]
+
+    for (const email of invalidEmails) {
+      const response = await request(app.getHttpServer()).post('/accounts').send({
+        name: 'Test User',
+        position: 'Director',
+        email,
+        password: '123456',
+      })
+
+      expect(response.statusCode).toBe(400)
+      expect(response.body.message).toContain('domain is not allowed')
+    }
   })
 })

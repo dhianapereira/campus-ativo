@@ -6,8 +6,11 @@ import { FetchProblemsController } from './controllers/fetch-problems.controller
 import { DatabaseModule } from '../database/database.module'
 import { CreateProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/create-problem'
 import { FetchProblemsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-problems'
-import { RegisterReporterUseCase } from '@/domain/accounts/application/use-cases/register-reporter'
-import { AuthenticateReporterUseCase } from '@/domain/accounts/application/use-cases/authenticate-reporter'
+import { RegisterUserUseCase } from '@/domain/accounts/application/use-cases/register-user'
+import { AuthenticateUserUseCase } from '@/domain/accounts/application/use-cases/authenticate-user'
+import { GetUserProfileUseCase } from '@/domain/accounts/application/use-cases/get-user-profile'
+import { FetchUsersUseCase } from '@/domain/accounts/application/use-cases/fetch-users'
+import { ChangeUserRoleUseCase } from '@/domain/accounts/application/use-cases/change-user-role'
 import { CryptographyModule } from '../cryptography/cryptography.module'
 import { GetProblemBySlugUseCase } from '@/domain/maintenance-problems/application/use-cases/get-problem-by-slug'
 import { GetProblemBySlugController } from './controllers/get-problem-by-slug.controller'
@@ -23,12 +26,18 @@ import { EditProblemController } from './controllers/edit-problem.controller'
 import { EditProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/edit-problem'
 import { DeleteProblemController } from './controllers/delete-problem.controller'
 import { DeleteProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/delete-problem'
+import { GetUserProfileController } from './controllers/get-user-profile.controller'
+import { FetchUsersController } from './controllers/fetch-users.controller'
+import { ChangeUserRoleController } from './controllers/change-user-role.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule],
   controllers: [
     CreateAccountController,
     AuthenticateController,
+    GetUserProfileController,
+    FetchUsersController,
+    ChangeUserRoleController,
     CreateProblemController,
     FetchProblemsController,
     GetProblemBySlugController,
@@ -40,8 +49,11 @@ import { DeleteProblemUseCase } from '@/domain/maintenance-problems/application/
     DeleteProblemController,
   ],
   providers: [
-    RegisterReporterUseCase,
-    AuthenticateReporterUseCase,
+    RegisterUserUseCase,
+    AuthenticateUserUseCase,
+    GetUserProfileUseCase,
+    FetchUsersUseCase,
+    ChangeUserRoleUseCase,
     CreateProblemUseCase,
     FetchProblemsUseCase,
     GetProblemBySlugUseCase,
