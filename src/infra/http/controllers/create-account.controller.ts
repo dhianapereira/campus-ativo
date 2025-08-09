@@ -8,8 +8,9 @@ import {
 } from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
-import { RegisterReporterUseCase } from '@/domain/accounts/application/use-cases/register-reporter'
-import { ReporterAlreadyExistsError } from '@/domain/accounts/application/use-cases/errors/reporter-already-exists-error'
+import { RegisterUserUseCase } from '@/domain/accounts/application/use-cases/register-user'
+import { UserAlreadyExistsError } from '@/domain/accounts/application/use-cases/errors/user-already-exists-error'
+import { InvalidEmailDomainError } from '@/domain/accounts/application/use-cases/errors/invalid-email-domain-error'
 import { Public } from '@/infra/auth/public'
 
 const createAccountBodySchema = z.object({
@@ -24,14 +25,14 @@ type CreateAccountBodySchema = z.infer<typeof createAccountBodySchema>
 @Controller('/accounts')
 @Public()
 export class CreateAccountController {
-  constructor(private readonly registerReporter: RegisterReporterUseCase) {}
+  constructor(private readonly registerUser: RegisterUserUseCase) {}
 
   @Post()
   @UsePipes(new ZodValidationPipe(createAccountBodySchema))
   async handle(@Body() body: CreateAccountBodySchema) {
     const { name, position, email, password } = body
 
-    const result = await this.registerReporter.execute({
+    const result = await this.registerUser.execute({
       name,
       position,
       email,
@@ -42,8 +43,10 @@ export class CreateAccountController {
       const error = result.value
 
       switch (error.constructor) {
-        case ReporterAlreadyExistsError:
+        case UserAlreadyExistsError:
           throw new ConflictException(error.message)
+        case InvalidEmailDomainError:
+          throw new BadRequestException(error.message)
         default:
           throw new BadRequestException(error.message)
       }

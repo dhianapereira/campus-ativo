@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
-import { AuthenticateReporterUseCase } from '@/domain/accounts/application/use-cases/authenticate-reporter'
+import { AuthenticateUserUseCase } from '@/domain/accounts/application/use-cases/authenticate-user'
 import { WrongCredentialsError } from '@/domain/accounts/application/use-cases/errors/wrong-credentials-error'
 import { Public } from '@/infra/auth/public'
 
@@ -23,7 +23,7 @@ type AuthenticateBodySchema = z.infer<typeof authenticateBodySchema>
 @Public()
 export class AuthenticateController {
   constructor(
-    private readonly authenticateReporter: AuthenticateReporterUseCase,
+    private readonly authenticateUser: AuthenticateUserUseCase,
   ) {}
 
   @Post()
@@ -31,7 +31,7 @@ export class AuthenticateController {
   async handle(@Body() body: AuthenticateBodySchema) {
     const { email, password } = body
 
-    const result = await this.authenticateReporter.execute({
+    const result = await this.authenticateUser.execute({
       email,
       password,
     })

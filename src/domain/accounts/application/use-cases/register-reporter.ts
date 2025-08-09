@@ -4,6 +4,8 @@ import { Reporter } from '../../enterprise/entities/reporter'
 import { ReportersRepository } from '../repositories/reporters-repository'
 import { HashGenerator } from '../cryptography/hash-generator'
 import { ReporterAlreadyExistsError } from './errors/reporter-already-exists-error'
+import { InvalidEmailDomainError } from './errors/invalid-email-domain-error'
+import { EmailValidator } from '@/core/utils/email-validator'
 
 interface RegisterReporterUseCaseRequest {
   name: string
@@ -13,7 +15,7 @@ interface RegisterReporterUseCaseRequest {
 }
 
 type RegisterReporterUseCaseResponse = Either<
-  ReporterAlreadyExistsError,
+  ReporterAlreadyExistsError | InvalidEmailDomainError,
   {
     reporter: Reporter
   }
@@ -32,6 +34,10 @@ export class RegisterReporterUseCase {
     email,
     password,
   }: RegisterReporterUseCaseRequest): Promise<RegisterReporterUseCaseResponse> {
+    if (!EmailValidator.isValidDomain(email)) {
+      return left(new InvalidEmailDomainError(email))
+    }
+
     const reporterWithSameEmail =
       await this.reportersRepository.findByEmail(email)
 

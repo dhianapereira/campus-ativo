@@ -6,13 +6,12 @@ import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { UserFactory } from 'test/factories/make-user'
-import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
-describe('Create category (E2E)', () => {
+describe('Get user profile (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let jwt: JwtService
   let userFactory: UserFactory
+  let jwt: JwtService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -29,9 +28,10 @@ describe('Create category (E2E)', () => {
     await app.init()
   })
 
-  test('[POST] /categories', async () => {
+  test('[GET] /profile', async () => {
     const user = await userFactory.makePrismaUser({
-      role: UserRole.MANAGER,
+      name: 'John Doe',
+      position: 'Reporter',
     })
 
     const accessToken = jwt.sign({ 
@@ -40,42 +40,17 @@ describe('Create category (E2E)', () => {
     })
 
     const response = await request(app.getHttpServer())
-      .post('/categories')
+      .get('/profile')
       .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        name: 'New category',
-        description: 'Category description',
-      })
+      .send()
 
-    expect(response.statusCode).toBe(201)
-
-    const categoryOnDatabase = await prisma.category.findFirst({
-      where: {
-        name: 'New category',
-      },
+    expect(response.statusCode).toBe(200)
+    expect(response.body).toEqual({
+      profile: expect.objectContaining({
+        id: user.id.toValue(),
+        name: 'John Doe',
+        position: 'Reporter',
+      }),
     })
-
-    expect(categoryOnDatabase).toBeTruthy()
-  })
-
-  test('[POST] /categories (as reporter - should be forbidden)', async () => {
-    const user = await userFactory.makePrismaUser({
-      role: UserRole.REPORTER,
-    })
-
-    const accessToken = jwt.sign({ 
-      sub: user.id.toValue(),
-      role: user.role,
-    })
-
-    const response = await request(app.getHttpServer())
-      .post('/categories')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send({
-        name: 'New category',
-        description: 'Category description',
-      })
-
-    expect(response.statusCode).toBe(403)
   })
 })

@@ -4,7 +4,9 @@ import { PrismaProblemsRepository } from './prisma/repositories/prisma-problems-
 import { PrismaProblemAttachmentsRepository } from './prisma/repositories/prisma-problem-attachments-repository'
 import { ProblemsRepository } from '@/domain/maintenance-problems/application/repositories/problems-repository'
 import { ReportersRepository } from '@/domain/accounts/application/repositories/reporters-repository'
+import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
 import { PrismaReportersRepository } from './prisma/repositories/prisma-reporters-repository'
+import { PrismaUsersRepository } from './prisma/repositories/prisma-users-repository'
 import { CategoriesRepository } from '@/domain/maintenance-problems/application/repositories/categories-repository'
 import { PrismaCategoriesRepository } from './prisma/repositories/prisma-categories-repository'
 import { LocationsRepository } from '@/domain/maintenance-problems/application/repositories/locations-repository'
@@ -23,6 +25,10 @@ import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/appl
       useClass: PrismaReportersRepository,
     },
     {
+      provide: UsersRepository,
+      useClass: PrismaUsersRepository,
+    },
+    {
       provide: CategoriesRepository,
       useClass: PrismaCategoriesRepository,
     },
@@ -39,6 +45,7 @@ import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/appl
     PrismaService,
     ProblemsRepository,
     ReportersRepository,
+    UsersRepository,
     CategoriesRepository,
     LocationsRepository,
     ProblemAttachmentsRepository,
