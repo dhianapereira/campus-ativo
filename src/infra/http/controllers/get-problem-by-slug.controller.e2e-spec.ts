@@ -8,12 +8,12 @@ import request from 'supertest'
 import { CategoryFactory } from 'test/factories/make-category'
 import { LocationFactory } from 'test/factories/make-location'
 import { ProblemFactory } from 'test/factories/make-problem'
-import { ReporterFactory } from 'test/factories/make-reporter'
+import { UserFactory } from 'test/factories/make-user'
 
 describe('Get problem by slug (E2E)', () => {
   let app: INestApplication
   let jwt: JwtService
-  let reporterFactory: ReporterFactory
+  let userFactory: UserFactory
   let problemFactory: ProblemFactory
   let categoryFactory: CategoryFactory
   let locationFactory: LocationFactory
@@ -23,7 +23,7 @@ describe('Get problem by slug (E2E)', () => {
       imports: [AppModule, DatabaseModule],
       providers: [
         ProblemFactory,
-        ReporterFactory,
+        UserFactory,
         CategoryFactory,
         LocationFactory,
       ],
@@ -31,7 +31,7 @@ describe('Get problem by slug (E2E)', () => {
 
     app = moduleRef.createNestApplication()
 
-    reporterFactory = moduleRef.get(ReporterFactory)
+    userFactory = moduleRef.get(UserFactory)
     problemFactory = moduleRef.get(ProblemFactory)
     categoryFactory = moduleRef.get(CategoryFactory)
     locationFactory = moduleRef.get(LocationFactory)
@@ -41,7 +41,7 @@ describe('Get problem by slug (E2E)', () => {
   })
 
   test('[GET] /problems/:slug', async () => {
-    const user = await reporterFactory.makePrismaReporter()
+    const user = await userFactory.makePrismaUser()
 
     const accessToken = jwt.sign({ sub: user.id.toValue() })
 

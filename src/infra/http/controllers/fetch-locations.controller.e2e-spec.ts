@@ -5,24 +5,24 @@ import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { LocationFactory } from 'test/factories/make-location'
-import { ReporterFactory } from 'test/factories/make-reporter'
+import { UserFactory } from 'test/factories/make-user'
 
 describe('Fetch locations (E2E)', () => {
   let app: INestApplication
   let jwt: JwtService
 
-  let reporterFactory: ReporterFactory
+  let userFactory: UserFactory
   let locationFactory: LocationFactory
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [ReporterFactory, LocationFactory],
+      providers: [UserFactory, LocationFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
 
-    reporterFactory = moduleRef.get(ReporterFactory)
+    userFactory = moduleRef.get(UserFactory)
     locationFactory = moduleRef.get(LocationFactory)
     jwt = moduleRef.get(JwtService)
 
@@ -30,7 +30,7 @@ describe('Fetch locations (E2E)', () => {
   })
 
   test('[GET] /locations', async () => {
-    const user = await reporterFactory.makePrismaReporter()
+    const user = await userFactory.makePrismaUser()
 
     const accessToken = jwt.sign({ sub: user.id.toValue() })
 

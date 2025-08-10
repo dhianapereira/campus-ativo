@@ -5,24 +5,24 @@ import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { CategoryFactory } from 'test/factories/make-category'
-import { ReporterFactory } from 'test/factories/make-reporter'
+import { UserFactory } from 'test/factories/make-user'
 
 describe('Fetch categories (E2E)', () => {
   let app: INestApplication
   let jwt: JwtService
 
-  let reporterFactory: ReporterFactory
+  let userFactory: UserFactory
   let categoryFactory: CategoryFactory
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [ReporterFactory, CategoryFactory],
+      providers: [UserFactory, CategoryFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
 
-    reporterFactory = moduleRef.get(ReporterFactory)
+    userFactory = moduleRef.get(UserFactory)
     categoryFactory = moduleRef.get(CategoryFactory)
     jwt = moduleRef.get(JwtService)
 
@@ -30,7 +30,7 @@ describe('Fetch categories (E2E)', () => {
   })
 
   test('[GET] /categories', async () => {
-    const user = await reporterFactory.makePrismaReporter()
+    const user = await userFactory.makePrismaUser()
 
     const accessToken = jwt.sign({ sub: user.id.toValue() })
 

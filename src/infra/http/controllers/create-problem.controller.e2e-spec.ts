@@ -7,26 +7,26 @@ import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { CategoryFactory } from 'test/factories/make-category'
 import { LocationFactory } from 'test/factories/make-location'
-import { ReporterFactory } from 'test/factories/make-reporter'
+import { UserFactory } from 'test/factories/make-user'
 
 describe('Create problem (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
   let jwt: JwtService
-  let reporterFactory: ReporterFactory
+  let userFactory: UserFactory
   let categoryFactory: CategoryFactory
   let locationFactory: LocationFactory
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
-      providers: [ReporterFactory, CategoryFactory, LocationFactory],
+      providers: [UserFactory, CategoryFactory, LocationFactory],
     }).compile()
 
     app = moduleRef.createNestApplication()
 
     prisma = moduleRef.get(PrismaService)
-    reporterFactory = moduleRef.get(ReporterFactory)
+    userFactory = moduleRef.get(UserFactory)
     categoryFactory = moduleRef.get(CategoryFactory)
     locationFactory = moduleRef.get(LocationFactory)
     jwt = moduleRef.get(JwtService)
@@ -35,7 +35,7 @@ describe('Create problem (E2E)', () => {
   })
 
   test('[POST] /problems', async () => {
-    const user = await reporterFactory.makePrismaReporter()
+    const user = await userFactory.makePrismaUser()
 
     const accessToken = jwt.sign({ sub: user.id.toValue() })
 
