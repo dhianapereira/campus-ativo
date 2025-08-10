@@ -8,46 +8,42 @@ import request from 'supertest'
 import { CategoryFactory } from 'test/factories/make-category'
 import { LocationFactory } from 'test/factories/make-location'
 import { ProblemFactory } from 'test/factories/make-problem'
-import { ReporterFactory } from 'test/factories/make-reporter'
 import { UserFactory } from 'test/factories/make-user'
 
 describe('Edit problem (E2E)', () => {
   let app: INestApplication
   let prisma: PrismaService
-  let reporterFactory: ReporterFactory
+  let userFactory: UserFactory
   let problemFactory: ProblemFactory
   let categoryFactory: CategoryFactory
   let locationFactory: LocationFactory
   let jwt: JwtService
-  let userFactory: UserFactory
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
       providers: [
-        ReporterFactory,
+        UserFactory,
         ProblemFactory,
         CategoryFactory,
         LocationFactory,
-        UserFactory,
       ],
     }).compile()
 
     app = moduleRef.createNestApplication()
 
     prisma = moduleRef.get(PrismaService)
-    reporterFactory = moduleRef.get(ReporterFactory)
+    userFactory = moduleRef.get(UserFactory)
     problemFactory = moduleRef.get(ProblemFactory)
     categoryFactory = moduleRef.get(CategoryFactory)
     locationFactory = moduleRef.get(LocationFactory)
-    userFactory = moduleRef.get(UserFactory)
     jwt = moduleRef.get(JwtService)
 
     await app.init()
   })
 
   test('[PUT] /problems/:id', async () => {
-    const user = await reporterFactory.makePrismaReporter()
+    const user = await userFactory.makePrismaUser()
 
     const accessToken = jwt.sign({ sub: user.id.toValue() })
 
