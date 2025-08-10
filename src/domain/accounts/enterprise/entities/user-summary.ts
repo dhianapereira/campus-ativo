@@ -1,23 +1,16 @@
 import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { UserRole } from './user'
 
-export enum UserRole {
-  REPORTER = 'REPORTER',
-  MANAGER = 'MANAGER',
-  DIRECTOR = 'DIRECTOR',
-  ADMIN = 'ADMIN',
-}
-
-export interface UserProps {
+export interface UserSummaryProps {
   name: string
   position: string
   email: string
-  password: string
   role: UserRole
   isActive: boolean
 }
 
-export class User extends Entity<UserProps> {
+export class UserSummary extends Entity<UserSummaryProps> {
   get name() {
     return this.props.name
   }
@@ -30,10 +23,6 @@ export class User extends Entity<UserProps> {
     return this.props.email
   }
 
-  get password() {
-    return this.props.password
-  }
-
   get role() {
     return this.props.role
   }
@@ -42,13 +31,8 @@ export class User extends Entity<UserProps> {
     return this.props.isActive
   }
 
-  changeRole(newRole: UserRole): void {
-    this.props.role = newRole
-  }
-
-  static create(props: UserProps, id?: UniqueEntityID) {
-    const user = new User(props, id)
-
-    return user
+  static create(props: UserSummaryProps, id?: UniqueEntityID) {
+    const userSummary = new UserSummary(props, id)
+    return userSummary
   }
 }

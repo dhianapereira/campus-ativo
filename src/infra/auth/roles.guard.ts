@@ -23,7 +23,7 @@ export class RolesGuard implements CanActivate {
     const userRole = user.role || UserRole.REPORTER
 
     return requiredRoles.some((role) => 
-      RoleHierarchy.hasPermission(userRole, role)
+      RoleHierarchy.hasPermission(userRole as UserRole, role as UserRole)
     )
   }
 }

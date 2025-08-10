@@ -29,7 +29,7 @@ describe('Change user role (E2E)', () => {
     await app.init()
   })
 
-  test('[PUT] /users/:id/role (admin changing any role)', async () => {
+  test('[PATCH] /users/:id/role (admin changing any role)', async () => {
     const admin = await userFactory.makePrismaUser({
       role: UserRole.ADMIN,
     })
@@ -44,7 +44,7 @@ describe('Change user role (E2E)', () => {
     })
 
     const response = await request(app.getHttpServer())
-      .put(`/users/${targetUser.id.toValue()}/role`)
+      .patch(`/users/${targetUser.id.toValue()}/role`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         role: 'MANAGER',
@@ -60,7 +60,7 @@ describe('Change user role (E2E)', () => {
     expect(updatedUser?.role).toBe('MANAGER')
   })
 
-  test('[PUT] /users/:id/role (director changing lower role)', async () => {
+  test('[PATCH] /users/:id/role (director changing lower role)', async () => {
     const director = await userFactory.makePrismaUser({
       role: UserRole.DIRECTOR,
     })
@@ -75,7 +75,7 @@ describe('Change user role (E2E)', () => {
     })
 
     const response = await request(app.getHttpServer())
-      .put(`/users/${targetUser.id.toValue()}/role`)
+      .patch(`/users/${targetUser.id.toValue()}/role`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         role: 'MANAGER',
@@ -85,7 +85,7 @@ describe('Change user role (E2E)', () => {
     expect(response.body.message).toBe('Role updated successfully')
   })
 
-  test('[PUT] /users/:id/role (director trying to change admin - should fail)', async () => {
+  test('[PATCH] /users/:id/role (director trying to change admin - should fail)', async () => {
     const director = await userFactory.makePrismaUser({
       role: UserRole.DIRECTOR,
     })
@@ -100,7 +100,7 @@ describe('Change user role (E2E)', () => {
     })
 
     const response = await request(app.getHttpServer())
-      .put(`/users/${adminUser.id.toValue()}/role`)
+      .patch(`/users/${adminUser.id.toValue()}/role`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         role: 'MANAGER',
@@ -109,7 +109,7 @@ describe('Change user role (E2E)', () => {
     expect(response.statusCode).toBe(403)
   })
 
-  test('[PUT] /users/:id/role (director trying to assign admin role - should fail)', async () => {
+  test('[PATCH] /users/:id/role (director trying to assign admin role - should fail)', async () => {
     const director = await userFactory.makePrismaUser({
       role: UserRole.DIRECTOR,
     })
@@ -124,7 +124,7 @@ describe('Change user role (E2E)', () => {
     })
 
     const response = await request(app.getHttpServer())
-      .put(`/users/${targetUser.id.toValue()}/role`)
+      .patch(`/users/${targetUser.id.toValue()}/role`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         role: 'ADMIN',
@@ -133,7 +133,7 @@ describe('Change user role (E2E)', () => {
     expect(response.statusCode).toBe(403)
   })
 
-  test('[PUT] /users/:id/role (manager trying to change role - should fail)', async () => {
+  test('[PATCH] /users/:id/role (manager trying to change role - should fail)', async () => {
     const manager = await userFactory.makePrismaUser({
       role: UserRole.MANAGER,
     })
@@ -148,7 +148,7 @@ describe('Change user role (E2E)', () => {
     })
 
     const response = await request(app.getHttpServer())
-      .put(`/users/${targetUser.id.toValue()}/role`)
+      .patch(`/users/${targetUser.id.toValue()}/role`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         role: 'DIRECTOR',
@@ -157,7 +157,7 @@ describe('Change user role (E2E)', () => {
     expect(response.statusCode).toBe(403)
   })
 
-  test('[PUT] /users/:id/role (non-existent user)', async () => {
+  test('[PATCH] /users/:id/role (non-existent user)', async () => {
     const admin = await userFactory.makePrismaUser({
       role: UserRole.ADMIN,
     })
@@ -168,7 +168,7 @@ describe('Change user role (E2E)', () => {
     })
 
     const response = await request(app.getHttpServer())
-      .put('/users/non-existent-id/role')
+      .patch('/users/non-existent-id/role')
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
         role: 'MANAGER',

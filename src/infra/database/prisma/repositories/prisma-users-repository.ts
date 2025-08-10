@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
 import { User } from '@/domain/accounts/enterprise/entities/user'
+import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
 import { PrismaUserMapper } from '../mappers/prisma-user-mapper'
 
 @Injectable()
@@ -55,6 +56,28 @@ export class PrismaUsersRepository implements UsersRepository {
     })
   }
 
+  async findByIdForListing(id: string): Promise<UserSummary | null> {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        name: true,
+        position: true,
+        email: true,
+        role: true,
+        isActive: true,
+      },
+    })
+
+    if (!user) {
+      return null
+    }
+
+    return PrismaUserMapper.toUserSummary(user)
+  }
+
   async findMany(): Promise<User[]> {
     const users = await this.prisma.user.findMany({
       orderBy: {
@@ -63,5 +86,23 @@ export class PrismaUsersRepository implements UsersRepository {
     })
 
     return users.map(PrismaUserMapper.toDomain)
+  }
+
+  async findManyForListing(): Promise<UserSummary[]> {
+    const users = await this.prisma.user.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+      select: {
+        id: true,
+        name: true,
+        position: true,
+        email: true,
+        role: true,
+        isActive: true,
+      },
+    })
+
+    return users.map(PrismaUserMapper.toUserSummary)
   }
 }

@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common'
 import { CreateAccountController } from './controllers/create-account.controller'
 import { AuthenticateController } from './controllers/authenticate.controller'
+import { LogoutController } from './controllers/logout.controller'
 import { CreateProblemController } from './controllers/create-problem.controller'
 import { FetchProblemsController } from './controllers/fetch-problems.controller'
 import { DatabaseModule } from '../database/database.module'
@@ -35,6 +36,7 @@ import { ChangeUserRoleController } from './controllers/change-user-role.control
   controllers: [
     CreateAccountController,
     AuthenticateController,
+    LogoutController,
     GetUserProfileController,
     FetchUsersController,
     ChangeUserRoleController,

@@ -1,0 +1,507 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/accounts": {
+      "post": {
+        "description": "Cria uma nova conta de usuário no sistema",
+        "operationId": "CreateAccountController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateAccountRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Conta criada com sucesso" },
+          "400": {
+            "description": "Dados inválidos ou domínio de email não permitido"
+          },
+          "409": { "description": "Email já existe no sistema" }
+        },
+        "summary": "Criar conta",
+        "tags": ["Authentication"]
+      }
+    },
+    "/sessions": {
+      "post": {
+        "description": "Autentica um usuário e retorna um token JWT",
+        "operationId": "AuthenticateController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AuthenticateRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login realizado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticateResponse"
+                }
+              }
+            }
+          },
+          "400": { "description": "Dados inválidos" },
+          "401": { "description": "Credenciais inválidas" }
+        },
+        "summary": "Autenticar usuário",
+        "tags": ["Authentication"]
+      }
+    },
+    "/sessions/logout": {
+      "post": {
+        "description": "Realiza logout do usuário (token deve ser removido no cliente)",
+        "operationId": "LogoutController_handle",
+        "parameters": [],
+        "responses": {
+          "204": { "description": "Logout realizado com sucesso" },
+          "401": { "description": "Token inválido ou não fornecido" }
+        },
+        "summary": "Logout do usuário",
+        "tags": ["Authentication"]
+      }
+    },
+    "/profile": {
+      "get": {
+        "description": "Retorna as informações do perfil do usuário autenticado",
+        "operationId": "GetUserProfileController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Perfil do usuário retornado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserResponse" }
+              }
+            }
+          },
+          "401": { "description": "Token JWT inválido ou expirado" },
+          "404": { "description": "Usuário não encontrado" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Obter perfil do usuário",
+        "tags": ["User Profile"]
+      }
+    },
+    "/users": {
+      "get": {
+        "description": "Lista todos os usuários do sistema com filtros baseados no role do usuário autenticado. ADMIN pode ver todos os usuários, DIRECTOR e abaixo não veem usuários ADMIN.",
+        "operationId": "FetchUsersController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Lista de usuários retornada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "123e4567-e89b-12d3-a456-426614174000"
+                          },
+                          "name": { "type": "string", "example": "João Silva" },
+                          "email": {
+                            "type": "string",
+                            "example": "joao.silva@ifal.edu.br"
+                          },
+                          "position": {
+                            "type": "string",
+                            "example": "Técnico em Informática"
+                          },
+                          "role": {
+                            "type": "string",
+                            "enum": [
+                              "REPORTER",
+                              "MANAGER",
+                              "DIRECTOR",
+                              "ADMIN"
+                            ],
+                            "example": "REPORTER"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Token JWT inválido ou expirado" },
+          "403": {
+            "description": "Usuário não tem permissão (requer DIRECTOR+)"
+          }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Listar usuários",
+        "tags": ["User Management"]
+      }
+    },
+    "/users/{id}/role": {
+      "patch": {
+        "description": "Altera o role de um usuário. ADMIN pode alterar qualquer role, DIRECTOR pode alterar apenas para roles de nível igual ou inferior.",
+        "operationId": "ChangeUserRoleController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do usuário cujo role será alterado",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "Novo role para o usuário",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "role": {
+                    "type": "string",
+                    "enum": ["REPORTER", "MANAGER", "DIRECTOR", "ADMIN"],
+                    "example": "MANAGER"
+                  }
+                },
+                "required": ["role"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Role alterado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Role updated successfully"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Dados inválidos" },
+          "401": { "description": "Token JWT inválido ou expirado" },
+          "403": {
+            "description": "Usuário não tem permissão para esta operação"
+          },
+          "404": { "description": "Usuário não encontrado" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Alterar role do usuário",
+        "tags": ["User Management"]
+      }
+    },
+    "/problems": {
+      "post": {
+        "description": "Cria um novo problema de infraestrutura",
+        "operationId": "CreateProblemController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateProblemRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Problema criado com sucesso" },
+          "400": { "description": "Dados inválidos" },
+          "401": { "description": "Token JWT inválido ou expirado" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Criar problema",
+        "tags": ["Problems"]
+      },
+      "get": {
+        "operationId": "FetchProblemsController_handle",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": { "type": "number" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["FetchProblems"]
+      }
+    },
+    "/problems/{slug}": {
+      "get": {
+        "operationId": "GetProblemBySlugController_handle",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["GetProblemBySlug"]
+      }
+    },
+    "/categories": {
+      "get": {
+        "operationId": "FetchCategoriesController_handle",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": { "type": "number" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["FetchCategories"]
+      },
+      "post": {
+        "description": "Cria uma nova categoria de problema (requer role MANAGER+)",
+        "operationId": "CreateCategoryController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCategoryRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Categoria criada com sucesso" },
+          "400": { "description": "Dados inválidos" },
+          "401": { "description": "Token JWT inválido ou expirado" },
+          "403": {
+            "description": "Usuário não tem permissão (requer MANAGER+)"
+          }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Criar categoria",
+        "tags": ["Categories"]
+      }
+    },
+    "/locations": {
+      "post": {
+        "operationId": "CreateLocationController_handle",
+        "parameters": [],
+        "responses": { "201": { "description": "" } },
+        "tags": ["CreateLocation"]
+      },
+      "get": {
+        "operationId": "FetchLocationsController_handle",
+        "parameters": [
+          {
+            "name": "page",
+            "required": true,
+            "in": "query",
+            "schema": { "type": "number" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["FetchLocations"]
+      }
+    },
+    "/problems/{id}": {
+      "put": {
+        "operationId": "EditProblemController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "204": { "description": "" } },
+        "tags": ["EditProblem"]
+      },
+      "delete": {
+        "operationId": "DeleteProblemController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "204": { "description": "" } },
+        "tags": ["DeleteProblem"]
+      }
+    }
+  },
+  "info": {
+    "title": "IFAL Arapiraca Backend API",
+    "description": "API para gerenciamento de problemas de infraestrutura do IFAL Arapiraca",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "JWT-auth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "name": "JWT",
+        "description": "Enter JWT token",
+        "in": "header"
+      }
+    },
+    "schemas": {
+      "CreateAccountRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome completo do usuário",
+            "example": "João Silva"
+          },
+          "position": {
+            "type": "string",
+            "description": "Cargo/posição do usuário na instituição",
+            "example": "Técnico em Informática"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email institucional (domínios @ifal.edu.br ou @aluno.ifal.edu.br)",
+            "example": "joao.silva@ifal.edu.br"
+          },
+          "password": {
+            "type": "string",
+            "description": "Senha do usuário",
+            "example": "123456789",
+            "minLength": 6
+          }
+        },
+        "required": ["name", "position", "email", "password"]
+      },
+      "AuthenticateRequest": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "description": "Email do usuário",
+            "example": "joao.silva@ifal.edu.br"
+          },
+          "password": {
+            "type": "string",
+            "description": "Senha do usuário",
+            "example": "123456789"
+          }
+        },
+        "required": ["email", "password"]
+      },
+      "AuthenticateResponse": {
+        "type": "object",
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "description": "Token JWT de acesso",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": ["access_token"]
+      },
+      "UserResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do usuário",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome do usuário",
+            "example": "João Silva"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email do usuário",
+            "example": "joao.silva@ifal.edu.br"
+          },
+          "position": {
+            "type": "string",
+            "description": "Cargo/posição do usuário",
+            "example": "Técnico em Informática"
+          },
+          "role": {
+            "type": "string",
+            "description": "Role do usuário",
+            "enum": ["REPORTER", "MANAGER", "DIRECTOR", "ADMIN"],
+            "example": "REPORTER"
+          }
+        },
+        "required": ["id", "name", "email", "position", "role"]
+      },
+      "CreateProblemRequest": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Título do problema",
+            "example": "Ar condicionado não está funcionando"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição detalhada do problema",
+            "example": "O ar condicionado da sala 201 não está ligando há 3 dias"
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "ID da categoria do problema",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "locationId": {
+            "type": "string",
+            "description": "ID da localização onde ocorreu o problema",
+            "example": "123e4567-e89b-12d3-a456-426614174001"
+          }
+        },
+        "required": ["title", "description", "categoryId", "locationId"]
+      },
+      "CreateCategoryRequest": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Nome da categoria",
+            "example": "Climatização"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição da categoria",
+            "example": "Problemas relacionados a ar condicionado, ventilação e climatização"
+          }
+        },
+        "required": ["name", "description"]
+      }
+    }
+  }
+}
