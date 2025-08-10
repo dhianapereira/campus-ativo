@@ -5,10 +5,11 @@ import {
   ForbiddenException,
   NotFoundException,
   Param,
-  Put,
+  Patch,
   UseGuards,
   UsePipes,
 } from '@nestjs/common'
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody } from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { UuidValidationPipe } from '@/infra/http/pipes/uuid-validation-pipe'
 import { z } from 'zod'
@@ -28,12 +29,63 @@ const changeUserRoleBodySchema = z.object({
 type ChangeUserRoleBodySchema = z.infer<typeof changeUserRoleBodySchema>
 
 @Controller('/users/:id/role')
+@ApiTags('User Management')
 @UseGuards(RolesGuard)
+@ApiBearerAuth('JWT-auth')
 export class ChangeUserRoleController {
   constructor(private readonly changeUserRole: ChangeUserRoleUseCase) {}
 
-  @Put()
+  @Patch()
   @Roles(UserRole.DIRECTOR, UserRole.ADMIN)
+  @ApiOperation({ 
+    summary: 'Alterar role do usuário', 
+    description: 'Altera o role de um usuário. ADMIN pode alterar qualquer role, DIRECTOR pode alterar apenas para roles de nível igual ou inferior.' 
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'ID do usuário cujo role será alterado',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @ApiBody({
+    description: 'Novo role para o usuário',
+    schema: {
+      type: 'object',
+      properties: {
+        role: {
+          type: 'string',
+          enum: ['REPORTER', 'MANAGER', 'DIRECTOR', 'ADMIN'],
+          example: 'MANAGER'
+        }
+      },
+      required: ['role']
+    }
+  })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Role alterado com sucesso',
+    schema: {
+      type: 'object',
+      properties: {
+        message: { type: 'string', example: 'Role updated successfully' }
+      }
+    }
+  })
+  @ApiResponse({ 
+    status: 400, 
+    description: 'Dados inválidos'
+  })
+  @ApiResponse({ 
+    status: 401, 
+    description: 'Token JWT inválido ou expirado'
+  })
+  @ApiResponse({ 
+    status: 403, 
+    description: 'Usuário não tem permissão para esta operação'
+  })
+  @ApiResponse({ 
+    status: 404, 
+    description: 'Usuário não encontrado'
+  })
   async handle(
     @Param('id') targetUserId: string,
     @Body(new ZodValidationPipe(changeUserRoleBodySchema)) body: ChangeUserRoleBodySchema,

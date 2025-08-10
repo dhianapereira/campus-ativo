@@ -1,7 +1,7 @@
-import { User } from '@/domain/accounts/enterprise/entities/user'
+import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
 
 export class UserListPresenter {
-  static toHTTP(user: User) {
+  static toHTTP(user: UserSummary) {
     return {
       id: user.id.toValue(),
       name: user.name,

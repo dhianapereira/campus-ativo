@@ -49,23 +49,12 @@ export class ChangeUserRoleUseCase {
       return left(new NotAllowedError())
     }
 
-    // Create a new user instance with the updated role
-    const updatedUser = User.create(
-      {
-        name: user.name,
-        position: user.position,
-        email: user.email,
-        password: user.password,
-        role: newRole,
-        isActive: user.isActive,
-      },
-      user.id,
-    )
+    user.changeRole(newRole)
 
-    await this.usersRepository.save(updatedUser)
+    await this.usersRepository.save(user)
 
     return right({
-      user: updatedUser,
+      user,
     })
   }
 }

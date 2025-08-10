@@ -6,12 +6,14 @@ import {
   Post,
   UsePipes,
 } from '@nestjs/common'
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { RegisterUserUseCase } from '@/domain/accounts/application/use-cases/register-user'
 import { UserAlreadyExistsError } from '@/domain/accounts/application/use-cases/errors/user-already-exists-error'
 import { InvalidEmailDomainError } from '@/domain/accounts/application/use-cases/errors/invalid-email-domain-error'
 import { Public } from '@/infra/auth/public'
+import { CreateAccountRequest } from '../dtos/interfaces.dto'
 
 const createAccountBodySchema = z.object({
   name: z.string(),
@@ -23,11 +25,20 @@ const createAccountBodySchema = z.object({
 type CreateAccountBodySchema = z.infer<typeof createAccountBodySchema>
 
 @Controller('/accounts')
+@ApiTags('Authentication')
 @Public()
 export class CreateAccountController {
   constructor(private readonly registerUser: RegisterUserUseCase) {}
 
   @Post()
+  @ApiOperation({ summary: 'Criar conta', description: 'Cria uma nova conta de usuário no sistema' })
+  @ApiBody({ type: CreateAccountRequest })
+  @ApiResponse({ 
+    status: 201, 
+    description: 'Conta criada com sucesso',
+  })
+  @ApiResponse({ status: 409, description: 'Email já existe no sistema' })
+  @ApiResponse({ status: 400, description: 'Dados inválidos ou domínio de email não permitido' })
   @UsePipes(new ZodValidationPipe(createAccountBodySchema))
   async handle(@Body() body: CreateAccountBodySchema) {
     const { name, position, email, password } = body
