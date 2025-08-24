@@ -116,6 +116,18 @@ export class CreateLocationRequest {
     example: 'Bloco A - Sala 201',
   })
   name!: string
+
+  @ApiProperty({
+    description: 'Descrição da localização',
+    example: 'Sala de aula localizada no primeiro andar do Bloco A',
+  })
+  description!: string
+
+  @ApiProperty({
+    description: 'Código identificador da localização',
+    example: 'BLA-201',
+  })
+  code!: string
 }
 
 export class ChangeUserRoleRequest {
@@ -184,6 +196,76 @@ export class ProblemResponse {
     example: 'ar-condicionado-nao-funcionando',
   })
   slug!: string
+
+  @ApiProperty({
+    description: 'Data de criação',
+    example: '2025-01-15T10:30:00Z',
+  })
+  createdAt!: Date
+
+  @ApiProperty({
+    description: 'Data de atualização',
+    example: '2025-01-15T10:30:00Z',
+  })
+  updatedAt!: Date
+}
+
+export class LocationResponse {
+  @ApiProperty({
+    description: 'ID da localização',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  id!: string
+
+  @ApiProperty({
+    description: 'Nome da localização',
+    example: 'Bloco A - Sala 201',
+  })
+  name!: string
+
+  @ApiProperty({
+    description: 'Descrição da localização',
+    example: 'Sala de aula localizada no primeiro andar do Bloco A',
+  })
+  description!: string
+
+  @ApiProperty({
+    description: 'Código identificador da localização',
+    example: 'BLA-201',
+  })
+  code!: string
+
+  @ApiProperty({
+    description: 'Data de criação',
+    example: '2025-01-15T10:30:00Z',
+  })
+  createdAt!: Date
+
+  @ApiProperty({
+    description: 'Data de atualização',
+    example: '2025-01-15T10:30:00Z',
+  })
+  updatedAt!: Date
+}
+
+export class CategoryResponse {
+  @ApiProperty({
+    description: 'ID da categoria',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  id!: string
+
+  @ApiProperty({
+    description: 'Nome da categoria',
+    example: 'Climatização',
+  })
+  name!: string
+
+  @ApiProperty({
+    description: 'Descrição da categoria',
+    example: 'Problemas relacionados a ar condicionado, ventilação e climatização',
+  })
+  description!: string
 
   @ApiProperty({
     description: 'Data de criação',
