@@ -1,19 +1,19 @@
-import { Either, left, right } from '@/core/either'
-import { Injectable } from '@nestjs/common'
-import { UsersRepository } from '../repositories/users-repository'
-import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { User } from '../../enterprise/entities/user'
+import { Either, left, right } from "@/core/either";
+import { Injectable } from "@nestjs/common";
+import { UsersRepository } from "../repositories/users-repository";
+import { ResourceNotFoundError } from "@/core/errors/resource-not-found-error";
+import { User } from "../../enterprise/entities/user";
 
 interface GetUserProfileUseCaseRequest {
-  userId: string
+  userId: string;
 }
 
 type GetUserProfileUseCaseResponse = Either<
   ResourceNotFoundError,
   {
-    user: User
+    user: User;
   }
->
+>;
 
 @Injectable()
 export class GetUserProfileUseCase {
@@ -22,14 +22,14 @@ export class GetUserProfileUseCase {
   async execute({
     userId,
   }: GetUserProfileUseCaseRequest): Promise<GetUserProfileUseCaseResponse> {
-    const user = await this.usersRepository.findById(userId)
+    const user = await this.usersRepository.findById(userId);
 
     if (!user) {
-      return left(new ResourceNotFoundError())
+      return left(new ResourceNotFoundError());
     }
 
     return right({
       user,
-    })
+    });
   }
 }

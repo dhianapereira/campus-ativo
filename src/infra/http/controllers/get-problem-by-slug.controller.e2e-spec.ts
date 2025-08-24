@@ -1,22 +1,22 @@
-import { Slug } from '@/domain/maintenance-problems/enterprise/entities/value-objects/slug'
-import { AppModule } from '@/infra/app.module'
-import { DatabaseModule } from '@/infra/database/database.module'
-import { INestApplication } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { Test } from '@nestjs/testing'
-import request from 'supertest'
-import { CategoryFactory } from 'test/factories/make-category'
-import { LocationFactory } from 'test/factories/make-location'
-import { ProblemFactory } from 'test/factories/make-problem'
-import { UserFactory } from 'test/factories/make-user'
+import { Slug } from "@/domain/maintenance-problems/enterprise/entities/value-objects/slug";
+import { AppModule } from "@/infra/app.module";
+import { DatabaseModule } from "@/infra/database/database.module";
+import { INestApplication } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { Test } from "@nestjs/testing";
+import request from "supertest";
+import { CategoryFactory } from "test/factories/make-category";
+import { LocationFactory } from "test/factories/make-location";
+import { ProblemFactory } from "test/factories/make-problem";
+import { UserFactory } from "test/factories/make-user";
 
-describe('Get problem by slug (E2E)', () => {
-  let app: INestApplication
-  let jwt: JwtService
-  let userFactory: UserFactory
-  let problemFactory: ProblemFactory
-  let categoryFactory: CategoryFactory
-  let locationFactory: LocationFactory
+describe("Get problem by slug (E2E)", () => {
+  let app: INestApplication;
+  let jwt: JwtService;
+  let userFactory: UserFactory;
+  let problemFactory: ProblemFactory;
+  let categoryFactory: CategoryFactory;
+  let locationFactory: LocationFactory;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -27,49 +27,49 @@ describe('Get problem by slug (E2E)', () => {
         CategoryFactory,
         LocationFactory,
       ],
-    }).compile()
+    }).compile();
 
-    app = moduleRef.createNestApplication()
+    app = moduleRef.createNestApplication();
 
-    userFactory = moduleRef.get(UserFactory)
-    problemFactory = moduleRef.get(ProblemFactory)
-    categoryFactory = moduleRef.get(CategoryFactory)
-    locationFactory = moduleRef.get(LocationFactory)
-    jwt = moduleRef.get(JwtService)
+    userFactory = moduleRef.get(UserFactory);
+    problemFactory = moduleRef.get(ProblemFactory);
+    categoryFactory = moduleRef.get(CategoryFactory);
+    locationFactory = moduleRef.get(LocationFactory);
+    jwt = moduleRef.get(JwtService);
 
-    await app.init()
-  })
+    await app.init();
+  });
 
-  test('[GET] /problems/:slug', async () => {
-    const user = await userFactory.makePrismaUser()
+  test("[GET] /problems/:slug", async () => {
+    const user = await userFactory.makePrismaUser();
 
-    const accessToken = jwt.sign({ sub: user.id.toValue() })
+    const accessToken = jwt.sign({ sub: user.id.toValue() });
 
     const category = await categoryFactory.makePrismaCategory({
-      name: 'Category 01',
-    })
+      name: "Category 01",
+    });
 
     const location = await locationFactory.makePrismaLocation({
-      name: 'Location 01',
-    })
+      name: "Location 01",
+    });
 
     await problemFactory.makePrismaProblem({
-      title: 'Problem 01',
-      description: 'Problem content',
+      title: "Problem 01",
+      description: "Problem content",
       reporterId: user.id,
-      slug: Slug.create('problem-01'),
+      slug: Slug.create("problem-01"),
       locationId: location.id,
       categoryId: category.id,
-    })
+    });
 
     const response = await request(app.getHttpServer())
-      .get('/problems/problem-01')
-      .set('Authorization', `Bearer ${accessToken}`)
-      .send()
+      .get("/problems/problem-01")
+      .set("Authorization", `Bearer ${accessToken}`)
+      .send();
 
-    expect(response.statusCode).toBe(200)
+    expect(response.statusCode).toBe(200);
     expect(response.body).toEqual({
-      problem: expect.objectContaining({ title: 'Problem 01' }),
-    })
-  })
-})
+      problem: expect.objectContaining({ title: "Problem 01" }),
+    });
+  });
+});

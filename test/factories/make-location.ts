@@ -1,12 +1,12 @@
-import { faker } from '@faker-js/faker'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { faker } from "@faker-js/faker";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
 import {
   Location,
   LocationProps,
-} from '@/domain/maintenance-problems/enterprise/entities/location'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { Injectable } from '@nestjs/common'
-import { PrismaLocationMapper } from '@/infra/database/prisma/mappers/prisma-location-mapper'
+} from "@/domain/maintenance-problems/enterprise/entities/location";
+import { PrismaService } from "@/infra/database/prisma/prisma.service";
+import { Injectable } from "@nestjs/common";
+import { PrismaLocationMapper } from "@/infra/database/prisma/mappers/prisma-location-mapper";
 
 export function makeLocation(
   override: Partial<LocationProps> = {},
@@ -21,9 +21,9 @@ export function makeLocation(
       ...override,
     },
     id,
-  )
+  );
 
-  return location
+  return location;
 }
 
 @Injectable()
@@ -33,12 +33,12 @@ export class LocationFactory {
   async makePrismaLocation(
     data: Partial<LocationProps> = {},
   ): Promise<Location> {
-    const location = makeLocation(data)
+    const location = makeLocation(data);
 
     await this.prisma.location.create({
       data: PrismaLocationMapper.toPrisma(location),
-    })
+    });
 
-    return location
+    return location;
   }
 }

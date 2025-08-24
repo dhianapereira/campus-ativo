@@ -1,81 +1,81 @@
-import { AppModule } from '@/infra/app.module'
-import { DatabaseModule } from '@/infra/database/database.module'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
-import { INestApplication } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { Test } from '@nestjs/testing'
-import request from 'supertest'
-import { UserFactory } from 'test/factories/make-user'
-import { UserRole } from '@/domain/accounts/enterprise/entities/user'
+import { AppModule } from "@/infra/app.module";
+import { DatabaseModule } from "@/infra/database/database.module";
+import { PrismaService } from "@/infra/database/prisma/prisma.service";
+import { INestApplication } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { Test } from "@nestjs/testing";
+import request from "supertest";
+import { UserFactory } from "test/factories/make-user";
+import { UserRole } from "@/domain/accounts/enterprise/entities/user";
 
-describe('Create category (E2E)', () => {
-  let app: INestApplication
-  let prisma: PrismaService
-  let jwt: JwtService
-  let userFactory: UserFactory
+describe("Create category (E2E)", () => {
+  let app: INestApplication;
+  let prisma: PrismaService;
+  let jwt: JwtService;
+  let userFactory: UserFactory;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
       imports: [AppModule, DatabaseModule],
       providers: [UserFactory],
-    }).compile()
+    }).compile();
 
-    app = moduleRef.createNestApplication()
+    app = moduleRef.createNestApplication();
 
-    prisma = moduleRef.get(PrismaService)
-    userFactory = moduleRef.get(UserFactory)
-    jwt = moduleRef.get(JwtService)
+    prisma = moduleRef.get(PrismaService);
+    userFactory = moduleRef.get(UserFactory);
+    jwt = moduleRef.get(JwtService);
 
-    await app.init()
-  })
+    await app.init();
+  });
 
-  test('[POST] /categories', async () => {
+  test("[POST] /categories", async () => {
     const user = await userFactory.makePrismaUser({
       role: UserRole.MANAGER,
-    })
+    });
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: user.id.toValue(),
       role: user.role,
-    })
+    });
 
     const response = await request(app.getHttpServer())
-      .post('/categories')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .post("/categories")
+      .set("Authorization", `Bearer ${accessToken}`)
       .send({
-        name: 'New category',
-        description: 'Category description',
-      })
+        name: "New category",
+        description: "Category description",
+      });
 
-    expect(response.statusCode).toBe(201)
+    expect(response.statusCode).toBe(201);
 
     const categoryOnDatabase = await prisma.category.findFirst({
       where: {
-        name: 'New category',
+        name: "New category",
       },
-    })
+    });
 
-    expect(categoryOnDatabase).toBeTruthy()
-  })
+    expect(categoryOnDatabase).toBeTruthy();
+  });
 
-  test('[POST] /categories (as reporter - should be forbidden)', async () => {
+  test("[POST] /categories (as reporter - should be forbidden)", async () => {
     const user = await userFactory.makePrismaUser({
       role: UserRole.REPORTER,
-    })
+    });
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: user.id.toValue(),
       role: user.role,
-    })
+    });
 
     const response = await request(app.getHttpServer())
-      .post('/categories')
-      .set('Authorization', `Bearer ${accessToken}`)
+      .post("/categories")
+      .set("Authorization", `Bearer ${accessToken}`)
       .send({
-        name: 'New category',
-        description: 'Category description',
-      })
+        name: "New category",
+        description: "Category description",
+      });
 
-    expect(response.statusCode).toBe(403)
-  })
-})
+    expect(response.statusCode).toBe(403);
+  });
+});

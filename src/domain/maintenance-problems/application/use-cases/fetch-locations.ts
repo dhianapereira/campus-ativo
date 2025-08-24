@@ -1,18 +1,18 @@
-import { right, Either } from '@/core/either'
-import { Injectable } from '@nestjs/common'
-import { Location } from '../../enterprise/entities/location'
-import { LocationsRepository } from '../repositories/locations-repository'
+import { right, Either } from "@/core/either";
+import { Injectable } from "@nestjs/common";
+import { Location } from "../../enterprise/entities/location";
+import { LocationsRepository } from "../repositories/locations-repository";
 
 interface FetchLocationsUseCaseRequest {
-  page: number
+  page: number;
 }
 
 type FetchLocationsUseCaseResponse = Either<
   null,
   {
-    locations: Location[]
+    locations: Location[];
   }
->
+>;
 
 @Injectable()
 export class FetchLocationsUseCase {
@@ -21,10 +21,10 @@ export class FetchLocationsUseCase {
   async execute({
     page,
   }: FetchLocationsUseCaseRequest): Promise<FetchLocationsUseCaseResponse> {
-    const locations = await this.locationsRepository.findMany({ page })
+    const locations = await this.locationsRepository.findMany({ page });
 
     return right({
       locations,
-    })
+    });
   }
 }

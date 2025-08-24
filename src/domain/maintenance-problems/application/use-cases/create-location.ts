@@ -1,20 +1,20 @@
-import { Location } from '@/domain/maintenance-problems/enterprise/entities/location'
-import { right, Either } from '@/core/either'
-import { Injectable } from '@nestjs/common'
-import { LocationsRepository } from '../repositories/locations-repository'
+import { Location } from "@/domain/maintenance-problems/enterprise/entities/location";
+import { right, Either } from "@/core/either";
+import { Injectable } from "@nestjs/common";
+import { LocationsRepository } from "../repositories/locations-repository";
 
 interface CreateLocationUseCaseRequest {
-  name: string
-  description?: string | null
-  code?: string | null
+  name: string;
+  description?: string | null;
+  code?: string | null;
 }
 
 type CreateLocationUseCaseResponse = Either<
   null,
   {
-    location: Location
+    location: Location;
   }
->
+>;
 
 @Injectable()
 export class CreateLocationUseCase {
@@ -29,12 +29,12 @@ export class CreateLocationUseCase {
       name,
       description,
       code,
-    })
+    });
 
-    await this.locationsRepository.create(location)
+    await this.locationsRepository.create(location);
 
     return right({
       location,
-    })
+    });
   }
 }

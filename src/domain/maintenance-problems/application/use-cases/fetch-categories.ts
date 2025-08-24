@@ -1,18 +1,18 @@
-import { right, Either } from '@/core/either'
-import { Injectable } from '@nestjs/common'
-import { Category } from '../../enterprise/entities/category'
-import { CategoriesRepository } from '../repositories/categories-repository'
+import { right, Either } from "@/core/either";
+import { Injectable } from "@nestjs/common";
+import { Category } from "../../enterprise/entities/category";
+import { CategoriesRepository } from "../repositories/categories-repository";
 
 interface FetchCategoriesUseCaseRequest {
-  page: number
+  page: number;
 }
 
 type FetchCategoriesUseCaseResponse = Either<
   null,
   {
-    categories: Category[]
+    categories: Category[];
   }
->
+>;
 
 @Injectable()
 export class FetchCategoriesUseCase {
@@ -21,10 +21,10 @@ export class FetchCategoriesUseCase {
   async execute({
     page,
   }: FetchCategoriesUseCaseRequest): Promise<FetchCategoriesUseCaseResponse> {
-    const categories = await this.categoriesRepository.findMany({ page })
+    const categories = await this.categoriesRepository.findMany({ page });
 
     return right({
       categories,
-    })
+    });
   }
 }

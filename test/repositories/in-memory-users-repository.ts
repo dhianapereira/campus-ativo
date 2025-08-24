@@ -1,35 +1,35 @@
-import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
-import { User } from '@/domain/accounts/enterprise/entities/user'
-import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
+import { UsersRepository } from "@/domain/accounts/application/repositories/users-repository";
+import { User } from "@/domain/accounts/enterprise/entities/user";
+import { UserSummary } from "@/domain/accounts/enterprise/entities/user-summary";
 
 export class InMemoryUsersRepository implements UsersRepository {
-  public items: User[] = []
+  public items: User[] = [];
 
   async findByEmail(email: string): Promise<User | null> {
-    const user = this.items.find((item) => item.email === email)
+    const user = this.items.find((item) => item.email === email);
 
     if (!user) {
-      return null
+      return null;
     }
 
-    return user
+    return user;
   }
 
   async findById(id: string): Promise<User | null> {
-    const user = this.items.find((item) => item.id.toString() === id)
+    const user = this.items.find((item) => item.id.toString() === id);
 
     if (!user) {
-      return null
+      return null;
     }
 
-    return user
+    return user;
   }
 
   async findByIdForListing(id: string): Promise<UserSummary | null> {
-    const user = this.items.find((item) => item.id.toString() === id)
+    const user = this.items.find((item) => item.id.toString() === id);
 
     if (!user) {
-      return null
+      return null;
     }
 
     return UserSummary.create(
@@ -41,25 +41,25 @@ export class InMemoryUsersRepository implements UsersRepository {
         isActive: user.isActive,
       },
       user.id,
-    )
+    );
   }
 
   async create(user: User): Promise<void> {
-    this.items.push(user)
+    this.items.push(user);
   }
 
   async save(user: User): Promise<void> {
-    const itemIndex = this.items.findIndex((item) => item.id === user.id)
+    const itemIndex = this.items.findIndex((item) => item.id === user.id);
 
-    this.items[itemIndex] = user
+    this.items[itemIndex] = user;
   }
 
   async findMany(): Promise<User[]> {
-    return this.items
+    return this.items;
   }
 
   async findManyForListing(): Promise<UserSummary[]> {
-    return this.items.map(user => 
+    return this.items.map((user) =>
       UserSummary.create(
         {
           name: user.name,
@@ -69,7 +69,7 @@ export class InMemoryUsersRepository implements UsersRepository {
           isActive: user.isActive,
         },
         user.id,
-      )
-    )
+      ),
+    );
   }
 }

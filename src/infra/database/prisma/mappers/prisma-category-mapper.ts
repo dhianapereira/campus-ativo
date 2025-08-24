@@ -1,6 +1,6 @@
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { Category } from '@/domain/maintenance-problems/enterprise/entities/category'
-import { Category as PrismaCategory, Prisma } from '@prisma/client'
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Category } from "@/domain/maintenance-problems/enterprise/entities/category";
+import { Category as PrismaCategory, Prisma } from "@prisma/client";
 
 export class PrismaCategoryMapper {
   static toDomain(raw: PrismaCategory): Category {
@@ -13,7 +13,7 @@ export class PrismaCategoryMapper {
         updatedAt: raw.updatedAt,
       },
       new UniqueEntityID(raw.id),
-    )
+    );
   }
 
   static toPrisma(category: Category): Prisma.CategoryUncheckedCreateInput {
@@ -24,6 +24,6 @@ export class PrismaCategoryMapper {
       isActive: category.isActive,
       createdAt: category.createdAt,
       updatedAt: category.updatedAt,
-    }
+    };
   }
 }

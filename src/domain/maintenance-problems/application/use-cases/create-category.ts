@@ -1,19 +1,19 @@
-import { Category } from '@/domain/maintenance-problems/enterprise/entities/category'
-import { right, Either } from '@/core/either'
-import { Injectable } from '@nestjs/common'
-import { CategoriesRepository } from '../repositories/categories-repository'
+import { Category } from "@/domain/maintenance-problems/enterprise/entities/category";
+import { right, Either } from "@/core/either";
+import { Injectable } from "@nestjs/common";
+import { CategoriesRepository } from "../repositories/categories-repository";
 
 interface CreateCategoryUseCaseRequest {
-  name: string
-  description?: string | null
+  name: string;
+  description?: string | null;
 }
 
 type CreateCategoryUseCaseResponse = Either<
   null,
   {
-    category: Category
+    category: Category;
   }
->
+>;
 
 @Injectable()
 export class CreateCategoryUseCase {
@@ -26,12 +26,12 @@ export class CreateCategoryUseCase {
     const category = Category.create({
       name,
       description,
-    })
+    });
 
-    await this.categoriesRepository.create(category)
+    await this.categoriesRepository.create(category);
 
     return right({
       category,
-    })
+    });
   }
 }

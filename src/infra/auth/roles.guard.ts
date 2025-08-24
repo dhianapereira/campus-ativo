@@ -1,9 +1,9 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common'
-import { Reflector } from '@nestjs/core'
-import { UserRole } from '@/domain/accounts/enterprise/entities/user'
-import { RoleHierarchy } from '@/core/utils/role-hierarchy'
-import { ROLES_KEY } from './roles.decorator'
-import { UserPayload } from './jwt.strategy'
+import { Injectable, CanActivate, ExecutionContext } from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { UserRole } from "@/domain/accounts/enterprise/entities/user";
+import { RoleHierarchy } from "@/core/utils/role-hierarchy";
+import { ROLES_KEY } from "./roles.decorator";
+import { UserPayload } from "./jwt.strategy";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -13,17 +13,17 @@ export class RolesGuard implements CanActivate {
     const requiredRoles = this.reflector.getAllAndOverride<UserRole[]>(
       ROLES_KEY,
       [context.getHandler(), context.getClass()],
-    )
+    );
 
     if (!requiredRoles) {
-      return true
+      return true;
     }
 
-    const { user }: { user: UserPayload } = context.switchToHttp().getRequest()
-    const userRole = user.role || UserRole.REPORTER
+    const { user }: { user: UserPayload } = context.switchToHttp().getRequest();
+    const userRole = user.role || UserRole.REPORTER;
 
-    return requiredRoles.some((role) => 
-      RoleHierarchy.hasPermission(userRole as UserRole, role as UserRole)
-    )
+    return requiredRoles.some((role) =>
+      RoleHierarchy.hasPermission(userRole as UserRole, role as UserRole),
+    );
   }
 }

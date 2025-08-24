@@ -1,7 +1,7 @@
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
-import { Slug } from '@/domain/maintenance-problems/enterprise/entities/value-objects/slug'
-import { Problem as PrismaProblem, Prisma } from '@prisma/client'
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Problem } from "@/domain/maintenance-problems/enterprise/entities/problems/problem";
+import { Slug } from "@/domain/maintenance-problems/enterprise/entities/value-objects/slug";
+import { Problem as PrismaProblem, Prisma } from "@prisma/client";
 
 export class PrismaProblemMapper {
   static toDomain(raw: PrismaProblem): Problem {
@@ -17,7 +17,7 @@ export class PrismaProblemMapper {
         updatedAt: raw.updatedAt,
       },
       new UniqueEntityID(raw.id),
-    )
+    );
   }
 
   static toPrisma(problem: Problem): Prisma.ProblemUncheckedCreateInput {
@@ -31,6 +31,6 @@ export class PrismaProblemMapper {
       slug: problem.slug.value,
       createdAt: problem.createdAt,
       updatedAt: problem.updatedAt,
-    }
+    };
   }
 }

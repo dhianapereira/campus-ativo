@@ -1,4 +1,4 @@
-import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
+import { UserSummary } from "@/domain/accounts/enterprise/entities/user-summary";
 
 export class UserListPresenter {
   static toHTTP(user: UserSummary) {
@@ -9,6 +9,6 @@ export class UserListPresenter {
       position: user.position,
       role: user.role,
       isActive: user.isActive,
-    }
+    };
   }
 }

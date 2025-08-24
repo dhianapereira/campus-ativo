@@ -1,4 +1,4 @@
-import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
+import { Problem } from "@/domain/maintenance-problems/enterprise/entities/problems/problem";
 
 export class ProblemPresenter {
   static toHTTP(problem: Problem) {
@@ -9,6 +9,6 @@ export class ProblemPresenter {
       excerpt: problem.excerpt,
       createdAt: problem.createdAt,
       updatedAt: problem.updatedAt,
-    }
+    };
   }
 }

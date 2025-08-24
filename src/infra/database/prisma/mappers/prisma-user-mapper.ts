@@ -1,9 +1,13 @@
-import { User as PrismaUser, UserRole as PrismaUserRole, Prisma } from '@prisma/client'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { User, UserRole } from '@/domain/accounts/enterprise/entities/user'
-import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
+import {
+  User as PrismaUser,
+  UserRole as PrismaUserRole,
+  Prisma,
+} from "@prisma/client";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { User, UserRole } from "@/domain/accounts/enterprise/entities/user";
+import { UserSummary } from "@/domain/accounts/enterprise/entities/user-summary";
 
-type PrismaUserWithoutPassword = Omit<PrismaUser, 'password'>
+type PrismaUserWithoutPassword = Omit<PrismaUser, "password">;
 
 export class PrismaUserMapper {
   static toDomain(raw: PrismaUser): User {
@@ -17,7 +21,7 @@ export class PrismaUserMapper {
         isActive: raw.isActive,
       },
       new UniqueEntityID(raw.id),
-    )
+    );
   }
 
   static toUserSummary(raw: PrismaUserWithoutPassword): UserSummary {
@@ -30,7 +34,7 @@ export class PrismaUserMapper {
         isActive: raw.isActive,
       },
       new UniqueEntityID(raw.id),
-    )
+    );
   }
 
   static toPrisma(user: User): Prisma.UserUncheckedCreateInput {
@@ -42,6 +46,6 @@ export class PrismaUserMapper {
       password: user.password,
       role: user.role as PrismaUserRole,
       isActive: user.isActive,
-    }
+    };
   }
 }

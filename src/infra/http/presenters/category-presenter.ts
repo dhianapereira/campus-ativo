@@ -1,4 +1,4 @@
-import { Category } from '@/domain/maintenance-problems/enterprise/entities/category'
+import { Category } from "@/domain/maintenance-problems/enterprise/entities/category";
 
 export class CategoryPresenter {
   static toHTTP(category: Category) {
@@ -7,6 +7,6 @@ export class CategoryPresenter {
       name: category.name,
       description: category.description,
       isActive: category.isActive,
-    }
+    };
   }
 }

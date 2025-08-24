@@ -1,4 +1,4 @@
-import { UserRole } from '@/domain/accounts/enterprise/entities/user'
+import { UserRole } from "@/domain/accounts/enterprise/entities/user";
 
 export class RoleHierarchy {
   private static readonly hierarchy: Record<UserRole, number> = {
@@ -6,28 +6,28 @@ export class RoleHierarchy {
     [UserRole.MANAGER]: 2,
     [UserRole.DIRECTOR]: 3,
     [UserRole.ADMIN]: 4,
-  }
+  };
 
   static hasPermission(userRole: UserRole, requiredRole: UserRole): boolean {
-    return this.hierarchy[userRole] >= this.hierarchy[requiredRole]
+    return this.hierarchy[userRole] >= this.hierarchy[requiredRole];
   }
 
   static canManageRole(managerRole: UserRole, targetRole: UserRole): boolean {
     if (managerRole === UserRole.ADMIN) {
-      return true
+      return true;
     }
-    
+
     if (managerRole === UserRole.DIRECTOR) {
-      return targetRole !== UserRole.ADMIN && targetRole !== UserRole.DIRECTOR
+      return targetRole !== UserRole.ADMIN && targetRole !== UserRole.DIRECTOR;
     }
-    
-    return false
+
+    return false;
   }
 
   static getRolePermissions(role: UserRole): UserRole[] {
-    const roleLevel = this.hierarchy[role]
+    const roleLevel = this.hierarchy[role];
     return Object.entries(this.hierarchy)
       .filter(([, level]) => level <= roleLevel)
-      .map(([roleName]) => roleName as UserRole)
+      .map(([roleName]) => roleName as UserRole);
   }
 }

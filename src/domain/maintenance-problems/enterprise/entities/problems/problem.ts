@@ -1,95 +1,95 @@
-import { AggregateRoot } from '@/core/entities/aggregate-root'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { Optional } from '@/core/types/optional'
-import { ProblemAttachmentList } from '@/domain/maintenance-problems/enterprise/entities/problems/problem-attachment-list'
-import { Slug } from '@/domain/maintenance-problems/enterprise/entities/value-objects/slug'
+import { AggregateRoot } from "@/core/entities/aggregate-root";
+import { UniqueEntityID } from "@/core/entities/unique-entity-id";
+import { Optional } from "@/core/types/optional";
+import { ProblemAttachmentList } from "@/domain/maintenance-problems/enterprise/entities/problems/problem-attachment-list";
+import { Slug } from "@/domain/maintenance-problems/enterprise/entities/value-objects/slug";
 
 export interface ProblemProps {
-  reporterId: UniqueEntityID
-  categoryId: UniqueEntityID
-  locationId: UniqueEntityID
-  title: string
-  slug: Slug
-  description: string
-  attachments: ProblemAttachmentList
-  createdAt: Date
-  updatedAt?: Date | null
+  reporterId: UniqueEntityID;
+  categoryId: UniqueEntityID;
+  locationId: UniqueEntityID;
+  title: string;
+  slug: Slug;
+  description: string;
+  attachments: ProblemAttachmentList;
+  createdAt: Date;
+  updatedAt?: Date | null;
 }
 
 export class Problem extends AggregateRoot<ProblemProps> {
   get reporterId() {
-    return this.props.reporterId
+    return this.props.reporterId;
   }
 
   get locationId() {
-    return this.props.locationId
+    return this.props.locationId;
   }
 
   set locationId(locationId: UniqueEntityID) {
-    this.props.locationId = this.locationId
-    this.touch()
+    this.props.locationId = this.locationId;
+    this.touch();
   }
 
   get categoryId() {
-    return this.props.categoryId
+    return this.props.categoryId;
   }
 
   set categoryId(categoryId: UniqueEntityID) {
-    this.props.categoryId = this.categoryId
-    this.touch()
+    this.props.categoryId = this.categoryId;
+    this.touch();
   }
 
   get title() {
-    return this.props.title
+    return this.props.title;
   }
 
   set title(title: string) {
-    this.props.title = title
-    this.props.slug = Slug.createFromText(title)
+    this.props.title = title;
+    this.props.slug = Slug.createFromText(title);
 
-    this.touch()
+    this.touch();
   }
 
   get description() {
-    return this.props.description
+    return this.props.description;
   }
 
   set description(description: string) {
-    this.props.description = description
-    this.touch()
+    this.props.description = description;
+    this.touch();
   }
 
   get slug() {
-    return this.props.slug
+    return this.props.slug;
   }
 
   get attachments() {
-    return this.props.attachments
+    return this.props.attachments;
   }
 
   get createdAt() {
-    return this.props.createdAt
+    return this.props.createdAt;
   }
 
   get updatedAt() {
-    return this.props.updatedAt
+    return this.props.updatedAt;
   }
 
   get excerpt() {
-    return this.description.substring(0, 120).trimEnd().concat('...')
+    return this.description.substring(0, 120).trimEnd().concat("...");
   }
 
   private touch() {
-    this.props.updatedAt = new Date()
+    this.props.updatedAt = new Date();
   }
 
   set attachments(attachments: ProblemAttachmentList) {
-    this.props.attachments = attachments
-    this.touch()
+    this.props.attachments = attachments;
+    this.touch();
   }
 
   static create(
-    props: Optional<ProblemProps, 'createdAt' | 'slug' | 'attachments'>,
+    props: Optional<ProblemProps, "createdAt" | "slug" | "attachments">,
     id?: UniqueEntityID,
   ) {
     const problem = new Problem(
@@ -100,8 +100,8 @@ export class Problem extends AggregateRoot<ProblemProps> {
         createdAt: props.createdAt ?? new Date(),
       },
       id,
-    )
+    );
 
-    return problem
+    return problem;
   }
 }

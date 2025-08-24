@@ -1,4 +1,4 @@
-import { User } from '@/domain/accounts/enterprise/entities/user'
+import { User } from "@/domain/accounts/enterprise/entities/user";
 
 export class UserProfilePresenter {
   static toHTTP(user: User) {
@@ -6,6 +6,6 @@ export class UserProfilePresenter {
       id: user.id.toValue(),
       name: user.name,
       position: user.position,
-    }
+    };
   }
 }

@@ -1,8 +1,8 @@
-import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/problem-attachments-repository'
-import { ProblemAttachment } from '@/domain/maintenance-problems/enterprise/entities/problems/problem-attachment'
-import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../prisma.service'
-import { PrismaProblemAttachmentMapper } from '../mappers/prisma-problem-attachment-mapper'
+import { ProblemAttachmentsRepository } from "@/domain/maintenance-problems/application/repositories/problem-attachments-repository";
+import { ProblemAttachment } from "@/domain/maintenance-problems/enterprise/entities/problems/problem-attachment";
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../prisma.service";
+import { PrismaProblemAttachmentMapper } from "../mappers/prisma-problem-attachment-mapper";
 
 @Injectable()
 export class PrismaProblemAttachmentsRepository
@@ -15,9 +15,9 @@ export class PrismaProblemAttachmentsRepository
       where: {
         problemId,
       },
-    })
+    });
 
-    return problemAttachments.map(PrismaProblemAttachmentMapper.toDomain)
+    return problemAttachments.map(PrismaProblemAttachmentMapper.toDomain);
   }
 
   async deleteManyByProblemId(problemId: string): Promise<void> {
@@ -25,6 +25,6 @@ export class PrismaProblemAttachmentsRepository
       where: {
         problemId,
       },
-    })
+    });
   }
 }
