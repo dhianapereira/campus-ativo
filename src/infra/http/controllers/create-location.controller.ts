@@ -10,8 +10,8 @@ import { CreateLocationRequest } from '../dtos/interfaces.dto'
 
 const createLocationBodySchema = z.object({
   name: z.string(),
-  description: z.string(),
-  code: z.string(),
+  description: z.string().optional(),
+  code: z.string().optional(),
 })
 
 const bodyValidationPipe = new ZodValidationPipe(createLocationBodySchema)

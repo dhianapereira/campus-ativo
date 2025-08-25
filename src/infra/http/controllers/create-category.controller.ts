@@ -10,7 +10,7 @@ import { CreateCategoryRequest } from '../dtos/interfaces.dto'
 
 const createCategoryBodySchema = z.object({
   name: z.string(),
-  description: z.string(),
+  description: z.string().optional(),
 })
 
 const bodyValidationPipe = new ZodValidationPipe(createCategoryBodySchema)
