@@ -46,6 +46,19 @@ export class User extends Entity<UserProps> {
     this.props.role = newRole
   }
 
+  changePassword(newPassword: string): void {
+    this.props.password = newPassword
+  }
+
+  updateProfile(name: string, position: string): void {
+    this.props.name = name
+    this.props.position = position
+  }
+
+  changeStatus(isActive: boolean): void {
+    this.props.isActive = isActive
+  }
+
   static create(props: UserProps, id?: UniqueEntityID) {
     const user = new User(props, id)
 

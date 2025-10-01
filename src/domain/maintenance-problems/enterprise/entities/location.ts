@@ -9,6 +9,7 @@ export interface LocationProps {
   isActive: boolean
   createdAt: Date
   updatedAt?: Date | null
+  deletedAt?: Date | null
 }
 
 export class Location extends Entity<LocationProps> {
@@ -34,6 +35,44 @@ export class Location extends Entity<LocationProps> {
 
   get updatedAt() {
     return this.props.updatedAt
+  }
+
+  get deletedAt() {
+    return this.props.deletedAt
+  }
+
+  get isInTrash() {
+    return !!this.props.deletedAt
+  }
+
+  set name(name: string) {
+    this.props.name = name
+    this.touch()
+  }
+
+  set description(description: string | null | undefined) {
+    this.props.description = description
+    this.touch()
+  }
+
+  set code(code: string | null | undefined) {
+    this.props.code = code
+    this.touch()
+  }
+
+  set isActive(isActive: boolean) {
+    this.props.isActive = isActive
+    this.touch()
+  }
+
+  moveToTrash() {
+    this.props.deletedAt = new Date()
+    this.touch()
+  }
+
+  restoreFromTrash() {
+    this.props.deletedAt = null
+    this.touch()
   }
 
   private touch() {

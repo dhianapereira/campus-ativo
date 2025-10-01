@@ -1,5 +1,7 @@
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { CategoriesRepository } from '@/domain/maintenance-problems/application/repositories/categories-repository'
+import {
+  CategoriesRepository,
+  FetchCategoriesParams,
+} from '@/domain/maintenance-problems/application/repositories/categories-repository'
 import { Category } from '@/domain/maintenance-problems/enterprise/entities/category'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
@@ -9,8 +11,33 @@ import { PrismaCategoryMapper } from '../mappers/prisma-category-mapper'
 export class PrismaCategoriesRepository implements CategoriesRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findMany({ page }: PaginationParams): Promise<Category[]> {
+  async findMany({
+    page,
+    query,
+    isActive,
+    includeDeleted,
+  }: FetchCategoriesParams): Promise<Category[]> {
     const categories = await this.prisma.category.findMany({
+      where: {
+        ...(query && {
+          OR: [
+            {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              description: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        }),
+        ...(isActive !== undefined && { isActive }),
+        ...(!includeDeleted && { deletedAt: null }),
+      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -21,11 +48,44 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
     return categories.map(PrismaCategoryMapper.toDomain)
   }
 
+  async findById(id: string): Promise<Category | null> {
+    const category = await this.prisma.category.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!category) {
+      return null
+    }
+
+    return PrismaCategoryMapper.toDomain(category)
+  }
+
   async create(category: Category): Promise<void> {
     const data = PrismaCategoryMapper.toPrisma(category)
 
     await this.prisma.category.create({
       data,
+    })
+  }
+
+  async save(category: Category): Promise<void> {
+    const data = PrismaCategoryMapper.toPrisma(category)
+
+    await this.prisma.category.update({
+      where: {
+        id: category.id.toString(),
+      },
+      data,
+    })
+  }
+
+  async delete(category: Category): Promise<void> {
+    await this.prisma.category.delete({
+      where: {
+        id: category.id.toString(),
+      },
     })
   }
 }

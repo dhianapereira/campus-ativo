@@ -1,5 +1,7 @@
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { LocationsRepository } from '@/domain/maintenance-problems/application/repositories/locations-repository'
+import {
+  LocationsRepository,
+  FetchLocationsParams,
+} from '@/domain/maintenance-problems/application/repositories/locations-repository'
 import { Location } from '@/domain/maintenance-problems/enterprise/entities/location'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
@@ -9,8 +11,33 @@ import { PrismaLocationMapper } from '../mappers/prisma-location-mapper'
 export class PrismaLocationsRepository implements LocationsRepository {
   constructor(private prisma: PrismaService) {}
 
-  async findMany({ page }: PaginationParams): Promise<Location[]> {
+  async findMany({
+    page,
+    query,
+    isActive,
+    includeDeleted,
+  }: FetchLocationsParams): Promise<Location[]> {
     const locations = await this.prisma.location.findMany({
+      where: {
+        ...(query && {
+          OR: [
+            {
+              name: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              description: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        }),
+        ...(isActive !== undefined && { isActive }),
+        ...(!includeDeleted && { deletedAt: null }),
+      },
       orderBy: {
         createdAt: 'desc',
       },
@@ -21,11 +48,44 @@ export class PrismaLocationsRepository implements LocationsRepository {
     return locations.map(PrismaLocationMapper.toDomain)
   }
 
+  async findById(id: string): Promise<Location | null> {
+    const location = await this.prisma.location.findUnique({
+      where: {
+        id,
+      },
+    })
+
+    if (!location) {
+      return null
+    }
+
+    return PrismaLocationMapper.toDomain(location)
+  }
+
   async create(location: Location): Promise<void> {
     const data = PrismaLocationMapper.toPrisma(location)
 
     await this.prisma.location.create({
       data,
+    })
+  }
+
+  async save(location: Location): Promise<void> {
+    const data = PrismaLocationMapper.toPrisma(location)
+
+    await this.prisma.location.update({
+      where: {
+        id: location.id.toString(),
+      },
+      data,
+    })
+  }
+
+  async delete(location: Location): Promise<void> {
+    await this.prisma.location.delete({
+      where: {
+        id: location.id.toString(),
+      },
     })
   }
 }

@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
-import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
+import {
+  UsersRepository,
+  FetchUsersParams,
+} from '@/domain/accounts/application/repositories/users-repository'
 import { User } from '@/domain/accounts/enterprise/entities/user'
 import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
 import { PrismaUserMapper } from '../mappers/prisma-user-mapper'
@@ -56,6 +59,14 @@ export class PrismaUsersRepository implements UsersRepository {
     })
   }
 
+  async delete(user: User): Promise<void> {
+    await this.prisma.user.delete({
+      where: {
+        id: user.id.toValue(),
+      },
+    })
+  }
+
   async findByIdForListing(id: string): Promise<UserSummary | null> {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -78,21 +89,69 @@ export class PrismaUsersRepository implements UsersRepository {
     return PrismaUserMapper.toUserSummary(user)
   }
 
-  async findMany(): Promise<User[]> {
+  async findMany(params?: FetchUsersParams): Promise<User[]> {
     const users = await this.prisma.user.findMany({
-      orderBy: {
-        name: 'asc',
+      where: {
+        ...(params?.query && {
+          OR: [
+            {
+              name: {
+                contains: params.query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              email: {
+                contains: params.query,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        }),
+        ...(params?.isActive !== undefined && { isActive: params.isActive }),
       },
+      orderBy: [
+        {
+          isActive: 'desc',
+        },
+        {
+          name: 'asc',
+        },
+      ],
     })
 
     return users.map(PrismaUserMapper.toDomain)
   }
 
-  async findManyForListing(): Promise<UserSummary[]> {
+  async findManyForListing(params?: FetchUsersParams): Promise<UserSummary[]> {
     const users = await this.prisma.user.findMany({
-      orderBy: {
-        name: 'asc',
+      where: {
+        ...(params?.query && {
+          OR: [
+            {
+              name: {
+                contains: params.query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              email: {
+                contains: params.query,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        }),
+        ...(params?.isActive !== undefined && { isActive: params.isActive }),
       },
+      orderBy: [
+        {
+          isActive: 'desc',
+        },
+        {
+          name: 'asc',
+        },
+      ],
       select: {
         id: true,
         name: true,

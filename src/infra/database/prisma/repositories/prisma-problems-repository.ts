@@ -1,5 +1,7 @@
-import { PaginationParams } from '@/core/repositories/pagination-params'
-import { ProblemsRepository } from '@/domain/maintenance-problems/application/repositories/problems-repository'
+import {
+  ProblemsRepository,
+  FetchProblemsParams,
+} from '@/domain/maintenance-problems/application/repositories/problems-repository'
 import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
@@ -37,8 +39,26 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     return PrismaProblemMapper.toDomain(problem)
   }
 
-  async findMany({ page }: PaginationParams): Promise<Problem[]> {
+  async findMany({ page, query }: FetchProblemsParams): Promise<Problem[]> {
     const problems = await this.prisma.problem.findMany({
+      where: {
+        ...(query && {
+          OR: [
+            {
+              title: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              description: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        }),
+      },
       orderBy: {
         createdAt: 'desc',
       },

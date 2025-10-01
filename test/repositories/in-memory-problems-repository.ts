@@ -1,6 +1,5 @@
-import { PaginationParams } from '@/core/repositories/pagination-params'
 import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/problem-attachments-repository'
-import { ProblemsRepository } from '@/domain/maintenance-problems/application/repositories/problems-repository'
+import { ProblemsRepository, FetchProblemsParams } from '@/domain/maintenance-problems/application/repositories/problems-repository'
 import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 
 export class InMemoryProblemsRepository implements ProblemsRepository {
@@ -30,8 +29,21 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     return problem
   }
 
-  async findMany({ page }: PaginationParams) {
-    const problems = this.items
+  async findMany({ page, query }: FetchProblemsParams) {
+    let problems = this.items
+
+    // Filter by query (case-insensitive search in title and description)
+    if (query) {
+      const lowerQuery = query.toLowerCase()
+      problems = problems.filter(problem => {
+        const titleMatch = problem.title.toLowerCase().includes(lowerQuery)
+        const descriptionMatch = problem.description.toLowerCase().includes(lowerQuery)
+        return titleMatch || descriptionMatch
+      })
+    }
+
+    // Sort and paginate
+    problems = problems
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
       .slice((page - 1) * 20, page * 20)
 

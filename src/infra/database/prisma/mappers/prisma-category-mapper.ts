@@ -11,6 +11,7 @@ export class PrismaCategoryMapper {
         isActive: raw.isActive,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
+        deletedAt: raw.deletedAt,
       },
       new UniqueEntityID(raw.id),
     )
@@ -24,6 +25,7 @@ export class PrismaCategoryMapper {
       isActive: category.isActive,
       createdAt: category.createdAt,
       updatedAt: category.updatedAt,
+      deletedAt: category.deletedAt,
     }
   }
 }
