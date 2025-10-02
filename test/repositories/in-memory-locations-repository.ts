@@ -36,7 +36,7 @@ export class InMemoryLocationsRepository implements LocationsRepository {
   }
 
   async findById(id: string) {
-    const location = this.items.find((item) => item.id.toString() === id)
+    const location = this.items.find((item) => item.id.toValue() === id)
 
     if (!location) {
       return null

@@ -13,7 +13,7 @@ interface EditLocationUseCaseRequest {
   name: string
   code?: string | null
   description?: string | null
-  isActive: boolean
+  isActive?: boolean
   userRole: UserRole
 }
 
@@ -54,7 +54,9 @@ export class EditLocationUseCase {
     location.name = name
     location.code = code
     location.description = description
-    location.isActive = isActive
+    if (isActive !== undefined) {
+      location.isActive = isActive
+    }
 
     await this.locationsRepository.save(location)
 

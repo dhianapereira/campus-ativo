@@ -41,8 +41,8 @@ describe('Change User Password', () => {
     )
 
     const result = await sut.execute({
-      userId: user.id.toString(),
-      executorId: user.id.toString(),
+      userId: user.id.toValue(),
+      executorId: user.id.toValue(),
       oldPassword: 'old-password',
       newPassword: 'new-password',
     })
@@ -68,8 +68,8 @@ describe('Change User Password', () => {
     vi.spyOn(fakeHashComparer, 'compare').mockResolvedValueOnce(false)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
-      executorId: user.id.toString(),
+      userId: user.id.toValue(),
+      executorId: user.id.toValue(),
       oldPassword: 'wrong-password',
       newPassword: 'new-password',
     })
@@ -93,8 +93,8 @@ describe('Change User Password', () => {
     inMemoryUsersRepository.items.push(anotherUser)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
-      executorId: anotherUser.id.toString(),
+      userId: user.id.toValue(),
+      executorId: anotherUser.id.toValue(),
       oldPassword: 'old-password',
       newPassword: 'new-password',
     })

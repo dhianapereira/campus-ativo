@@ -16,7 +16,7 @@ export class InMemoryUsersRepository implements UsersRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    const user = this.items.find((item) => item.id.toString() === id)
+    const user = this.items.find((item) => item.id.toValue() === id)
 
     if (!user) {
       return null
@@ -26,7 +26,7 @@ export class InMemoryUsersRepository implements UsersRepository {
   }
 
   async findByIdForListing(id: string): Promise<UserSummary | null> {
-    const user = this.items.find((item) => item.id.toString() === id)
+    const user = this.items.find((item) => item.id.toValue() === id)
 
     if (!user) {
       return null

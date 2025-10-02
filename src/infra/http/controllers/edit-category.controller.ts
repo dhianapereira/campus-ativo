@@ -18,6 +18,8 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { CategoryInTrashError } from '@/core/errors/category-in-trash-error'
 import { EditCategoryRequest } from '../dtos/interfaces.dto'
 import { CategoriesRepository } from '@/domain/maintenance-problems/application/repositories/categories-repository'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import { UserPayload } from '@/infra/auth/jwt.strategy'
 
 const editCategoryBodySchema = z.object({
   name: z.string().optional(),
@@ -61,6 +63,7 @@ export class EditCategoryController {
   @ApiResponse({ status: 403, description: 'Usuário não tem permissão (requer MANAGER+)' })
   @ApiResponse({ status: 404, description: 'Categoria não encontrada' })
   async handle(
+    @CurrentUser() user: UserPayload,
     @Body(bodyValidationPipe) body: EditCategoryBodySchema,
     @Param('id') categoryId: string,
   ) {
@@ -83,6 +86,7 @@ export class EditCategoryController {
 
     const result = await this.editCategory.execute({
       categoryId,
+      userRole: user.role as UserRole,
       name: categoryName,
       description,
       isActive,

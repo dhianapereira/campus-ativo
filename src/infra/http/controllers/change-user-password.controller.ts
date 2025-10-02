@@ -22,7 +22,11 @@ import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 
 const changeUserPasswordBodySchema = z.object({
   oldPassword: z.string().min(6),
-  newPassword: z.string().min(6),
+  newPassword: z
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
 })
 
 type ChangeUserPasswordBodySchema = z.infer<typeof changeUserPasswordBodySchema>

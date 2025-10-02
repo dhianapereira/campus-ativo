@@ -22,7 +22,7 @@ describe('Change User Status', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
+      userId: user.id.toValue(),
       isActive: false,
       executorRole: UserRole.DIRECTOR,
     })
@@ -40,7 +40,7 @@ describe('Change User Status', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
+      userId: user.id.toValue(),
       isActive: true,
       executorRole: UserRole.DIRECTOR,
     })
@@ -58,7 +58,7 @@ describe('Change User Status', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
+      userId: user.id.toValue(),
       isActive: false,
       executorRole: UserRole.ADMIN,
     })
@@ -75,7 +75,7 @@ describe('Change User Status', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
+      userId: user.id.toValue(),
       isActive: false,
       executorRole: UserRole.MANAGER,
     })
@@ -92,7 +92,7 @@ describe('Change User Status', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
+      userId: user.id.toValue(),
       isActive: false,
       executorRole: UserRole.REPORTER,
     })

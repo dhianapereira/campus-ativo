@@ -28,6 +28,12 @@ export class PrismaLocationsRepository implements LocationsRepository {
               },
             },
             {
+              code: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
               description: {
                 contains: query,
                 mode: 'insensitive',
@@ -75,7 +81,7 @@ export class PrismaLocationsRepository implements LocationsRepository {
 
     await this.prisma.location.update({
       where: {
-        id: location.id.toString(),
+        id: location.id.toValue(),
       },
       data,
     })
@@ -84,7 +90,7 @@ export class PrismaLocationsRepository implements LocationsRepository {
   async delete(location: Location): Promise<void> {
     await this.prisma.location.delete({
       where: {
-        id: location.id.toString(),
+        id: location.id.toValue(),
       },
     })
   }

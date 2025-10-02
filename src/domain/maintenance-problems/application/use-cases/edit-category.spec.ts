@@ -4,6 +4,7 @@ import { makeCategory } from 'test/factories/make-category'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { CategoryInTrashError } from '@/core/errors/category-in-trash-error'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let sut: EditCategoryUseCase
@@ -27,6 +28,7 @@ describe('Edit Category', () => {
 
     const result = await sut.execute({
       categoryId: 'category-1',
+      userRole: UserRole.MANAGER,
       name: 'Categoria Editada',
       description: 'Descricao editada',
       isActive: false,
@@ -43,6 +45,7 @@ describe('Edit Category', () => {
   it('should not be able to edit a non-existing category', async () => {
     const result = await sut.execute({
       categoryId: 'non-existing-id',
+      userRole: UserRole.MANAGER,
       name: 'Categoria Editada',
     })
 
@@ -64,6 +67,7 @@ describe('Edit Category', () => {
 
     const result = await sut.execute({
       categoryId: 'category-1',
+      userRole: UserRole.MANAGER,
       name: 'Categoria Editada',
     })
 

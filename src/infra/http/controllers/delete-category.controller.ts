@@ -12,6 +12,8 @@ import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/roles.decorator'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import { UserPayload } from '@/infra/auth/jwt.strategy'
 
 @Controller('/categories/:id')
 @ApiTags('Categories')
@@ -40,9 +42,13 @@ export class DeleteCategoryController {
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
   @ApiResponse({ status: 403, description: 'Usuário não tem permissão (requer MANAGER+)' })
   @ApiResponse({ status: 404, description: 'Categoria não encontrada' })
-  async handle(@Param('id') categoryId: string) {
+  async handle(
+    @CurrentUser() user: UserPayload,
+    @Param('id') categoryId: string,
+  ) {
     const result = await this.deleteCategory.execute({
       categoryId,
+      userRole: user.role as UserRole,
     })
 
     if (result.isLeft()) {

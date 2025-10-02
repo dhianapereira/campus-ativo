@@ -22,7 +22,7 @@ describe('Change User Role', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      targetUserId: user.id.toString(),
+      targetUserId: user.id.toValue(),
       newRole: UserRole.MANAGER,
       currentUserRole: UserRole.ADMIN,
     })
@@ -39,7 +39,7 @@ describe('Change User Role', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      targetUserId: user.id.toString(),
+      targetUserId: user.id.toValue(),
       newRole: UserRole.MANAGER,
       currentUserRole: UserRole.DIRECTOR,
     })
@@ -56,7 +56,7 @@ describe('Change User Role', () => {
     inMemoryUsersRepository.items.push(adminUser)
 
     const result = await sut.execute({
-      targetUserId: adminUser.id.toString(),
+      targetUserId: adminUser.id.toValue(),
       newRole: UserRole.MANAGER,
       currentUserRole: UserRole.DIRECTOR,
     })
@@ -73,7 +73,7 @@ describe('Change User Role', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      targetUserId: user.id.toString(),
+      targetUserId: user.id.toValue(),
       newRole: UserRole.ADMIN,
       currentUserRole: UserRole.DIRECTOR,
     })
@@ -90,7 +90,7 @@ describe('Change User Role', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      targetUserId: user.id.toString(),
+      targetUserId: user.id.toValue(),
       newRole: UserRole.MANAGER,
       currentUserRole: UserRole.MANAGER,
     })

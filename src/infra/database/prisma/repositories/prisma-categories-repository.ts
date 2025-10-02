@@ -75,7 +75,7 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
 
     await this.prisma.category.update({
       where: {
-        id: category.id.toString(),
+        id: category.id.toValue(),
       },
       data,
     })
@@ -84,7 +84,7 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
   async delete(category: Category): Promise<void> {
     await this.prisma.category.delete({
       where: {
-        id: category.id.toString(),
+        id: category.id.toValue(),
       },
     })
   }

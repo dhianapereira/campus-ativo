@@ -106,6 +106,12 @@ export class PrismaUsersRepository implements UsersRepository {
                 mode: 'insensitive',
               },
             },
+            {
+              position: {
+                contains: params.query,
+                mode: 'insensitive',
+              },
+            },
           ],
         }),
         ...(params?.isActive !== undefined && { isActive: params.isActive }),
@@ -136,6 +142,12 @@ export class PrismaUsersRepository implements UsersRepository {
             },
             {
               email: {
+                contains: params.query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              position: {
                 contains: params.query,
                 mode: 'insensitive',
               },

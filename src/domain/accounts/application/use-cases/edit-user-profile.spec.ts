@@ -22,8 +22,8 @@ describe('Edit User Profile', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
-      executorId: user.id.toString(),
+      userId: user.id.toValue(),
+      executorId: user.id.toValue(),
       name: 'Jane Doe',
       position: 'Senior Developer',
     })
@@ -50,8 +50,8 @@ describe('Edit User Profile', () => {
     inMemoryUsersRepository.items.push(anotherUser)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
-      executorId: anotherUser.id.toString(),
+      userId: user.id.toValue(),
+      executorId: anotherUser.id.toValue(),
       name: 'Hacker',
       position: 'Hacker',
     })

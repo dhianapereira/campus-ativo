@@ -21,8 +21,8 @@ describe('Delete User Account', () => {
     expect(inMemoryUsersRepository.items).toHaveLength(1)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
-      executorId: user.id.toString(),
+      userId: user.id.toValue(),
+      executorId: user.id.toValue(),
     })
 
     expect(result.isRight()).toBe(true)
@@ -39,8 +39,8 @@ describe('Delete User Account', () => {
     expect(inMemoryUsersRepository.items).toHaveLength(2)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
-      executorId: anotherUser.id.toString(),
+      userId: user.id.toValue(),
+      executorId: anotherUser.id.toValue(),
     })
 
     expect(result.isLeft()).toBe(true)
