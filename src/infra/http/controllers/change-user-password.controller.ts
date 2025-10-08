@@ -18,6 +18,7 @@ import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { WrongCredentialsError } from '@/domain/accounts/application/use-cases/errors/wrong-credentials-error'
+import { InvalidPasswordError } from '@/domain/accounts/application/use-cases/errors/invalid-password-error'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 
 const changeUserPasswordBodySchema = z.object({
@@ -119,6 +120,8 @@ export class ChangeUserPasswordController {
           throw new ForbiddenException(error.message)
         case WrongCredentialsError:
           throw new UnauthorizedException(error.message)
+        case InvalidPasswordError:
+          throw new BadRequestException(error.message)
         default:
           throw new BadRequestException(error.message)
       }

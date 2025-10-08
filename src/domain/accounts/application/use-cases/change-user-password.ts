@@ -7,6 +7,8 @@ import { User } from '../../enterprise/entities/user'
 import { HashComparer } from '../cryptography/hash-comparer'
 import { HashGenerator } from '../cryptography/hash-generator'
 import { WrongCredentialsError } from './errors/wrong-credentials-error'
+import { InvalidPasswordError } from './errors/invalid-password-error'
+import { PasswordValidator } from '@/core/utils/password-validator'
 
 interface ChangeUserPasswordUseCaseRequest {
   userId: string
@@ -16,7 +18,7 @@ interface ChangeUserPasswordUseCaseRequest {
 }
 
 type ChangeUserPasswordUseCaseResponse = Either<
-  ResourceNotFoundError | NotAllowedError | WrongCredentialsError,
+  ResourceNotFoundError | NotAllowedError | WrongCredentialsError | InvalidPasswordError,
   {
     user: User
   }
@@ -55,6 +57,11 @@ export class ChangeUserPasswordUseCase {
 
     if (!isOldPasswordValid) {
       return left(new WrongCredentialsError())
+    }
+
+    // Validate new password strength
+    if (!PasswordValidator.isValid(newPassword)) {
+      return left(new InvalidPasswordError())
     }
 
     // Hash new password

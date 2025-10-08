@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { RegisterUserUseCase } from '@/domain/accounts/application/use-cases/register-user'
 import { UserAlreadyExistsError } from '@/domain/accounts/application/use-cases/errors/user-already-exists-error'
 import { InvalidEmailDomainError } from '@/domain/accounts/application/use-cases/errors/invalid-email-domain-error'
+import { InvalidPasswordError } from '@/domain/accounts/application/use-cases/errors/invalid-password-error'
 import { Public } from '@/infra/auth/public'
 import { CreateAccountRequest } from '../dtos/interfaces.dto'
 
@@ -61,6 +62,7 @@ export class CreateAccountController {
         case UserAlreadyExistsError:
           throw new ConflictException(error.message)
         case InvalidEmailDomainError:
+        case InvalidPasswordError:
           throw new BadRequestException(error.message)
         default:
           throw new BadRequestException(error.message)
