@@ -21,13 +21,15 @@ enum UserRole {
 }
 
 model User {
-  id       String   @id @default(uuid())
-  role     UserRole @default(REPORTER)
-  name     String
-  position String
-  email    String   @unique
-  password String
-  isActive Boolean  @default(true) @map("is_active")
+  id        String    @id @default(uuid())
+  role      UserRole  @default(REPORTER)
+  name      String
+  position  String
+  email     String    @unique
+  password  String
+  isActive  Boolean   @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
 
   problems Problem[]
 
