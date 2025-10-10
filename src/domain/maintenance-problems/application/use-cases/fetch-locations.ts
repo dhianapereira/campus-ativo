@@ -5,6 +5,9 @@ import { LocationsRepository } from '../repositories/locations-repository'
 
 interface FetchLocationsUseCaseRequest {
   page: number
+  query?: string
+  isActive?: boolean
+  includeDeleted?: boolean
 }
 
 type FetchLocationsUseCaseResponse = Either<
@@ -20,8 +23,16 @@ export class FetchLocationsUseCase {
 
   async execute({
     page,
+    query,
+    isActive,
+    includeDeleted = false,
   }: FetchLocationsUseCaseRequest): Promise<FetchLocationsUseCaseResponse> {
-    const locations = await this.locationsRepository.findMany({ page })
+    const locations = await this.locationsRepository.findMany({
+      page,
+      query,
+      isActive,
+      includeDeleted,
+    })
 
     return right({
       locations,

@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { RegisterUserUseCase } from '@/domain/accounts/application/use-cases/register-user'
 import { UserAlreadyExistsError } from '@/domain/accounts/application/use-cases/errors/user-already-exists-error'
 import { InvalidEmailDomainError } from '@/domain/accounts/application/use-cases/errors/invalid-email-domain-error'
+import { InvalidPasswordError } from '@/domain/accounts/application/use-cases/errors/invalid-password-error'
 import { Public } from '@/infra/auth/public'
 import { CreateAccountRequest } from '../dtos/interfaces.dto'
 
@@ -19,7 +20,11 @@ const createAccountBodySchema = z.object({
   name: z.string(),
   position: z.string(),
   email: z.string().email(),
-  password: z.string(),
+  password: z
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number'),
 })
 
 type CreateAccountBodySchema = z.infer<typeof createAccountBodySchema>
@@ -57,6 +62,7 @@ export class CreateAccountController {
         case UserAlreadyExistsError:
           throw new ConflictException(error.message)
         case InvalidEmailDomainError:
+        case InvalidPasswordError:
           throw new BadRequestException(error.message)
         default:
           throw new BadRequestException(error.message)

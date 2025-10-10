@@ -50,4 +50,68 @@ describe('Fetch Recent Problems', () => {
 
     expect(result.value?.problems).toHaveLength(2)
   })
+
+  it('should filter problems by query in title', async () => {
+    await inMemoryProblemsRepository.create(
+      makeProblem({ title: 'Water Leak Problem', createdAt: new Date(2022, 0, 20) }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({ title: 'Electrical Issue', createdAt: new Date(2022, 0, 21) }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({ title: 'Water Pressure Low', createdAt: new Date(2022, 0, 22) }),
+    )
+
+    const result = await sut.execute({
+      page: 1,
+      query: 'water',
+    })
+
+    expect(result.value?.problems).toHaveLength(2)
+    expect(result.value?.problems).toEqual([
+      expect.objectContaining({ title: 'Water Pressure Low' }),
+      expect.objectContaining({ title: 'Water Leak Problem' }),
+    ])
+  })
+
+  it('should filter problems by query in description', async () => {
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Problem A',
+        description: 'The water system needs urgent repair',
+      }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Problem B',
+        description: 'The electrical wiring is damaged',
+      }),
+    )
+
+    const result = await sut.execute({
+      page: 1,
+      query: 'electrical',
+    })
+
+    expect(result.value?.problems).toHaveLength(1)
+    expect(result.value?.problems[0].title).toBe('Problem B')
+  })
+
+  it('should return all problems when no query is provided', async () => {
+    await inMemoryProblemsRepository.create(
+      makeProblem({ title: 'Problem 1' }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({ title: 'Problem 2' }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({ title: 'Problem 3' }),
+    )
+
+    const result = await sut.execute({
+      page: 1,
+    })
+
+    expect(result.value?.problems).toHaveLength(3)
+  })
 })

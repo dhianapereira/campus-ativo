@@ -8,6 +8,7 @@ export interface CategoryProps {
   isActive: boolean
   createdAt: Date
   updatedAt?: Date | null
+  deletedAt?: Date | null
 }
 
 export class Category extends Entity<CategoryProps> {
@@ -29,6 +30,39 @@ export class Category extends Entity<CategoryProps> {
 
   get updatedAt() {
     return this.props.updatedAt
+  }
+
+  get deletedAt() {
+    return this.props.deletedAt
+  }
+
+  get isInTrash() {
+    return !!this.props.deletedAt
+  }
+
+  set name(name: string) {
+    this.props.name = name
+    this.touch()
+  }
+
+  set description(description: string | null | undefined) {
+    this.props.description = description
+    this.touch()
+  }
+
+  set isActive(isActive: boolean) {
+    this.props.isActive = isActive
+    this.touch()
+  }
+
+  moveToTrash() {
+    this.props.deletedAt = new Date()
+    this.touch()
+  }
+
+  restoreFromTrash() {
+    this.props.deletedAt = null
+    this.touch()
   }
 
   private touch() {

@@ -12,6 +12,7 @@ export class PrismaLocationMapper {
         isActive: raw.isActive,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
+        deletedAt: raw.deletedAt,
       },
       new UniqueEntityID(raw.id),
     )
@@ -26,6 +27,7 @@ export class PrismaLocationMapper {
       isActive: location.isActive,
       createdAt: location.createdAt,
       updatedAt: location.updatedAt,
+      deletedAt: location.deletedAt,
     }
   }
 }

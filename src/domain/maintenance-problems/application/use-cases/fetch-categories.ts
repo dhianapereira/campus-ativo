@@ -5,6 +5,9 @@ import { CategoriesRepository } from '../repositories/categories-repository'
 
 interface FetchCategoriesUseCaseRequest {
   page: number
+  query?: string
+  isActive?: boolean
+  includeDeleted?: boolean
 }
 
 type FetchCategoriesUseCaseResponse = Either<
@@ -20,8 +23,16 @@ export class FetchCategoriesUseCase {
 
   async execute({
     page,
+    query,
+    isActive,
+    includeDeleted = false,
   }: FetchCategoriesUseCaseRequest): Promise<FetchCategoriesUseCaseResponse> {
-    const categories = await this.categoriesRepository.findMany({ page })
+    const categories = await this.categoriesRepository.findMany({
+      page,
+      query,
+      isActive,
+      includeDeleted,
+    })
 
     return right({
       categories,

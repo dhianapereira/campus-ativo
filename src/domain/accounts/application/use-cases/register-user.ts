@@ -4,8 +4,10 @@ import { UsersRepository } from '../repositories/users-repository'
 import { HashGenerator } from '../cryptography/hash-generator'
 import { UserAlreadyExistsError } from './errors/user-already-exists-error'
 import { InvalidEmailDomainError } from './errors/invalid-email-domain-error'
+import { InvalidPasswordError } from './errors/invalid-password-error'
 import { User, UserRole } from '../../enterprise/entities/user'
 import { EmailValidator } from '@/core/utils/email-validator'
+import { PasswordValidator } from '@/core/utils/password-validator'
 
 interface RegisterUserUseCaseRequest {
   name: string
@@ -16,7 +18,7 @@ interface RegisterUserUseCaseRequest {
 }
 
 type RegisterUserUseCaseResponse = Either<
-  UserAlreadyExistsError | InvalidEmailDomainError,
+  UserAlreadyExistsError | InvalidEmailDomainError | InvalidPasswordError,
   {
     user: User
   }
@@ -38,6 +40,10 @@ export class RegisterUserUseCase {
   }: RegisterUserUseCaseRequest): Promise<RegisterUserUseCaseResponse> {
     if (!EmailValidator.isValidDomain(email)) {
       return left(new InvalidEmailDomainError(email))
+    }
+
+    if (!PasswordValidator.isValid(password)) {
+      return left(new InvalidPasswordError())
     }
 
     const userWithSameEmail = await this.usersRepository.findByEmail(email)

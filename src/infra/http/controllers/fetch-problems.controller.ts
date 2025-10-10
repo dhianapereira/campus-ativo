@@ -13,9 +13,13 @@ const pageQueryParamSchema = z
   .transform(Number)
   .pipe(z.number().min(1))
 
-const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
+const queryQueryParamSchema = z.string().optional()
+
+const pageValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
+const queryValidationPipe = new ZodValidationPipe(queryQueryParamSchema)
 
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
+type QueryQueryParamSchema = z.infer<typeof queryQueryParamSchema>
 
 @Controller('/problems')
 @ApiTags('Problems')
@@ -23,9 +27,9 @@ export class FetchProblemsController {
   constructor(private fetchProblems: FetchProblemsUseCase) {}
 
   @Get()
-  @ApiOperation({ 
-    summary: 'Buscar problemas', 
-    description: 'Retorna uma lista paginada de problemas reportados no sistema' 
+  @ApiOperation({
+    summary: 'Buscar problemas',
+    description: 'Retorna uma lista paginada de problemas reportados no sistema'
   })
   @ApiQuery({
     name: 'page',
@@ -34,8 +38,15 @@ export class FetchProblemsController {
     example: 1,
     type: Number
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiQuery({
+    name: 'query',
+    required: false,
+    description: 'Termo de busca para filtrar problemas por título ou descrição',
+    example: 'ar condicionado',
+    type: String
+  })
+  @ApiResponse({
+    status: 200,
     description: 'Lista de problemas retornada com sucesso',
     schema: {
       type: 'object',
@@ -48,8 +59,11 @@ export class FetchProblemsController {
     }
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
-  async handle(@Query('page', queryValidationPipe) page: PageQueryParamSchema) {
-    const result = await this.fetchProblems.execute({ page })
+  async handle(
+    @Query('page', pageValidationPipe) page: PageQueryParamSchema,
+    @Query('query', queryValidationPipe) query: QueryQueryParamSchema,
+  ) {
+    const result = await this.fetchProblems.execute({ page, query })
 
     if (result.isLeft()) {
       throw new BadRequestException()

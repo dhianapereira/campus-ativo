@@ -20,7 +20,7 @@ describe('Get User Profile', () => {
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
-      userId: user.id.toString(),
+      userId: user.id.toValue(),
     })
 
     expect(result.isRight()).toBe(true)

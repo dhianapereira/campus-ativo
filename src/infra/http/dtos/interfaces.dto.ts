@@ -110,6 +110,29 @@ export class CreateCategoryRequest {
   description!: string
 }
 
+export class EditCategoryRequest {
+  @ApiProperty({
+    description: 'Nome da categoria',
+    example: 'Climatização',
+    required: false,
+  })
+  name?: string
+
+  @ApiProperty({
+    description: 'Descrição da categoria',
+    example: 'Problemas relacionados a ar condicionado, ventilação e climatização',
+    required: false,
+  })
+  description?: string
+
+  @ApiProperty({
+    description: 'Status ativo/inativo da categoria',
+    example: true,
+    required: false,
+  })
+  isActive?: boolean
+}
+
 export class CreateLocationRequest {
   @ApiProperty({
     description: 'Nome da localização',
@@ -128,6 +151,36 @@ export class CreateLocationRequest {
     example: 'BLA-201',
   })
   code!: string
+}
+
+export class EditLocationRequest {
+  @ApiProperty({
+    description: 'Nome da localização',
+    example: 'Bloco A - Sala 201',
+    required: false,
+  })
+  name?: string
+
+  @ApiProperty({
+    description: 'Código identificador da localização',
+    example: 'BLA-201',
+    required: false,
+  })
+  code?: string
+
+  @ApiProperty({
+    description: 'Descrição da localização',
+    example: 'Sala de aula localizada no primeiro andar do Bloco A',
+    required: false,
+  })
+  description?: string
+
+  @ApiProperty({
+    description: 'Status ativo/inativo da localização',
+    example: true,
+    required: false,
+  })
+  isActive?: boolean
 }
 
 export class ChangeUserRoleRequest {

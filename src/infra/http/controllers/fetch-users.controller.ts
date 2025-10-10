@@ -2,9 +2,10 @@ import {
   BadRequestException,
   Controller,
   Get,
+  Query,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 import { FetchUsersUseCase } from '@/domain/accounts/application/use-cases/fetch-users'
 import { UserListPresenter } from '../presenters/user-list-presenter'
 import { RolesGuard } from '@/infra/auth/roles.guard'
@@ -22,12 +23,26 @@ export class FetchUsersController {
 
   @Get()
   @Roles(UserRole.DIRECTOR, UserRole.ADMIN)
-  @ApiOperation({ 
-    summary: 'Listar usuários', 
-    description: 'Lista todos os usuários do sistema com filtros baseados no role do usuário autenticado. ADMIN pode ver todos os usuários, DIRECTOR e abaixo não veem usuários ADMIN.' 
+  @ApiOperation({
+    summary: 'Listar usuários',
+    description: 'Lista todos os usuários do sistema com filtros baseados no role do usuário autenticado. ADMIN pode ver todos os usuários, DIRECTOR e abaixo não veem usuários ADMIN.'
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiQuery({
+    name: 'query',
+    required: false,
+    description: 'Termo de busca para filtrar usuários por nome ou email',
+    type: String,
+    example: 'João'
+  })
+  @ApiQuery({
+    name: 'isActive',
+    required: false,
+    description: 'Filtrar usuários por status (true para ativos, false para inativos)',
+    type: Boolean,
+    example: true
+  })
+  @ApiResponse({
+    status: 200,
     description: 'Lista de usuários retornada com sucesso',
     schema: {
       type: 'object',
@@ -48,27 +63,33 @@ export class FetchUsersController {
       }
     }
   })
-  @ApiResponse({ 
-    status: 401, 
+  @ApiResponse({
+    status: 401,
     description: 'Token JWT inválido ou expirado'
   })
-  @ApiResponse({ 
-    status: 403, 
+  @ApiResponse({
+    status: 403,
     description: 'Usuário não tem permissão (requer DIRECTOR+)'
   })
-  async handle(@CurrentUser() user: UserPayload) {
+  async handle(
+    @CurrentUser() user: UserPayload,
+    @Query('query') query?: string,
+    @Query('isActive') isActive?: string,
+  ) {
     const currentUserRole = (user.role as UserRole) || UserRole.REPORTER
-    
+
     const result = await this.fetchUsers.execute({
       currentUserRole,
+      query,
+      isActive: isActive !== undefined ? isActive === 'true' : undefined,
     })
 
     if (result.isLeft()) {
       throw new BadRequestException()
     }
 
-    return { 
-      users: result.value.users.map(UserListPresenter.toHTTP) 
+    return {
+      users: result.value.users.map(UserListPresenter.toHTTP)
     }
   }
 }

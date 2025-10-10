@@ -15,6 +15,8 @@ export class PrismaUserMapper {
         password: raw.password,
         role: raw.role as UserRole,
         isActive: raw.isActive,
+        createdAt: raw.createdAt,
+        updatedAt: raw.updatedAt,
       },
       new UniqueEntityID(raw.id),
     )
@@ -42,6 +44,8 @@ export class PrismaUserMapper {
       password: user.password,
       role: user.role as PrismaUserRole,
       isActive: user.isActive,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     }
   }
 }
