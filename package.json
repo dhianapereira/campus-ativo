@@ -8,14 +8,15 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/src/infra/main.js",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
     "test:debug": "vitest --inspect-brk --inspect --logHeapUsage --threads=false",
     "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
-    "generate:openapi": "./scripts/generate-openapi.sh"
+    "generate:openapi": "./scripts/generate-openapi.sh",
+    "openapi": "./scripts/generate-openapi.sh"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.6",

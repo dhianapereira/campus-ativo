@@ -5,6 +5,8 @@ import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
 
 type PrismaUserWithoutPassword = Omit<PrismaUser, 'password'>
 
+type PrismaUserSummary = Pick<PrismaUser, 'id' | 'name' | 'position' | 'email' | 'role' | 'isActive'>
+
 export class PrismaUserMapper {
   static toDomain(raw: PrismaUser): User {
     return User.create(
@@ -22,7 +24,7 @@ export class PrismaUserMapper {
     )
   }
 
-  static toUserSummary(raw: PrismaUserWithoutPassword): UserSummary {
+  static toUserSummary(raw: PrismaUserSummary): UserSummary {
     return UserSummary.create(
       {
         name: raw.name,
