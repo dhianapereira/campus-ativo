@@ -44,7 +44,7 @@ export class EditProblemUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    if (reporterId !== problem.reporterId.toValue()) {
+    if (reporterId !== problem.reporterId?.toValue()) {
       return left(new NotAllowedError())
     }
 

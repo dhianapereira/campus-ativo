@@ -16,6 +16,7 @@ export function makeProblem(
     {
       reporterId: new UniqueEntityID(),
       locationId: new UniqueEntityID(),
+      locationName: faker.location.street(),
       categoryId: new UniqueEntityID(),
       title: faker.lorem.sentence(),
       description: faker.lorem.text(),

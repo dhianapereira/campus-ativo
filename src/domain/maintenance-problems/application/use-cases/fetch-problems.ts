@@ -1,4 +1,4 @@
-import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
+import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
 import { ProblemsRepository } from '../repositories/problems-repository'
 import { right, Either } from '@/core/either'
 import { Injectable } from '@nestjs/common'
@@ -11,7 +11,7 @@ interface FetchProblemsUseCaseRequest {
 type FetchProblemsUseCaseResponse = Either<
   null,
   {
-    problems: Problem[]
+    problems: ProblemWithDetails[]
   }
 >
 
@@ -23,7 +23,7 @@ export class FetchProblemsUseCase {
     page,
     query,
   }: FetchProblemsUseCaseRequest): Promise<FetchProblemsUseCaseResponse> {
-    const problems = await this.problemsRepository.findMany({
+    const problems = await this.problemsRepository.findManyWithDetails({
       page,
       query,
     })

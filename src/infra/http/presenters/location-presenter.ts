@@ -8,6 +8,9 @@ export class LocationPresenter {
       code: location.code,
       description: location.description,
       isActive: location.isActive,
+      createdAt: location.createdAt,
+      updatedAt: location.updatedAt,
+      deletedAt: location.deletedAt,
     }
   }
 }

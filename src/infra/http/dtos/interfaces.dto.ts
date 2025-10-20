@@ -225,6 +225,20 @@ export class UserResponse {
   role!: UserRoleEnum
 }
 
+export class ProblemLocationInfo {
+  @ApiProperty({
+    description: 'ID da localização',
+    example: '123e4567-e89b-12d3-a456-426614174001',
+  })
+  id!: string
+
+  @ApiProperty({
+    description: 'Nome da localização',
+    example: 'Bloco A - Sala 201',
+  })
+  name!: string
+}
+
 export class ProblemResponse {
   @ApiProperty({
     description: 'ID do problema',
@@ -263,6 +277,51 @@ export class ProblemResponse {
   updatedAt!: Date
 }
 
+export class ProblemWithDetailsResponse {
+  @ApiProperty({
+    description: 'ID do problema',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  id!: string
+
+  @ApiProperty({
+    description: 'Título do problema',
+    example: 'Ar condicionado não funcionando',
+  })
+  title!: string
+
+  @ApiProperty({
+    description: 'Slug do problema',
+    example: 'ar-condicionado-nao-funcionando',
+  })
+  slug!: string
+
+  @ApiProperty({
+    description: 'Trecho da descrição do problema (primeiros 120 caracteres)',
+    example: 'O ar condicionado da sala 201 não está ligando há 3 dias...',
+  })
+  excerpt!: string
+
+  @ApiProperty({
+    description: 'Informações da localização do problema',
+    type: ProblemLocationInfo,
+  })
+  location!: ProblemLocationInfo
+
+  @ApiProperty({
+    description: 'Data de criação',
+    example: '2025-01-15T10:30:00Z',
+  })
+  createdAt!: Date
+
+  @ApiProperty({
+    description: 'Data de atualização',
+    example: '2025-01-15T10:30:00Z',
+    required: false,
+  })
+  updatedAt?: Date
+}
+
 export class LocationResponse {
   @ApiProperty({
     description: 'ID da localização',
@@ -289,6 +348,12 @@ export class LocationResponse {
   code!: string
 
   @ApiProperty({
+    description: 'Status ativo/inativo da localização',
+    example: true,
+  })
+  isActive!: boolean
+
+  @ApiProperty({
     description: 'Data de criação',
     example: '2025-01-15T10:30:00Z',
   })
@@ -297,8 +362,17 @@ export class LocationResponse {
   @ApiProperty({
     description: 'Data de atualização',
     example: '2025-01-15T10:30:00Z',
+    required: false,
   })
-  updatedAt!: Date
+  updatedAt?: Date
+
+  @ApiProperty({
+    description: 'Data de exclusão (null se não deletado)',
+    example: '2025-01-15T10:30:00Z',
+    required: false,
+    nullable: true,
+  })
+  deletedAt?: Date | null
 }
 
 export class CategoryResponse {
@@ -321,6 +395,12 @@ export class CategoryResponse {
   description!: string
 
   @ApiProperty({
+    description: 'Status ativo/inativo da categoria',
+    example: true,
+  })
+  isActive!: boolean
+
+  @ApiProperty({
     description: 'Data de criação',
     example: '2025-01-15T10:30:00Z',
   })
@@ -329,6 +409,15 @@ export class CategoryResponse {
   @ApiProperty({
     description: 'Data de atualização',
     example: '2025-01-15T10:30:00Z',
+    required: false,
   })
-  updatedAt!: Date
+  updatedAt?: Date
+
+  @ApiProperty({
+    description: 'Data de exclusão (null se não deletado)',
+    example: '2025-01-15T10:30:00Z',
+    required: false,
+    nullable: true,
+  })
+  deletedAt?: Date | null
 }

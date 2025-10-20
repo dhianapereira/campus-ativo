@@ -5,9 +5,10 @@ import { ProblemAttachmentList } from '@/domain/maintenance-problems/enterprise/
 import { Slug } from '@/domain/maintenance-problems/enterprise/entities/value-objects/slug'
 
 export interface ProblemProps {
-  reporterId: UniqueEntityID
+  reporterId: UniqueEntityID | null
   categoryId: UniqueEntityID
-  locationId: UniqueEntityID
+  locationId: UniqueEntityID | null
+  locationName: string
   title: string
   slug: Slug
   description: string
@@ -25,8 +26,17 @@ export class Problem extends AggregateRoot<ProblemProps> {
     return this.props.locationId
   }
 
-  set locationId(locationId: UniqueEntityID) {
-    this.props.locationId = this.locationId
+  set locationId(locationId: UniqueEntityID | null) {
+    this.props.locationId = locationId
+    this.touch()
+  }
+
+  get locationName() {
+    return this.props.locationName
+  }
+
+  set locationName(locationName: string) {
+    this.props.locationName = locationName
     this.touch()
   }
 

@@ -8,6 +8,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 import { FetchUsersUseCase } from '@/domain/accounts/application/use-cases/fetch-users'
 import { UserListPresenter } from '../presenters/user-list-presenter'
+import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/roles.decorator'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
@@ -16,7 +17,7 @@ import { UserPayload } from '@/infra/auth/jwt.strategy'
 
 @Controller('/users')
 @ApiTags('User Management')
-@UseGuards(RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth('JWT-auth')
 export class FetchUsersController {
   constructor(private readonly fetchUsers: FetchUsersUseCase) {}
