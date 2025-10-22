@@ -57,14 +57,15 @@ model Problem {
   description     String
   status          Status           @default(TO_ANALYSIS)
   maintenanceType MaintenanceType? @map("maintenance_type")
-  reporterId      String           @map("reporter_id")
-  locationId      String           @map("location_id")
+  reporterId      String?          @map("reporter_id")
+  locationId      String?          @map("location_id")
+  locationName    String           @map("location_name")
   categoryId      String           @map("category_id")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime?        @updatedAt @map("updated_at")
 
-  reporter    User         @relation(fields: [reporterId], references: [id])
-  location    Location     @relation(fields: [locationId], references: [id])
+  reporter    User?        @relation(fields: [reporterId], references: [id], onDelete: SetNull)
+  location    Location?    @relation(fields: [locationId], references: [id], onDelete: SetNull)
   category    Category     @relation(fields: [categoryId], references: [id])
   attachments Attachment[]
 

@@ -44,7 +44,7 @@ describe('Change User Password', () => {
       userId: user.id.toValue(),
       executorId: user.id.toValue(),
       oldPassword: 'old-password',
-      newPassword: 'new-password',
+      newPassword: 'NewPassword123',
     })
 
     expect(result.isRight()).toBe(true)
@@ -52,7 +52,7 @@ describe('Change User Password', () => {
       'old-password',
       'hashed-old-password',
     )
-    expect(fakeHashGenerator.hash).toHaveBeenCalledWith('new-password')
+    expect(fakeHashGenerator.hash).toHaveBeenCalledWith('NewPassword123')
     expect(inMemoryUsersRepository.items[0].password).toBe(
       'hashed-new-password',
     )
@@ -71,7 +71,7 @@ describe('Change User Password', () => {
       userId: user.id.toValue(),
       executorId: user.id.toValue(),
       oldPassword: 'wrong-password',
-      newPassword: 'new-password',
+      newPassword: 'NewPassword123',
     })
 
     expect(result.isLeft()).toBe(true)
@@ -96,7 +96,7 @@ describe('Change User Password', () => {
       userId: user.id.toValue(),
       executorId: anotherUser.id.toValue(),
       oldPassword: 'old-password',
-      newPassword: 'new-password',
+      newPassword: 'NewPassword123',
     })
 
     expect(result.isLeft()).toBe(true)
@@ -110,7 +110,7 @@ describe('Change User Password', () => {
       userId: 'non-existing-id',
       executorId: 'non-existing-id',
       oldPassword: 'old-password',
-      newPassword: 'new-password',
+      newPassword: 'NewPassword123',
     })
 
     expect(result.isLeft()).toBe(true)

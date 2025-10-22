@@ -7,8 +7,9 @@ export class PrismaProblemMapper {
   static toDomain(raw: PrismaProblem): Problem {
     return Problem.create(
       {
-        reporterId: new UniqueEntityID(raw.reporterId),
-        locationId: new UniqueEntityID(raw.locationId),
+        reporterId: raw.reporterId ? new UniqueEntityID(raw.reporterId) : null,
+        locationId: raw.locationId ? new UniqueEntityID(raw.locationId) : null,
+        locationName: raw.locationName,
         categoryId: new UniqueEntityID(raw.categoryId),
         slug: Slug.create(raw.slug),
         title: raw.title,
@@ -23,9 +24,10 @@ export class PrismaProblemMapper {
   static toPrisma(problem: Problem): Prisma.ProblemUncheckedCreateInput {
     return {
       id: problem.id.toValue(),
-      reporterId: problem.reporterId.toValue(),
+      reporterId: problem.reporterId?.toValue() ?? null,
       categoryId: problem.categoryId.toValue(),
-      locationId: problem.locationId.toValue(),
+      locationId: problem.locationId?.toValue() ?? null,
+      locationName: problem.locationName,
       title: problem.title,
       description: problem.description,
       slug: problem.slug.value,

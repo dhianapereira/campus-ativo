@@ -2,9 +2,12 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { CreateProblemUseCase } from './create-problem'
 import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems-repository'
 import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
+import { InMemoryLocationsRepository } from 'test/repositories/in-memory-locations-repository'
+import { makeLocation } from 'test/factories/make-location'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
+let inMemoryLocationsRepository: InMemoryLocationsRepository
 let sut: CreateProblemUseCase
 
 describe('Create Problem', () => {
@@ -14,10 +17,17 @@ describe('Create Problem', () => {
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
       inMemoryProblemAttachmentsRepository,
     )
-    sut = new CreateProblemUseCase(inMemoryProblemsRepository)
+    inMemoryLocationsRepository = new InMemoryLocationsRepository()
+    sut = new CreateProblemUseCase(
+      inMemoryProblemsRepository,
+      inMemoryLocationsRepository,
+    )
   })
 
   it('should be able to create a problem', async () => {
+    const location = makeLocation({}, new UniqueEntityID('location-id'))
+    inMemoryLocationsRepository.items.push(location)
+
     const result = await sut.execute({
       reporterId: '1',
       title: 'Novo problema',
@@ -29,6 +39,7 @@ describe('Create Problem', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryProblemsRepository.items[0]).toEqual(result.value?.problem)
+    expect(inMemoryProblemsRepository.items[0].locationName).toBe(location.name)
     expect(
       inMemoryProblemsRepository.items[0].attachments.currentItems,
     ).toHaveLength(2)

@@ -7,6 +7,9 @@ export class CategoryPresenter {
       name: category.name,
       description: category.description,
       isActive: category.isActive,
+      createdAt: category.createdAt,
+      updatedAt: category.updatedAt,
+      deletedAt: category.deletedAt,
     }
   }
 }

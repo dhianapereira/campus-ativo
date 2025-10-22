@@ -3,9 +3,11 @@ import {
   FetchProblemsParams,
 } from '@/domain/maintenance-problems/application/repositories/problems-repository'
 import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
+import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaProblemMapper } from '../mappers/prisma-problem-mapper'
+import { PrismaProblemWithDetailsMapper } from '../mappers/prisma-problem-with-details-mapper'
 
 @Injectable()
 export class PrismaProblemsRepository implements ProblemsRepository {
@@ -67,6 +69,42 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     })
 
     return problems.map(PrismaProblemMapper.toDomain)
+  }
+
+  async findManyWithDetails({
+    page,
+    query,
+  }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
+    const problems = await this.prisma.problem.findMany({
+      where: {
+        ...(query && {
+          OR: [
+            {
+              title: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+            {
+              description: {
+                contains: query,
+                mode: 'insensitive',
+              },
+            },
+          ],
+        }),
+      },
+      include: {
+        location: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: 20,
+      skip: (page - 1) * 20,
+    })
+
+    return problems.map(PrismaProblemWithDetailsMapper.toDomain)
   }
 
   async create(problem: Problem): Promise<void> {

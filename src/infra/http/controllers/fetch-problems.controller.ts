@@ -4,7 +4,7 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { FetchProblemsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-problems'
 import { ProblemPresenter } from '../presenters/problem-presenter'
-import { ProblemResponse } from '../dtos/interfaces.dto'
+import { ProblemWithDetailsResponse } from '../dtos/interfaces.dto'
 
 const pageQueryParamSchema = z
   .string()
@@ -29,7 +29,7 @@ export class FetchProblemsController {
   @Get()
   @ApiOperation({
     summary: 'Buscar problemas',
-    description: 'Retorna uma lista paginada de problemas reportados no sistema'
+    description: 'Retorna uma lista paginada de problemas reportados no sistema com informações de localização'
   })
   @ApiQuery({
     name: 'page',
@@ -53,7 +53,7 @@ export class FetchProblemsController {
       properties: {
         problems: {
           type: 'array',
-          items: { $ref: '#/components/schemas/ProblemResponse' }
+          items: { $ref: '#/components/schemas/ProblemWithDetailsResponse' }
         }
       }
     }
@@ -71,6 +71,6 @@ export class FetchProblemsController {
 
     const problems = result.value.problems
 
-    return { problems: problems.map(ProblemPresenter.toHTTP) }
+    return { problems: problems.map(ProblemPresenter.toHTTPWithDetails) }
   }
 }
