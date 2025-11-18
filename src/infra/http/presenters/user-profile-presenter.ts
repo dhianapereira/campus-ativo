@@ -5,6 +5,7 @@ export class UserProfilePresenter {
     return {
       id: user.id.toValue(),
       name: user.name,
+      email: user.email,
       position: user.position,
     }
   }

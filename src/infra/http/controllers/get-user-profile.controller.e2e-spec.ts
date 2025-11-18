@@ -32,9 +32,10 @@ describe('Get user profile (E2E)', () => {
     const user = await userFactory.makePrismaUser({
       name: 'John Doe',
       position: 'Reporter',
+      email: 'johndoe@ifal.edu.br',
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: user.id.toValue(),
       role: user.role,
     })
@@ -49,6 +50,7 @@ describe('Get user profile (E2E)', () => {
       profile: expect.objectContaining({
         id: user.id.toValue(),
         name: 'John Doe',
+        email: 'johndoe@ifal.edu.br',
         position: 'Reporter',
       }),
     })
