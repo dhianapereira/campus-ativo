@@ -4,6 +4,7 @@ import { ChangeUserStatusUseCase } from './change-user-status'
 import { UserRole } from '../../enterprise/entities/user'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { CannotModifyOwnAccountError } from '@/core/errors/cannot-modify-own-account-error'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let sut: ChangeUserStatusUseCase
@@ -15,51 +16,72 @@ describe('Change User Status', () => {
   })
 
   it('should be able to deactivate user as director', async () => {
+    const director = makeUser({
+      role: UserRole.DIRECTOR,
+      isActive: true,
+    })
+
     const user = makeUser({
       isActive: true,
     })
 
+    inMemoryUsersRepository.items.push(director)
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
       userId: user.id.toValue(),
       isActive: false,
+      executorId: director.id.toValue(),
       executorRole: UserRole.DIRECTOR,
     })
 
     expect(result.isRight()).toBe(true)
     expect(result.value?.user.isActive).toBe(false)
-    expect(inMemoryUsersRepository.items[0].isActive).toBe(false)
+    expect(inMemoryUsersRepository.items[1].isActive).toBe(false)
   })
 
   it('should be able to activate user as director', async () => {
+    const director = makeUser({
+      role: UserRole.DIRECTOR,
+      isActive: true,
+    })
+
     const user = makeUser({
       isActive: false,
     })
 
+    inMemoryUsersRepository.items.push(director)
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
       userId: user.id.toValue(),
       isActive: true,
+      executorId: director.id.toValue(),
       executorRole: UserRole.DIRECTOR,
     })
 
     expect(result.isRight()).toBe(true)
     expect(result.value?.user.isActive).toBe(true)
-    expect(inMemoryUsersRepository.items[0].isActive).toBe(true)
+    expect(inMemoryUsersRepository.items[1].isActive).toBe(true)
   })
 
   it('should be able to change user status as admin', async () => {
+    const admin = makeUser({
+      role: UserRole.ADMIN,
+      isActive: true,
+    })
+
     const user = makeUser({
       isActive: true,
     })
 
+    inMemoryUsersRepository.items.push(admin)
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
       userId: user.id.toValue(),
       isActive: false,
+      executorId: admin.id.toValue(),
       executorRole: UserRole.ADMIN,
     })
 
@@ -68,15 +90,22 @@ describe('Change User Status', () => {
   })
 
   it('should not allow manager to change user status', async () => {
+    const manager = makeUser({
+      role: UserRole.MANAGER,
+      isActive: true,
+    })
+
     const user = makeUser({
       isActive: true,
     })
 
+    inMemoryUsersRepository.items.push(manager)
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
       userId: user.id.toValue(),
       isActive: false,
+      executorId: manager.id.toValue(),
       executorRole: UserRole.MANAGER,
     })
 
@@ -85,15 +114,22 @@ describe('Change User Status', () => {
   })
 
   it('should not allow reporter to change user status', async () => {
+    const reporter = makeUser({
+      role: UserRole.REPORTER,
+      isActive: true,
+    })
+
     const user = makeUser({
       isActive: true,
     })
 
+    inMemoryUsersRepository.items.push(reporter)
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
       userId: user.id.toValue(),
       isActive: false,
+      executorId: reporter.id.toValue(),
       executorRole: UserRole.REPORTER,
     })
 
@@ -102,13 +138,58 @@ describe('Change User Status', () => {
   })
 
   it('should not be able to change status for non-existing user', async () => {
+    const director = makeUser({
+      role: UserRole.DIRECTOR,
+    })
+
+    inMemoryUsersRepository.items.push(director)
+
     const result = await sut.execute({
       userId: 'non-existing-id',
       isActive: false,
+      executorId: director.id.toValue(),
       executorRole: UserRole.DIRECTOR,
     })
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should not allow user to deactivate their own account', async () => {
+    const admin = makeUser({
+      role: UserRole.ADMIN,
+      isActive: true,
+    })
+
+    inMemoryUsersRepository.items.push(admin)
+
+    const result = await sut.execute({
+      userId: admin.id.toValue(),
+      isActive: false,
+      executorId: admin.id.toValue(),
+      executorRole: admin.role,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(CannotModifyOwnAccountError)
+    expect(inMemoryUsersRepository.items[0].isActive).toBe(true)
+  })
+
+  it('should allow user to activate their own account', async () => {
+    const admin = makeUser({
+      role: UserRole.ADMIN,
+      isActive: true,
+    })
+
+    inMemoryUsersRepository.items.push(admin)
+
+    const result = await sut.execute({
+      userId: admin.id.toValue(),
+      isActive: true,
+      executorId: admin.id.toValue(),
+      executorRole: admin.role,
+    })
+
+    expect(result.isRight()).toBe(true)
   })
 })

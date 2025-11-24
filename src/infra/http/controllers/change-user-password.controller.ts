@@ -9,7 +9,14 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { ChangeUserPasswordUseCase } from '@/domain/accounts/application/use-cases/change-user-password'
@@ -42,12 +49,13 @@ export class ChangeUserPasswordController {
   @Patch()
   @ApiOperation({
     summary: 'Alterar senha do usuário',
-    description: 'Altera a senha do próprio usuário. Apenas o próprio usuário pode alterar sua senha.'
+    description:
+      'Altera a senha do próprio usuário. Apenas o próprio usuário pode alterar sua senha.',
   })
   @ApiParam({
     name: 'id',
     description: 'ID do usuário cuja senha será alterada',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiBody({
     description: 'Senha antiga e nova senha',
@@ -58,17 +66,17 @@ export class ChangeUserPasswordController {
           type: 'string',
           example: 'oldPassword123',
           description: 'Senha atual do usuário',
-          minLength: 6
+          minLength: 6,
         },
         newPassword: {
           type: 'string',
           example: 'newPassword123',
           description: 'Nova senha do usuário',
-          minLength: 6
-        }
+          minLength: 6,
+        },
       },
-      required: ['oldPassword', 'newPassword']
-    }
+      required: ['oldPassword', 'newPassword'],
+    },
   })
   @ApiResponse({
     status: 200,
@@ -76,29 +84,30 @@ export class ChangeUserPasswordController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Password changed successfully' }
-      }
-    }
+        message: { type: 'string', example: 'Password changed successfully' },
+      },
+    },
   })
   @ApiResponse({
     status: 400,
-    description: 'Dados inválidos'
+    description: 'Dados inválidos',
   })
   @ApiResponse({
     status: 401,
-    description: 'Senha antiga incorreta ou token JWT inválido'
+    description: 'Senha antiga incorreta ou token JWT inválido',
   })
   @ApiResponse({
     status: 403,
-    description: 'Usuário não tem permissão para alterar esta senha'
+    description: 'Usuário não tem permissão para alterar esta senha',
   })
   @ApiResponse({
     status: 404,
-    description: 'Usuário não encontrado'
+    description: 'Usuário não encontrado',
   })
   async handle(
     @Param('id') userId: string,
-    @Body(new ZodValidationPipe(changeUserPasswordBodySchema)) body: ChangeUserPasswordBodySchema,
+    @Body(new ZodValidationPipe(changeUserPasswordBodySchema))
+    body: ChangeUserPasswordBodySchema,
     @CurrentUser() user: UserPayload,
   ) {
     const { oldPassword, newPassword } = body

@@ -39,4 +39,19 @@ describe('Authenticate (E2E)', () => {
       access_token: expect.any(String),
     })
   })
+
+  test('[POST] /sessions should not authenticate an inactive user', async () => {
+    await userFactory.makePrismaUser({
+      email: 'inactive@example.com',
+      password: await hash('123456', 8),
+      isActive: false,
+    })
+
+    const response = await request(app.getHttpServer()).post('/sessions').send({
+      email: 'inactive@example.com',
+      password: '123456',
+    })
+
+    expect(response.statusCode).toBe(401)
+  })
 })

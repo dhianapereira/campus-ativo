@@ -83,12 +83,12 @@ describe('Edit problem (E2E)', () => {
     expect(problemOnDatabase).toBeTruthy()
   })
 
-  test('[PUT] /problems/:id (trying to edit another user\'s problem - should fail)', async () => {
+  test("[PUT] /problems/:id (trying to edit another user's problem - should fail)", async () => {
     const originalUser = await userFactory.makePrismaUser()
-    
+
     const category = await categoryFactory.makePrismaCategory()
     const location = await locationFactory.makePrismaLocation()
-    
+
     const problem = await problemFactory.makePrismaProblem({
       reporterId: originalUser.id,
       categoryId: category.id,

@@ -64,18 +64,20 @@ export class InMemoryUsersRepository implements UsersRepository {
     return this.items
   }
 
-  async findManyForListing(params?: import('@/domain/accounts/application/repositories/users-repository').FetchUsersParams): Promise<UserSummary[]> {
+  async findManyForListing(
+    params?: import('@/domain/accounts/application/repositories/users-repository').FetchUsersParams,
+  ): Promise<UserSummary[]> {
     let users = this.items
 
     // Filter by isActive
     if (params?.isActive !== undefined) {
-      users = users.filter(user => user.isActive === params.isActive)
+      users = users.filter((user) => user.isActive === params.isActive)
     }
 
     // Filter by query (case-insensitive search in name and email)
     if (params?.query) {
       const lowerQuery = params.query.toLowerCase()
-      users = users.filter(user => {
+      users = users.filter((user) => {
         const nameMatch = user.name.toLowerCase().includes(lowerQuery)
         const emailMatch = user.email.toLowerCase().includes(lowerQuery)
         return nameMatch || emailMatch
@@ -92,7 +94,7 @@ export class InMemoryUsersRepository implements UsersRepository {
       return a.name.localeCompare(b.name)
     })
 
-    return users.map(user =>
+    return users.map((user) =>
       UserSummary.create(
         {
           name: user.name,
@@ -102,7 +104,7 @@ export class InMemoryUsersRepository implements UsersRepository {
           isActive: user.isActive,
         },
         user.id,
-      )
+      ),
     )
   }
 }

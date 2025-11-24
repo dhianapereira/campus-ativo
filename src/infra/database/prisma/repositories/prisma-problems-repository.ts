@@ -2,8 +2,9 @@ import {
   ProblemsRepository,
   FetchProblemsParams,
 } from '@/domain/maintenance-problems/application/repositories/problems-repository'
-import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
+import { Problem, ProblemStatus } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
+import { DashboardMetrics } from '@/domain/maintenance-problems/enterprise/entities/value-objects/dashboard-metrics'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaProblemMapper } from '../mappers/prisma-problem-mapper'
@@ -44,6 +45,7 @@ export class PrismaProblemsRepository implements ProblemsRepository {
   async findMany({ page, query }: FetchProblemsParams): Promise<Problem[]> {
     const problems = await this.prisma.problem.findMany({
       where: {
+        deletedAt: null,
         ...(query && {
           OR: [
             {
@@ -77,6 +79,7 @@ export class PrismaProblemsRepository implements ProblemsRepository {
   }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
     const problems = await this.prisma.problem.findMany({
       where: {
+        deletedAt: null,
         ...(query && {
           OR: [
             {
@@ -133,6 +136,77 @@ export class PrismaProblemsRepository implements ProblemsRepository {
       where: {
         id: data.id,
       },
+    })
+  }
+
+  async getDashboardMetrics(): Promise<DashboardMetrics> {
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+    // Count total problems (excluding deleted)
+    const totalProblems = await this.prisma.problem.count({
+      where: {
+        deletedAt: null,
+      },
+    })
+
+    // Count problems by status
+    const problemsByStatus = await this.prisma.problem.groupBy({
+      by: ['status'],
+      where: {
+        deletedAt: null,
+      },
+      _count: {
+        status: true,
+      },
+    })
+
+    // Count recent problems (last 7 days)
+    const recentProblems = await this.prisma.problem.count({
+      where: {
+        deletedAt: null,
+        createdAt: {
+          gte: sevenDaysAgo,
+        },
+      },
+    })
+
+    // Calculate average resolution time for finished problems
+    const finishedProblems = await this.prisma.problem.findMany({
+      where: {
+        deletedAt: null,
+        status: 'FINISHED',
+        updatedAt: {
+          not: null,
+        },
+      },
+      select: {
+        createdAt: true,
+        updatedAt: true,
+      },
+    })
+
+    let averageResolutionTime: number | undefined
+
+    if (finishedProblems.length > 0) {
+      const totalDays = finishedProblems.reduce((sum, problem) => {
+        const createdAt = problem.createdAt.getTime()
+        const finishedAt = problem.updatedAt!.getTime()
+        const diffInDays = (finishedAt - createdAt) / (1000 * 60 * 60 * 24)
+        return sum + diffInDays
+      }, 0)
+
+      averageResolutionTime = Math.round(totalDays / finishedProblems.length)
+    }
+
+    return new DashboardMetrics({
+      totalProblems,
+      problemsByStatus: problemsByStatus.map((item) => ({
+        status: item.status as ProblemStatus,
+        count: item._count.status,
+      })),
+      recentProblems,
+      averageResolutionTime,
     })
   }
 }

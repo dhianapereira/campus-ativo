@@ -29,21 +29,23 @@ export class FetchProblemsController {
   @Get()
   @ApiOperation({
     summary: 'Buscar problemas',
-    description: 'Retorna uma lista paginada de problemas reportados no sistema com informações de localização'
+    description:
+      'Retorna uma lista paginada de problemas reportados no sistema com informações de localização',
   })
   @ApiQuery({
     name: 'page',
     required: false,
     description: 'Número da página (começa em 1)',
     example: 1,
-    type: Number
+    type: Number,
   })
   @ApiQuery({
     name: 'query',
     required: false,
-    description: 'Termo de busca para filtrar problemas por título ou descrição',
+    description:
+      'Termo de busca para filtrar problemas por título ou descrição',
     example: 'ar condicionado',
-    type: String
+    type: String,
   })
   @ApiResponse({
     status: 200,
@@ -53,10 +55,10 @@ export class FetchProblemsController {
       properties: {
         problems: {
           type: 'array',
-          items: { $ref: '#/components/schemas/ProblemWithDetailsResponse' }
-        }
-      }
-    }
+          items: { $ref: '#/components/schemas/ProblemWithDetailsResponse' },
+        },
+      },
+    },
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
   async handle(

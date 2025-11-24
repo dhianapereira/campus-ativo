@@ -6,7 +6,13 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger'
 import { RestoreLocationUseCase } from '@/domain/maintenance-problems/application/use-cases/restore-location'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/roles.decorator'
@@ -27,12 +33,13 @@ export class RestoreLocationController {
   @Roles(UserRole.MANAGER)
   @ApiOperation({
     summary: 'Restaurar localização da lixeira',
-    description: 'Restaura uma localização que estava na lixeira (requer role MANAGER+)'
+    description:
+      'Restaura uma localização que estava na lixeira (requer role MANAGER+)',
   })
   @ApiParam({
     name: 'id',
     description: 'ID da localização a ser restaurada',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiResponse({
     status: 204,
@@ -40,7 +47,10 @@ export class RestoreLocationController {
   })
   @ApiResponse({ status: 400, description: 'Localização não encontrada' })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
-  @ApiResponse({ status: 403, description: 'Usuário não tem permissão (requer MANAGER+)' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão (requer MANAGER+)',
+  })
   @ApiResponse({ status: 404, description: 'Localização não encontrada' })
   async handle(
     @CurrentUser() user: UserPayload,

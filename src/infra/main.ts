@@ -8,7 +8,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('IFAL Arapiraca Backend API')
-    .setDescription('API para gerenciamento de problemas de infraestrutura do IFAL Arapiraca')
+    .setDescription(
+      'API para gerenciamento de problemas de infraestrutura do IFAL Arapiraca',
+    )
     .setVersion('1.0.0')
     .addBearerAuth(
       {

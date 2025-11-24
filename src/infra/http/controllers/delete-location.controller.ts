@@ -6,7 +6,13 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger'
 import { DeleteLocationUseCase } from '@/domain/maintenance-problems/application/use-cases/delete-location'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/roles.decorator'
@@ -27,12 +33,13 @@ export class DeleteLocationController {
   @Roles(UserRole.MANAGER)
   @ApiOperation({
     summary: 'Deletar localização',
-    description: 'Deleta permanentemente uma localização do sistema (requer role MANAGER+)'
+    description:
+      'Deleta permanentemente uma localização do sistema (requer role MANAGER+)',
   })
   @ApiParam({
     name: 'id',
     description: 'ID da localização a ser deletada',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiResponse({
     status: 204,
@@ -40,7 +47,10 @@ export class DeleteLocationController {
   })
   @ApiResponse({ status: 400, description: 'Localização não encontrada' })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
-  @ApiResponse({ status: 403, description: 'Usuário não tem permissão (requer MANAGER+)' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão (requer MANAGER+)',
+  })
   @ApiResponse({ status: 404, description: 'Localização não encontrada' })
   async handle(
     @CurrentUser() user: UserPayload,

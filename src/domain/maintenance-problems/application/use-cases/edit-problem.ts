@@ -1,8 +1,9 @@
 import { left, right, Either } from '@/core/either'
-import { Problem } from '../../enterprise/entities/problems/problem'
+import { Problem, ProblemStatus } from '../../enterprise/entities/problems/problem'
 import { ProblemsRepository } from '../repositories/problems-repository'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { ProblemNotEditableError } from '@/core/errors/problem-not-editable-error'
 import { ProblemAttachmentsRepository } from '../repositories/problem-attachments-repository'
 import { ProblemAttachmentList } from '../../enterprise/entities/problems/problem-attachment-list'
 import { ProblemAttachment } from '../../enterprise/entities/problems/problem-attachment'
@@ -18,7 +19,7 @@ interface EditProblemUseCaseRequest {
 }
 
 type EditProblemUseCaseResponse = Either<
-  ResourceNotFoundError | NotAllowedError,
+  ResourceNotFoundError | NotAllowedError | ProblemNotEditableError,
   {
     problem: Problem
   }
@@ -44,8 +45,14 @@ export class EditProblemUseCase {
       return left(new ResourceNotFoundError())
     }
 
+    // Only the reporter can edit the problem
     if (reporterId !== problem.reporterId?.toValue()) {
       return left(new NotAllowedError())
+    }
+
+    // Problem can only be edited when status is TO_ANALYSIS
+    if (problem.status !== ProblemStatus.TO_ANALYSIS) {
+      return left(new ProblemNotEditableError())
     }
 
     const currentProblemAttachments =

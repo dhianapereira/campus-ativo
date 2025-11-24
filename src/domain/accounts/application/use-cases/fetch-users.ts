@@ -24,7 +24,7 @@ export class FetchUsersUseCase {
   async execute({
     currentUserRole,
     query,
-    isActive
+    isActive,
   }: FetchUsersUseCaseRequest): Promise<FetchUsersUseCaseResponse> {
     const users = await this.usersRepository.findManyForListing({
       query,
@@ -32,7 +32,7 @@ export class FetchUsersUseCase {
     })
 
     // Filter users based on current user role
-    const filteredUsers = users.filter(user => {
+    const filteredUsers = users.filter((user) => {
       // ADMIN can see all users
       if (currentUserRole === UserRole.ADMIN) {
         return true

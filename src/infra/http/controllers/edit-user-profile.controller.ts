@@ -8,7 +8,14 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { EditUserProfileUseCase } from '@/domain/accounts/application/use-cases/edit-user-profile'
@@ -35,12 +42,13 @@ export class EditUserProfileController {
   @Patch()
   @ApiOperation({
     summary: 'Editar perfil do usuário',
-    description: 'Edita o perfil do próprio usuário. Apenas o próprio usuário pode editar seu perfil.'
+    description:
+      'Edita o perfil do próprio usuário. Apenas o próprio usuário pode editar seu perfil.',
   })
   @ApiParam({
     name: 'id',
     description: 'ID do usuário cujo perfil será editado',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiBody({
     description: 'Dados do perfil a serem atualizados',
@@ -50,16 +58,16 @@ export class EditUserProfileController {
         name: {
           type: 'string',
           example: 'João Silva',
-          description: 'Nome completo do usuário'
+          description: 'Nome completo do usuário',
         },
         position: {
           type: 'string',
           example: 'Técnico em Informática',
-          description: 'Cargo do usuário'
-        }
+          description: 'Cargo do usuário',
+        },
       },
-      required: ['name', 'position']
-    }
+      required: ['name', 'position'],
+    },
   })
   @ApiResponse({
     status: 200,
@@ -67,29 +75,30 @@ export class EditUserProfileController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Profile updated successfully' }
-      }
-    }
+        message: { type: 'string', example: 'Profile updated successfully' },
+      },
+    },
   })
   @ApiResponse({
     status: 400,
-    description: 'Dados inválidos'
+    description: 'Dados inválidos',
   })
   @ApiResponse({
     status: 401,
-    description: 'Token JWT inválido ou expirado'
+    description: 'Token JWT inválido ou expirado',
   })
   @ApiResponse({
     status: 403,
-    description: 'Usuário não tem permissão para editar este perfil'
+    description: 'Usuário não tem permissão para editar este perfil',
   })
   @ApiResponse({
     status: 404,
-    description: 'Usuário não encontrado'
+    description: 'Usuário não encontrado',
   })
   async handle(
     @Param('id') userId: string,
-    @Body(new ZodValidationPipe(editUserProfileBodySchema)) body: EditUserProfileBodySchema,
+    @Body(new ZodValidationPipe(editUserProfileBodySchema))
+    body: EditUserProfileBodySchema,
     @CurrentUser() user: UserPayload,
   ) {
     const { name, position } = body

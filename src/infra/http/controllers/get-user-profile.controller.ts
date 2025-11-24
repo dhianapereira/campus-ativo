@@ -4,7 +4,12 @@ import {
   Get,
   NotFoundException,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { GetUserProfileUseCase } from '@/domain/accounts/application/use-cases/get-user-profile'
@@ -19,9 +24,12 @@ export class GetUserProfileController {
   constructor(private readonly getUserProfile: GetUserProfileUseCase) {}
 
   @Get()
-  @ApiOperation({ summary: 'Obter perfil do usuário', description: 'Retorna as informações do perfil do usuário autenticado' })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiOperation({
+    summary: 'Obter perfil do usuário',
+    description: 'Retorna as informações do perfil do usuário autenticado',
+  })
+  @ApiResponse({
+    status: 200,
     description: 'Perfil do usuário retornado com sucesso',
     type: UserResponse,
   })

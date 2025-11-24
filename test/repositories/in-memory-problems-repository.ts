@@ -1,7 +1,11 @@
 import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/problem-attachments-repository'
-import { ProblemsRepository, FetchProblemsParams } from '@/domain/maintenance-problems/application/repositories/problems-repository'
-import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
+import {
+  ProblemsRepository,
+  FetchProblemsParams,
+} from '@/domain/maintenance-problems/application/repositories/problems-repository'
+import { Problem, ProblemStatus } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
+import { DashboardMetrics } from '@/domain/maintenance-problems/enterprise/entities/value-objects/dashboard-metrics'
 import { LocationsRepository } from '@/domain/maintenance-problems/application/repositories/locations-repository'
 
 export class InMemoryProblemsRepository implements ProblemsRepository {
@@ -33,14 +37,17 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
   }
 
   async findMany({ page, query }: FetchProblemsParams) {
-    let problems = this.items
+    // Filter out deleted problems
+    let problems = this.items.filter((problem) => !problem.isDeleted)
 
     // Filter by query (case-insensitive search in title and description)
     if (query) {
       const lowerQuery = query.toLowerCase()
-      problems = problems.filter(problem => {
+      problems = problems.filter((problem) => {
         const titleMatch = problem.title.toLowerCase().includes(lowerQuery)
-        const descriptionMatch = problem.description.toLowerCase().includes(lowerQuery)
+        const descriptionMatch = problem.description
+          .toLowerCase()
+          .includes(lowerQuery)
         return titleMatch || descriptionMatch
       })
     }
@@ -53,15 +60,21 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     return problems
   }
 
-  async findManyWithDetails({ page, query }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
-    let problems = this.items
+  async findManyWithDetails({
+    page,
+    query,
+  }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
+    // Filter out deleted problems
+    let problems = this.items.filter((problem) => !problem.isDeleted)
 
     // Filter by query (case-insensitive search in title and description)
     if (query) {
       const lowerQuery = query.toLowerCase()
-      problems = problems.filter(problem => {
+      problems = problems.filter((problem) => {
         const titleMatch = problem.title.toLowerCase().includes(lowerQuery)
-        const descriptionMatch = problem.description.toLowerCase().includes(lowerQuery)
+        const descriptionMatch = problem.description
+          .toLowerCase()
+          .includes(lowerQuery)
         return titleMatch || descriptionMatch
       })
     }
@@ -112,5 +125,61 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     const itemIndex = this.items.findIndex((item) => item.id === problem.id)
 
     this.items[itemIndex] = problem
+  }
+
+  async getDashboardMetrics(): Promise<DashboardMetrics> {
+    const sevenDaysAgo = new Date()
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+
+    // Filter out deleted problems
+    const activeProblems = this.items.filter((problem) => !problem.isDeleted)
+
+    // Count total problems
+    const totalProblems = activeProblems.length
+
+    // Count problems by status
+    const statusCounts = new Map<ProblemStatus, number>()
+    activeProblems.forEach((problem) => {
+      const current = statusCounts.get(problem.status) || 0
+      statusCounts.set(problem.status, current + 1)
+    })
+
+    const problemsByStatus = Array.from(statusCounts.entries()).map(
+      ([status, count]) => ({
+        status,
+        count,
+      }),
+    )
+
+    // Count recent problems (last 7 days)
+    const recentProblems = activeProblems.filter(
+      (problem) => problem.createdAt >= sevenDaysAgo,
+    ).length
+
+    // Calculate average resolution time for finished problems
+    const finishedProblems = activeProblems.filter(
+      (problem) =>
+        problem.status === ProblemStatus.FINISHED && problem.updatedAt,
+    )
+
+    let averageResolutionTime: number | undefined
+
+    if (finishedProblems.length > 0) {
+      const totalDays = finishedProblems.reduce((sum, problem) => {
+        const createdAt = problem.createdAt.getTime()
+        const finishedAt = problem.updatedAt!.getTime()
+        const diffInDays = (finishedAt - createdAt) / (1000 * 60 * 60 * 24)
+        return sum + diffInDays
+      }, 0)
+
+      averageResolutionTime = Math.round(totalDays / finishedProblems.length)
+    }
+
+    return new DashboardMetrics({
+      totalProblems,
+      problemsByStatus,
+      recentProblems,
+      averageResolutionTime,
+    })
   }
 }

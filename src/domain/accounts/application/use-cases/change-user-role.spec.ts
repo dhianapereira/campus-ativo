@@ -4,6 +4,7 @@ import { ChangeUserRoleUseCase } from './change-user-role'
 import { UserRole } from '../../enterprise/entities/user'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { CannotModifyOwnAccountError } from '@/core/errors/cannot-modify-own-account-error'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let sut: ChangeUserRoleUseCase
@@ -15,15 +16,21 @@ describe('Change User Role', () => {
   })
 
   it('should be able to change user role as admin', async () => {
+    const admin = makeUser({
+      role: UserRole.ADMIN,
+    })
+
     const user = makeUser({
       role: UserRole.REPORTER,
     })
 
+    inMemoryUsersRepository.items.push(admin)
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
       targetUserId: user.id.toValue(),
       newRole: UserRole.MANAGER,
+      currentUserId: admin.id.toValue(),
       currentUserRole: UserRole.ADMIN,
     })
 
@@ -32,15 +39,21 @@ describe('Change User Role', () => {
   })
 
   it('should be able to change lower role as director', async () => {
+    const director = makeUser({
+      role: UserRole.DIRECTOR,
+    })
+
     const user = makeUser({
       role: UserRole.REPORTER,
     })
 
+    inMemoryUsersRepository.items.push(director)
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
       targetUserId: user.id.toValue(),
       newRole: UserRole.MANAGER,
+      currentUserId: director.id.toValue(),
       currentUserRole: UserRole.DIRECTOR,
     })
 
@@ -49,15 +62,21 @@ describe('Change User Role', () => {
   })
 
   it('should not allow director to change admin role', async () => {
+    const director = makeUser({
+      role: UserRole.DIRECTOR,
+    })
+
     const adminUser = makeUser({
       role: UserRole.ADMIN,
     })
 
+    inMemoryUsersRepository.items.push(director)
     inMemoryUsersRepository.items.push(adminUser)
 
     const result = await sut.execute({
       targetUserId: adminUser.id.toValue(),
       newRole: UserRole.MANAGER,
+      currentUserId: director.id.toValue(),
       currentUserRole: UserRole.DIRECTOR,
     })
 
@@ -66,15 +85,21 @@ describe('Change User Role', () => {
   })
 
   it('should not allow director to assign admin role', async () => {
+    const director = makeUser({
+      role: UserRole.DIRECTOR,
+    })
+
     const user = makeUser({
       role: UserRole.REPORTER,
     })
 
+    inMemoryUsersRepository.items.push(director)
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
       targetUserId: user.id.toValue(),
       newRole: UserRole.ADMIN,
+      currentUserId: director.id.toValue(),
       currentUserRole: UserRole.DIRECTOR,
     })
 
@@ -83,15 +108,21 @@ describe('Change User Role', () => {
   })
 
   it('should not allow manager to change roles', async () => {
+    const manager = makeUser({
+      role: UserRole.MANAGER,
+    })
+
     const user = makeUser({
       role: UserRole.REPORTER,
     })
 
+    inMemoryUsersRepository.items.push(manager)
     inMemoryUsersRepository.items.push(user)
 
     const result = await sut.execute({
       targetUserId: user.id.toValue(),
       newRole: UserRole.MANAGER,
+      currentUserId: manager.id.toValue(),
       currentUserRole: UserRole.MANAGER,
     })
 
@@ -100,13 +131,39 @@ describe('Change User Role', () => {
   })
 
   it('should not be able to change role for non-existing user', async () => {
+    const admin = makeUser({
+      role: UserRole.ADMIN,
+    })
+
+    inMemoryUsersRepository.items.push(admin)
+
     const result = await sut.execute({
       targetUserId: 'non-existing-id',
       newRole: UserRole.MANAGER,
+      currentUserId: admin.id.toValue(),
       currentUserRole: UserRole.ADMIN,
     })
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should not allow user to change their own role', async () => {
+    const admin = makeUser({
+      role: UserRole.ADMIN,
+    })
+
+    inMemoryUsersRepository.items.push(admin)
+
+    const result = await sut.execute({
+      targetUserId: admin.id.toValue(),
+      newRole: UserRole.REPORTER,
+      currentUserId: admin.id.toValue(),
+      currentUserRole: UserRole.ADMIN,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(CannotModifyOwnAccountError)
+    expect(inMemoryUsersRepository.items[0].role).toBe(UserRole.ADMIN)
   })
 })

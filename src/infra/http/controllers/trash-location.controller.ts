@@ -6,7 +6,13 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger'
 import { TrashLocationUseCase } from '@/domain/maintenance-problems/application/use-cases/trash-location'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/roles.decorator'
@@ -27,12 +33,13 @@ export class TrashLocationController {
   @Roles(UserRole.MANAGER)
   @ApiOperation({
     summary: 'Mover localização para lixeira',
-    description: 'Move uma localização para a lixeira (soft delete, requer role MANAGER+)'
+    description:
+      'Move uma localização para a lixeira (soft delete, requer role MANAGER+)',
   })
   @ApiParam({
     name: 'id',
     description: 'ID da localização a ser movida para lixeira',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiResponse({
     status: 204,
@@ -40,7 +47,10 @@ export class TrashLocationController {
   })
   @ApiResponse({ status: 400, description: 'Localização não encontrada' })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
-  @ApiResponse({ status: 403, description: 'Usuário não tem permissão (requer MANAGER+)' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão (requer MANAGER+)',
+  })
   @ApiResponse({ status: 404, description: 'Localização não encontrada' })
   async handle(
     @CurrentUser() user: UserPayload,

@@ -16,11 +16,11 @@ export class RoleHierarchy {
     if (managerRole === UserRole.ADMIN) {
       return true
     }
-    
+
     if (managerRole === UserRole.DIRECTOR) {
       return targetRole !== UserRole.ADMIN && targetRole !== UserRole.DIRECTOR
     }
-    
+
     return false
   }
 

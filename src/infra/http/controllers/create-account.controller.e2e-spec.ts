@@ -87,12 +87,14 @@ describe('Create Account (E2E)', () => {
     ]
 
     for (const email of invalidEmails) {
-      const response = await request(app.getHttpServer()).post('/accounts').send({
-        name: 'Test User',
-        position: 'Director',
-        email,
-        password: '123456',
-      })
+      const response = await request(app.getHttpServer())
+        .post('/accounts')
+        .send({
+          name: 'Test User',
+          position: 'Director',
+          email,
+          password: '123456',
+        })
 
       expect(response.statusCode).toBe(400)
       expect(response.body.message).toContain('domain is not allowed')

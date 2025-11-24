@@ -10,7 +10,7 @@ describe('EmailValidator', () => {
         '  spaced@ifal.edu.br  ',
       ]
 
-      validEmails.forEach(email => {
+      validEmails.forEach((email) => {
         expect(EmailValidator.isValidDomain(email)).toBe(true)
       })
     })
@@ -23,7 +23,7 @@ describe('EmailValidator', () => {
         '  spaced@aluno.ifal.edu.br  ',
       ]
 
-      validEmails.forEach(email => {
+      validEmails.forEach((email) => {
         expect(EmailValidator.isValidDomain(email)).toBe(true)
       })
     })
@@ -40,7 +40,7 @@ describe('EmailValidator', () => {
         'user@',
       ]
 
-      invalidEmails.forEach(email => {
+      invalidEmails.forEach((email) => {
         expect(EmailValidator.isValidDomain(email)).toBe(false)
       })
     })
@@ -53,14 +53,16 @@ describe('EmailValidator', () => {
 
     it('should handle whitespace correctly', () => {
       expect(EmailValidator.isValidDomain('  user@ifal.edu.br  ')).toBe(true)
-      expect(EmailValidator.isValidDomain('\tuser@aluno.ifal.edu.br\n')).toBe(true)
+      expect(EmailValidator.isValidDomain('\tuser@aluno.ifal.edu.br\n')).toBe(
+        true,
+      )
     })
   })
 
   describe('getAllowedDomains', () => {
     it('should return the correct allowed domains', () => {
       const domains = EmailValidator.getAllowedDomains()
-      
+
       expect(domains).toHaveLength(2)
       expect(domains).toContain('@ifal.edu.br')
       expect(domains).toContain('@aluno.ifal.edu.br')
@@ -68,7 +70,7 @@ describe('EmailValidator', () => {
 
     it('should return a readonly array', () => {
       const domains = EmailValidator.getAllowedDomains()
-      
+
       // TypeScript ensures compile-time immutability
       // At runtime, the array is still mutable, but this tests the type contract
       expect(Array.isArray(domains)).toBe(true)

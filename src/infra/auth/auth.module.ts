@@ -8,10 +8,12 @@ import { RolesGuard } from './roles.guard'
 import { PermissionsGuard } from './permissions.guard'
 import { EnvModule } from '../env/env.module'
 import { EnvService } from '../env/env.service'
+import { DatabaseModule } from '../database/database.module'
 
 @Module({
   imports: [
     PassportModule,
+    DatabaseModule,
     JwtModule.registerAsync({
       imports: [EnvModule],
       inject: [EnvService],

@@ -83,8 +83,8 @@ describe('Fetch Users', () => {
     ])
     expect(result.value?.users).not.toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ role: UserRole.ADMIN })
-      ])
+        expect.objectContaining({ role: UserRole.ADMIN }),
+      ]),
     )
   })
 
@@ -252,7 +252,12 @@ describe('Fetch Users', () => {
       isActive: false,
     })
 
-    inMemoryUsersRepository.items.push(inactiveUser1, activeUser1, activeUser2, inactiveUser2)
+    inMemoryUsersRepository.items.push(
+      inactiveUser1,
+      activeUser1,
+      activeUser2,
+      inactiveUser2,
+    )
 
     const result = await sut.execute({ currentUserRole: UserRole.ADMIN })
 

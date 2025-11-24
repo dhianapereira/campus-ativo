@@ -36,14 +36,20 @@ export class CreateAccountController {
   constructor(private readonly registerUser: RegisterUserUseCase) {}
 
   @Post()
-  @ApiOperation({ summary: 'Criar conta', description: 'Cria uma nova conta de usuário no sistema' })
+  @ApiOperation({
+    summary: 'Criar conta',
+    description: 'Cria uma nova conta de usuário no sistema',
+  })
   @ApiBody({ type: CreateAccountRequest })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Conta criada com sucesso',
   })
   @ApiResponse({ status: 409, description: 'Email já existe no sistema' })
-  @ApiResponse({ status: 400, description: 'Dados inválidos ou domínio de email não permitido' })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos ou domínio de email não permitido',
+  })
   @UsePipes(new ZodValidationPipe(createAccountBodySchema))
   async handle(@Body() body: CreateAccountBodySchema) {
     const { name, position, email, password } = body

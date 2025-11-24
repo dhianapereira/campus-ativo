@@ -18,7 +18,10 @@ interface ChangeUserPasswordUseCaseRequest {
 }
 
 type ChangeUserPasswordUseCaseResponse = Either<
-  ResourceNotFoundError | NotAllowedError | WrongCredentialsError | InvalidPasswordError,
+  | ResourceNotFoundError
+  | NotAllowedError
+  | WrongCredentialsError
+  | InvalidPasswordError,
   {
     user: User
   }

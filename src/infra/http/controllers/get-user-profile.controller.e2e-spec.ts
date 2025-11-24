@@ -55,4 +55,31 @@ describe('Get user profile (E2E)', () => {
       }),
     })
   })
+
+  test('[GET] /profile should not allow inactive user to access with valid token', async () => {
+    const user = await userFactory.makePrismaUser({
+      name: 'Inactive User',
+      position: 'Reporter',
+      email: 'inactive@ifal.edu.br',
+      isActive: true,
+    })
+
+    const accessToken = jwt.sign({
+      sub: user.id.toValue(),
+      role: user.role,
+    })
+
+    // User is now deactivated
+    await prisma.user.update({
+      where: { id: user.id.toValue() },
+      data: { isActive: false },
+    })
+
+    const response = await request(app.getHttpServer())
+      .get('/profile')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send()
+
+    expect(response.statusCode).toBe(401)
+  })
 })

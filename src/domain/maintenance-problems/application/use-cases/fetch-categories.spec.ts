@@ -114,7 +114,10 @@ describe('Fetch Recent Categories', () => {
       makeCategory({ name: 'Furniture', createdAt: new Date(2022, 0, 21) }),
     )
     await inMemoryCategoriesRepository.create(
-      makeCategory({ name: 'Electronic Devices', createdAt: new Date(2022, 0, 22) }),
+      makeCategory({
+        name: 'Electronic Devices',
+        createdAt: new Date(2022, 0, 22),
+      }),
     )
 
     const result = await sut.execute({

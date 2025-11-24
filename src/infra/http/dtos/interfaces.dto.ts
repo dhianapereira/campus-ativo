@@ -21,7 +21,8 @@ export class CreateAccountRequest {
   position!: string
 
   @ApiProperty({
-    description: 'Email institucional (domínios @ifal.edu.br ou @aluno.ifal.edu.br)',
+    description:
+      'Email institucional (domínios @ifal.edu.br ou @aluno.ifal.edu.br)',
     example: 'joao.silva@ifal.edu.br',
   })
   email!: string
@@ -91,7 +92,8 @@ export class EditProblemRequest {
 
   @ApiProperty({
     description: 'Nova descrição do problema',
-    example: 'O ar condicionado da sala 201 está fazendo ruído estranho e não resfriando adequadamente',
+    example:
+      'O ar condicionado da sala 201 está fazendo ruído estranho e não resfriando adequadamente',
   })
   description!: string
 }
@@ -105,7 +107,8 @@ export class CreateCategoryRequest {
 
   @ApiProperty({
     description: 'Descrição da categoria',
-    example: 'Problemas relacionados a ar condicionado, ventilação e climatização',
+    example:
+      'Problemas relacionados a ar condicionado, ventilação e climatização',
   })
   description!: string
 }
@@ -120,7 +123,8 @@ export class EditCategoryRequest {
 
   @ApiProperty({
     description: 'Descrição da categoria',
-    example: 'Problemas relacionados a ar condicionado, ventilação e climatização',
+    example:
+      'Problemas relacionados a ar condicionado, ventilação e climatização',
     required: false,
   })
   description?: string
@@ -390,7 +394,8 @@ export class CategoryResponse {
 
   @ApiProperty({
     description: 'Descrição da categoria',
-    example: 'Problemas relacionados a ar condicionado, ventilação e climatização',
+    example:
+      'Problemas relacionados a ar condicionado, ventilação e climatização',
   })
   description!: string
 

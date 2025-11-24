@@ -35,11 +35,15 @@ const includeDeletedQueryParamSchema = z
 
 const querySearchValidationPipe = new ZodValidationPipe(querySearchParamSchema)
 const isActiveValidationPipe = new ZodValidationPipe(isActiveQueryParamSchema)
-const includeDeletedValidationPipe = new ZodValidationPipe(includeDeletedQueryParamSchema)
+const includeDeletedValidationPipe = new ZodValidationPipe(
+  includeDeletedQueryParamSchema,
+)
 
 type QuerySearchParamSchema = z.infer<typeof querySearchParamSchema>
 type IsActiveQueryParamSchema = z.infer<typeof isActiveQueryParamSchema>
-type IncludeDeletedQueryParamSchema = z.infer<typeof includeDeletedQueryParamSchema>
+type IncludeDeletedQueryParamSchema = z.infer<
+  typeof includeDeletedQueryParamSchema
+>
 
 @Controller('/categories')
 @ApiTags('Categories')
@@ -49,35 +53,36 @@ export class FetchCategoriesController {
   @Get()
   @ApiOperation({
     summary: 'Buscar categorias',
-    description: 'Retorna uma lista paginada de categorias de problemas disponíveis no sistema'
+    description:
+      'Retorna uma lista paginada de categorias de problemas disponíveis no sistema',
   })
   @ApiQuery({
     name: 'page',
     required: false,
     description: 'Número da página (começa em 1)',
     example: 1,
-    type: Number
+    type: Number,
   })
   @ApiQuery({
     name: 'query',
     required: false,
     description: 'Busca por nome ou descrição',
     example: 'Climatização',
-    type: String
+    type: String,
   })
   @ApiQuery({
     name: 'isActive',
     required: false,
     description: 'Filtrar por status ativo/inativo',
     example: true,
-    type: Boolean
+    type: Boolean,
   })
   @ApiQuery({
     name: 'includeDeleted',
     required: false,
     description: 'Incluir categorias deletadas (na lixeira)',
     example: false,
-    type: Boolean
+    type: Boolean,
   })
   @ApiResponse({
     status: 200,
@@ -87,17 +92,19 @@ export class FetchCategoriesController {
       properties: {
         categories: {
           type: 'array',
-          items: { $ref: '#/components/schemas/CategoryResponse' }
-        }
-      }
-    }
+          items: { $ref: '#/components/schemas/CategoryResponse' },
+        },
+      },
+    },
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
   async handle(
     @Query('page', queryValidationPipe) page: PageQueryParamSchema,
     @Query('query', querySearchValidationPipe) query: QuerySearchParamSchema,
-    @Query('isActive', isActiveValidationPipe) isActive: IsActiveQueryParamSchema,
-    @Query('includeDeleted', includeDeletedValidationPipe) includeDeleted: IncludeDeletedQueryParamSchema,
+    @Query('isActive', isActiveValidationPipe)
+    isActive: IsActiveQueryParamSchema,
+    @Query('includeDeleted', includeDeletedValidationPipe)
+    includeDeleted: IncludeDeletedQueryParamSchema,
   ) {
     const result = await this.fetchCategories.execute({
       page,

@@ -4,6 +4,20 @@ import { Optional } from '@/core/types/optional'
 import { ProblemAttachmentList } from '@/domain/maintenance-problems/enterprise/entities/problems/problem-attachment-list'
 import { Slug } from '@/domain/maintenance-problems/enterprise/entities/value-objects/slug'
 
+export enum ProblemStatus {
+  TO_ANALYSIS = 'TO_ANALYSIS',
+  IN_ANALYSIS = 'IN_ANALYSIS',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  FINISHED = 'FINISHED',
+}
+
+export enum MaintenanceType {
+  PREVENTIVE = 'PREVENTIVE',
+  CORRECTIVE = 'CORRECTIVE',
+}
+
 export interface ProblemProps {
   reporterId: UniqueEntityID | null
   categoryId: UniqueEntityID
@@ -12,9 +26,12 @@ export interface ProblemProps {
   title: string
   slug: Slug
   description: string
+  status: ProblemStatus
+  maintenanceType: MaintenanceType | null
   attachments: ProblemAttachmentList
   createdAt: Date
   updatedAt?: Date | null
+  deletedAt?: Date | null
 }
 
 export class Problem extends AggregateRoot<ProblemProps> {
@@ -85,8 +102,49 @@ export class Problem extends AggregateRoot<ProblemProps> {
     return this.props.updatedAt
   }
 
+  get status() {
+    return this.props.status
+  }
+
+  get maintenanceType() {
+    return this.props.maintenanceType
+  }
+
+  get deletedAt() {
+    return this.props.deletedAt
+  }
+
+  get isDeleted() {
+    return this.props.deletedAt !== null && this.props.deletedAt !== undefined
+  }
+
   get excerpt() {
     return this.description.substring(0, 120).trimEnd().concat('...')
+  }
+
+  changeStatus(status: ProblemStatus) {
+    this.props.status = status
+    this.touch()
+  }
+
+  changeCategory(categoryId: UniqueEntityID) {
+    this.props.categoryId = categoryId
+    this.touch()
+  }
+
+  changeMaintenanceType(maintenanceType: MaintenanceType | null) {
+    this.props.maintenanceType = maintenanceType
+    this.touch()
+  }
+
+  moveToTrash() {
+    this.props.deletedAt = new Date()
+    this.touch()
+  }
+
+  restoreFromTrash() {
+    this.props.deletedAt = null
+    this.touch()
   }
 
   private touch() {
@@ -99,7 +157,7 @@ export class Problem extends AggregateRoot<ProblemProps> {
   }
 
   static create(
-    props: Optional<ProblemProps, 'createdAt' | 'slug' | 'attachments'>,
+    props: Optional<ProblemProps, 'createdAt' | 'slug' | 'attachments' | 'status' | 'maintenanceType'>,
     id?: UniqueEntityID,
   ) {
     const problem = new Problem(
@@ -107,6 +165,8 @@ export class Problem extends AggregateRoot<ProblemProps> {
         ...props,
         slug: props.slug ?? Slug.createFromText(props.title),
         attachments: props.attachments ?? new ProblemAttachmentList(),
+        status: props.status ?? ProblemStatus.TO_ANALYSIS,
+        maintenanceType: props.maintenanceType ?? null,
         createdAt: props.createdAt ?? new Date(),
       },
       id,

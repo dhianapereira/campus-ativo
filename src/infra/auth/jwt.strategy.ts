@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
 import { z } from 'zod'
 import { EnvService } from '../env/env.service'
+import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
 
 const userPayloadSchema = z.object({
   sub: z.string().uuid(),
@@ -13,7 +14,10 @@ export type UserPayload = z.infer<typeof userPayloadSchema>
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(env: EnvService) {
+  constructor(
+    env: EnvService,
+    private usersRepository: UsersRepository,
+  ) {
     const publicKey = env.get('JWT_PUBLIC_KEY')
 
     super({
@@ -24,6 +28,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: UserPayload) {
-    return userPayloadSchema.parse(payload)
+    const validatedPayload = userPayloadSchema.parse(payload)
+
+    // Verify if user is still active
+    const user = await this.usersRepository.findById(validatedPayload.sub)
+
+    if (!user || !user.isActive) {
+      throw new UnauthorizedException('User is not active')
+    }
+
+    return validatedPayload
   }
 }
