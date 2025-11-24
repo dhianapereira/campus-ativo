@@ -54,9 +54,12 @@ import { ChangeUserPasswordController } from './controllers/change-user-password
 import { ChangeUserPasswordUseCase } from '@/domain/accounts/application/use-cases/change-user-password'
 import { DeleteUserAccountController } from './controllers/delete-user-account.controller'
 import { DeleteUserAccountUseCase } from '@/domain/accounts/application/use-cases/delete-user-account'
+import { UploadAttachmentController } from './controllers/upload-attachment.controller'
+import { UploadAttachmentUseCase } from '@/domain/maintenance-problems/application/use-cases/upload-attachment'
+import { UploadModule } from '../upload/upload.module'
 
 @Module({
-  imports: [DatabaseModule, CryptographyModule],
+  imports: [DatabaseModule, CryptographyModule, UploadModule],
   controllers: [
     CreateAccountController,
     AuthenticateController,
@@ -85,6 +88,7 @@ import { DeleteUserAccountUseCase } from '@/domain/accounts/application/use-case
     DeleteLocationController,
     EditProblemController,
     DeleteProblemController,
+    UploadAttachmentController,
   ],
   providers: [
     RegisterUserUseCase,
@@ -113,6 +117,7 @@ import { DeleteUserAccountUseCase } from '@/domain/accounts/application/use-case
     DeleteLocationUseCase,
     EditProblemUseCase,
     DeleteProblemUseCase,
+    UploadAttachmentUseCase,
   ],
 })
 export class HttpModule {}

@@ -1067,6 +1067,57 @@
         "summary": "Deletar problema",
         "tags": ["Problems"]
       }
+    },
+    "/attachments": {
+      "post": {
+        "description": "Faz upload de uma imagem para o ImgBB e retorna o ID do attachment criado",
+        "operationId": "UploadAttachmentController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Arquivo de imagem (JPEG, PNG, GIF, WEBP)"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Imagem enviada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "attachmentId": {
+                      "type": "string",
+                      "description": "ID do attachment criado"
+                    },
+                    "url": {
+                      "type": "string",
+                      "description": "URL da imagem no ImgBB"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Arquivo inválido" },
+          "401": { "description": "Token JWT inválido ou expirado" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Upload de imagem",
+        "tags": ["Attachments"]
+      }
     }
   },
   "info": {
