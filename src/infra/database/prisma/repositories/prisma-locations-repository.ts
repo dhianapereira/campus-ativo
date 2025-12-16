@@ -94,4 +94,14 @@ export class PrismaLocationsRepository implements LocationsRepository {
       },
     })
   }
+
+  async hasAssociatedProblems(locationId: string): Promise<boolean> {
+    const count = await this.prisma.problem.count({
+      where: {
+        locationId,
+      },
+    })
+
+    return count > 0
+  }
 }

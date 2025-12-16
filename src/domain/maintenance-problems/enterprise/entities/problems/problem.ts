@@ -32,6 +32,7 @@ export interface ProblemProps {
   createdAt: Date
   updatedAt?: Date | null
   deletedAt?: Date | null
+  isPermanentlyDeleted?: boolean
 }
 
 export class Problem extends AggregateRoot<ProblemProps> {
@@ -62,7 +63,7 @@ export class Problem extends AggregateRoot<ProblemProps> {
   }
 
   set categoryId(categoryId: UniqueEntityID) {
-    this.props.categoryId = this.categoryId
+    this.props.categoryId = categoryId
     this.touch()
   }
 
@@ -114,8 +115,12 @@ export class Problem extends AggregateRoot<ProblemProps> {
     return this.props.deletedAt
   }
 
+  get isPermanentlyDeleted() {
+    return this.props.isPermanentlyDeleted ?? false
+  }
+
   get isDeleted() {
-    return this.props.deletedAt !== null && this.props.deletedAt !== undefined
+    return (this.props.deletedAt !== null && this.props.deletedAt !== undefined) || this.isPermanentlyDeleted
   }
 
   get excerpt() {
@@ -139,11 +144,19 @@ export class Problem extends AggregateRoot<ProblemProps> {
 
   moveToTrash() {
     this.props.deletedAt = new Date()
+    this.props.isPermanentlyDeleted = false
     this.touch()
   }
 
   restoreFromTrash() {
     this.props.deletedAt = null
+    this.props.isPermanentlyDeleted = false
+    this.touch()
+  }
+
+  permanentDelete() {
+    this.props.deletedAt = new Date()
+    this.props.isPermanentlyDeleted = true
     this.touch()
   }
 

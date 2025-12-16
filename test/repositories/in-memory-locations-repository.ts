@@ -73,4 +73,10 @@ export class InMemoryLocationsRepository implements LocationsRepository {
 
     this.items.splice(itemIndex, 1)
   }
+
+  async hasAssociatedProblems(locationId: string): Promise<boolean> {
+    // In memory implementation would need access to problems
+    // For testing purposes, we'll return false
+    return false
+  }
 }

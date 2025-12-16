@@ -19,4 +19,5 @@ export abstract class ProblemsRepository {
   abstract create(problem: Problem): Promise<void>
   abstract delete(problem: Problem): Promise<void>
   abstract getDashboardMetrics(): Promise<DashboardMetrics>
+  abstract migrateUserProblems(fromUserId: string, toUserId: string): Promise<void>
 }

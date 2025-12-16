@@ -13,6 +13,7 @@ export class PrismaLocationMapper {
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
         deletedAt: raw.deletedAt,
+        isPermanentlyDeleted: raw.isPermanentlyDeleted,
       },
       new UniqueEntityID(raw.id),
     )
@@ -28,6 +29,9 @@ export class PrismaLocationMapper {
       createdAt: location.createdAt,
       updatedAt: location.updatedAt,
       deletedAt: location.deletedAt,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - Type will be available after Prisma migration
+      is_permanently_deleted: location.isPermanentlyDeleted,
     }
   }
 }

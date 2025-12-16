@@ -23,6 +23,7 @@ export class PrismaProblemMapper {
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
         deletedAt: raw.deletedAt,
+        isPermanentlyDeleted: raw.isPermanentlyDeleted,
       },
       new UniqueEntityID(raw.id),
     )
@@ -43,6 +44,9 @@ export class PrismaProblemMapper {
       createdAt: problem.createdAt,
       updatedAt: problem.updatedAt,
       deletedAt: problem.deletedAt,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - Type will be available after Prisma migration
+      is_permanently_deleted: problem.isPermanentlyDeleted,
     }
   }
 }

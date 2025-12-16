@@ -13,4 +13,5 @@ export abstract class LocationsRepository {
   abstract create(location: Location): Promise<void>
   abstract save(location: Location): Promise<void>
   abstract delete(location: Location): Promise<void>
+  abstract hasAssociatedProblems(locationId: string): Promise<boolean>
 }

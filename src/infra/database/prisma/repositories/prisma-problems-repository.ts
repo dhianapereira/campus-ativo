@@ -209,4 +209,15 @@ export class PrismaProblemsRepository implements ProblemsRepository {
       averageResolutionTime,
     })
   }
+
+  async migrateUserProblems(fromUserId: string, toUserId: string): Promise<void> {
+    await this.prisma.problem.updateMany({
+      where: {
+        reporterId: fromUserId,
+      },
+      data: {
+        reporterId: toUserId,
+      },
+    })
+  }
 }

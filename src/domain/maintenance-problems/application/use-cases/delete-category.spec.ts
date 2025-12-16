@@ -33,7 +33,8 @@ describe('Delete Category', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryCategoriesRepository.items).toHaveLength(0)
+    expect(inMemoryCategoriesRepository.items).toHaveLength(1)
+    expect(inMemoryCategoriesRepository.items[0].isPermanentlyDeleted).toBe(true)
   })
 
   it('should be able to delete a category as director', async () => {
@@ -47,7 +48,8 @@ describe('Delete Category', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryCategoriesRepository.items).toHaveLength(0)
+    expect(inMemoryCategoriesRepository.items).toHaveLength(1)
+    expect(inMemoryCategoriesRepository.items[0].isPermanentlyDeleted).toBe(true)
   })
 
   it('should be able to delete a category as admin', async () => {
@@ -61,7 +63,8 @@ describe('Delete Category', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryCategoriesRepository.items).toHaveLength(0)
+    expect(inMemoryCategoriesRepository.items).toHaveLength(1)
+    expect(inMemoryCategoriesRepository.items[0].isPermanentlyDeleted).toBe(true)
   })
 
   it('should not be able to delete a category as reporter', async () => {

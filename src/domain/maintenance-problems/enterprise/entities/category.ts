@@ -9,6 +9,7 @@ export interface CategoryProps {
   createdAt: Date
   updatedAt?: Date | null
   deletedAt?: Date | null
+  isPermanentlyDeleted?: boolean
 }
 
 export class Category extends Entity<CategoryProps> {
@@ -36,8 +37,12 @@ export class Category extends Entity<CategoryProps> {
     return this.props.deletedAt
   }
 
+  get isPermanentlyDeleted() {
+    return this.props.isPermanentlyDeleted ?? false
+  }
+
   get isInTrash() {
-    return !!this.props.deletedAt
+    return !!this.props.deletedAt && !this.isPermanentlyDeleted
   }
 
   set name(name: string) {
@@ -57,11 +62,19 @@ export class Category extends Entity<CategoryProps> {
 
   moveToTrash() {
     this.props.deletedAt = new Date()
+    this.props.isPermanentlyDeleted = false
     this.touch()
   }
 
   restoreFromTrash() {
     this.props.deletedAt = null
+    this.props.isPermanentlyDeleted = false
+    this.touch()
+  }
+
+  permanentDelete() {
+    this.props.deletedAt = new Date()
+    this.props.isPermanentlyDeleted = true
     this.touch()
   }
 

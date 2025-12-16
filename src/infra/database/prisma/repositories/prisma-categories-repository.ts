@@ -88,4 +88,14 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
       },
     })
   }
+
+  async hasAssociatedProblems(categoryId: string): Promise<boolean> {
+    const count = await this.prisma.problem.count({
+      where: {
+        categoryId,
+      },
+    })
+
+    return count > 0
+  }
 }

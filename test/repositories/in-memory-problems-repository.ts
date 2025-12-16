@@ -1,4 +1,5 @@
 import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/problem-attachments-repository'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import {
   ProblemsRepository,
   FetchProblemsParams,
@@ -88,7 +89,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     const problemsWithDetails = await Promise.all(
       problems.map(async (problem) => {
         const location = await this.locationsRepository?.findById(
-          problem.locationId.toValue(),
+          problem.locationId?.toValue() || '',
         )
 
         return new ProblemWithDetails({
@@ -96,7 +97,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
           title: problem.title,
           slug: problem.slug,
           excerpt: problem.excerpt,
-          locationId: problem.locationId,
+          locationId: problem.locationId || new UniqueEntityID('unknown'),
           locationName: location?.name ?? 'Local não informado',
           createdAt: problem.createdAt,
           updatedAt: problem.updatedAt,
@@ -180,6 +181,27 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
       problemsByStatus,
       recentProblems,
       averageResolutionTime,
+    })
+  }
+
+  async migrateUserProblems(fromUserId: string, toUserId: string): Promise<void> {
+    // Find all problems belonging to the user
+    const userProblems = this.items.filter(
+      (problem) => problem.reporterId?.toValue() === fromUserId,
+    )
+
+    // Update each problem to belong to the new user
+    userProblems.forEach((problem) => {
+      // Create a new UniqueEntityID for the new reporter
+      const newReporterId = new UniqueEntityID(toUserId)
+
+      // Update the problem directly by forcing the new reporterId
+      // In a real implementation, this would be handled by the entity
+      Object.defineProperty(problem, 'reporterId', {
+        value: newReporterId,
+        writable: false,
+        configurable: true,
+      })
     })
   }
 }
