@@ -7,7 +7,13 @@ import {
   Param,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+} from '@nestjs/swagger'
 import { DeleteUserAccountUseCase } from '@/domain/accounts/application/use-cases/delete-user-account'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
@@ -25,12 +31,13 @@ export class DeleteUserAccountController {
   @Delete()
   @ApiOperation({
     summary: 'Deletar conta do usuário',
-    description: 'Deleta a conta do próprio usuário. Apenas o próprio usuário pode deletar sua conta.'
+    description:
+      'Deleta a conta do próprio usuário. Apenas o próprio usuário pode deletar sua conta.',
   })
   @ApiParam({
     name: 'id',
     description: 'ID do usuário cuja conta será deletada',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiResponse({
     status: 200,
@@ -38,26 +45,23 @@ export class DeleteUserAccountController {
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Account deleted successfully' }
-      }
-    }
+        message: { type: 'string', example: 'Account deleted successfully' },
+      },
+    },
   })
   @ApiResponse({
     status: 401,
-    description: 'Token JWT inválido ou expirado'
+    description: 'Token JWT inválido ou expirado',
   })
   @ApiResponse({
     status: 403,
-    description: 'Usuário não tem permissão para deletar esta conta'
+    description: 'Usuário não tem permissão para deletar esta conta',
   })
   @ApiResponse({
     status: 404,
-    description: 'Usuário não encontrado'
+    description: 'Usuário não encontrado',
   })
-  async handle(
-    @Param('id') userId: string,
-    @CurrentUser() user: UserPayload,
-  ) {
+  async handle(@Param('id') userId: string, @CurrentUser() user: UserPayload) {
     const result = await this.deleteUserAccount.execute({
       userId,
       executorId: user.sub,

@@ -34,7 +34,7 @@ describe('Create category (E2E)', () => {
       role: UserRole.MANAGER,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: user.id.toValue(),
       role: user.role,
     })
@@ -63,7 +63,7 @@ describe('Create category (E2E)', () => {
       role: UserRole.REPORTER,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: user.id.toValue(),
       role: user.role,
     })

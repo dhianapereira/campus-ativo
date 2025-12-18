@@ -162,4 +162,52 @@ describe('Change user status (E2E)', () => {
 
     expect(response.statusCode).toBe(404)
   })
+
+  test('[PATCH] /users/:id/status (user trying to deactivate their own account - should fail)', async () => {
+    const admin = await userFactory.makePrismaUser({
+      role: UserRole.ADMIN,
+      isActive: true,
+    })
+
+    const accessToken = jwt.sign({
+      sub: admin.id.toValue(),
+      role: admin.role,
+    })
+
+    const response = await request(app.getHttpServer())
+      .patch(`/users/${admin.id.toValue()}/status`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        isActive: false,
+      })
+
+    expect(response.statusCode).toBe(403)
+
+    const user = await prisma.user.findUnique({
+      where: { id: admin.id.toValue() },
+    })
+
+    expect(user?.isActive).toBe(true)
+  })
+
+  test('[PATCH] /users/:id/status (user activating their own account - should succeed)', async () => {
+    const admin = await userFactory.makePrismaUser({
+      role: UserRole.ADMIN,
+      isActive: true,
+    })
+
+    const accessToken = jwt.sign({
+      sub: admin.id.toValue(),
+      role: admin.role,
+    })
+
+    const response = await request(app.getHttpServer())
+      .patch(`/users/${admin.id.toValue()}/status`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        isActive: true,
+      })
+
+    expect(response.statusCode).toBe(200)
+  })
 })

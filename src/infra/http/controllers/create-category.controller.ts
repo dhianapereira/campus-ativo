@@ -1,5 +1,17 @@
-import { BadRequestException, Body, Controller, Post, UseGuards } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger'
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Post,
+  UseGuards,
+} from '@nestjs/common'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { CreateCategoryUseCase } from '@/domain/maintenance-problems/application/use-cases/create-category'
@@ -26,15 +38,21 @@ export class CreateCategoryController {
 
   @Post()
   @Roles(UserRole.MANAGER)
-  @ApiOperation({ summary: 'Criar categoria', description: 'Cria uma nova categoria de problema (requer role MANAGER+)' })
+  @ApiOperation({
+    summary: 'Criar categoria',
+    description: 'Cria uma nova categoria de problema (requer role MANAGER+)',
+  })
   @ApiBody({ type: CreateCategoryRequest })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Categoria criada com sucesso',
   })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
-  @ApiResponse({ status: 403, description: 'Usuário não tem permissão (requer MANAGER+)' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão (requer MANAGER+)',
+  })
   async handle(@Body(bodyValidationPipe) body: CreateCategoryBodySchema) {
     const { name, description } = body
 

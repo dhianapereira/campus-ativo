@@ -12,7 +12,10 @@ import { z } from 'zod'
 import { AuthenticateUserUseCase } from '@/domain/accounts/application/use-cases/authenticate-user'
 import { WrongCredentialsError } from '@/domain/accounts/application/use-cases/errors/wrong-credentials-error'
 import { Public } from '@/infra/auth/public'
-import { AuthenticateRequest, AuthenticateResponse } from '../dtos/interfaces.dto'
+import {
+  AuthenticateRequest,
+  AuthenticateResponse,
+} from '../dtos/interfaces.dto'
 
 const authenticateBodySchema = z.object({
   email: z.string().email(),
@@ -25,15 +28,16 @@ type AuthenticateBodySchema = z.infer<typeof authenticateBodySchema>
 @ApiTags('Authentication')
 @Public()
 export class AuthenticateController {
-  constructor(
-    private readonly authenticateUser: AuthenticateUserUseCase,
-  ) {}
+  constructor(private readonly authenticateUser: AuthenticateUserUseCase) {}
 
   @Post()
-  @ApiOperation({ summary: 'Autenticar usuário', description: 'Autentica um usuário e retorna um token JWT' })
+  @ApiOperation({
+    summary: 'Autenticar usuário',
+    description: 'Autentica um usuário e retorna um token JWT',
+  })
   @ApiBody({ type: AuthenticateRequest })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Login realizado com sucesso',
     type: AuthenticateResponse,
   })

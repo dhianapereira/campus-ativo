@@ -1,11 +1,18 @@
-import { User as PrismaUser, UserRole as PrismaUserRole, Prisma } from '@prisma/client'
+import {
+  User as PrismaUser,
+  UserRole as PrismaUserRole,
+  Prisma,
+} from '@prisma/client'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { User, UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
 
 type PrismaUserWithoutPassword = Omit<PrismaUser, 'password'>
 
-type PrismaUserSummary = Pick<PrismaUser, 'id' | 'name' | 'position' | 'email' | 'role' | 'isActive'>
+type PrismaUserSummary = Pick<
+  PrismaUser,
+  'id' | 'name' | 'position' | 'email' | 'role' | 'isActive'
+>
 
 export class PrismaUserMapper {
   static toDomain(raw: PrismaUser): User {

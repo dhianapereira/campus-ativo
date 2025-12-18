@@ -5,6 +5,8 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
 import { makeProblemAttachment } from 'test/factories/make-problem-attachments'
+import { ProblemStatus } from '../../enterprise/entities/problems/problem'
+import { ProblemNotEditableError } from '@/core/errors/problem-not-editable-error'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
@@ -23,10 +25,11 @@ describe('Edit Problem', () => {
     )
   })
 
-  it('should be able to edit a problem', async () => {
+  it('should be able to edit a problem when status is TO_ANALYSIS', async () => {
     const newProblem = makeProblem(
       {
         reporterId: new UniqueEntityID('reporter-1'),
+        status: ProblemStatus.TO_ANALYSIS,
       },
       new UniqueEntityID('problem-1'),
     )
@@ -70,6 +73,7 @@ describe('Edit Problem', () => {
     const newProblem = makeProblem(
       {
         reporterId: new UniqueEntityID('reporter-1'),
+        status: ProblemStatus.TO_ANALYSIS,
       },
       new UniqueEntityID('problem-1'),
     )
@@ -86,5 +90,74 @@ describe('Edit Problem', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(NotAllowedError)
+  })
+
+  it('should not be able to edit a problem when status is not TO_ANALYSIS', async () => {
+    const newProblem = makeProblem(
+      {
+        reporterId: new UniqueEntityID('reporter-1'),
+        status: ProblemStatus.IN_ANALYSIS,
+      },
+      new UniqueEntityID('problem-1'),
+    )
+
+    await inMemoryProblemsRepository.create(newProblem)
+
+    const result = await sut.execute({
+      problemId: newProblem.id.toValue(),
+      reporterId: 'reporter-1',
+      title: 'Problema teste',
+      description: 'Descrição teste',
+      attachmentsIds: [],
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ProblemNotEditableError)
+  })
+
+  it('should not be able to edit a problem when status is ACCEPTED', async () => {
+    const newProblem = makeProblem(
+      {
+        reporterId: new UniqueEntityID('reporter-1'),
+        status: ProblemStatus.ACCEPTED,
+      },
+      new UniqueEntityID('problem-1'),
+    )
+
+    await inMemoryProblemsRepository.create(newProblem)
+
+    const result = await sut.execute({
+      problemId: newProblem.id.toValue(),
+      reporterId: 'reporter-1',
+      title: 'Problema teste',
+      description: 'Descrição teste',
+      attachmentsIds: [],
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ProblemNotEditableError)
+  })
+
+  it('should not be able to edit a problem when status is IN_PROGRESS', async () => {
+    const newProblem = makeProblem(
+      {
+        reporterId: new UniqueEntityID('reporter-1'),
+        status: ProblemStatus.IN_PROGRESS,
+      },
+      new UniqueEntityID('problem-1'),
+    )
+
+    await inMemoryProblemsRepository.create(newProblem)
+
+    const result = await sut.execute({
+      problemId: newProblem.id.toValue(),
+      reporterId: 'reporter-1',
+      title: 'Problema teste',
+      description: 'Descrição teste',
+      attachmentsIds: [],
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ProblemNotEditableError)
   })
 })

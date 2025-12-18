@@ -7,7 +7,14 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody, ApiParam } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { EditCategoryUseCase } from '@/domain/maintenance-problems/application/use-cases/edit-category'
@@ -46,21 +53,27 @@ export class EditCategoryController {
   @Roles(UserRole.MANAGER)
   @ApiOperation({
     summary: 'Editar categoria',
-    description: 'Edita uma categoria existente (requer role MANAGER+)'
+    description: 'Edita uma categoria existente (requer role MANAGER+)',
   })
   @ApiParam({
     name: 'id',
     description: 'ID da categoria a ser editada',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiBody({ type: EditCategoryRequest })
   @ApiResponse({
     status: 204,
     description: 'Categoria editada com sucesso',
   })
-  @ApiResponse({ status: 400, description: 'Dados inválidos ou categoria na lixeira' })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos ou categoria na lixeira',
+  })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
-  @ApiResponse({ status: 403, description: 'Usuário não tem permissão (requer MANAGER+)' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão (requer MANAGER+)',
+  })
   @ApiResponse({ status: 404, description: 'Categoria não encontrada' })
   async handle(
     @CurrentUser() user: UserPayload,
@@ -70,14 +83,19 @@ export class EditCategoryController {
     const { name, description, isActive } = body
 
     // At least one field must be provided
-    if (name === undefined && description === undefined && isActive === undefined) {
+    if (
+      name === undefined &&
+      description === undefined &&
+      isActive === undefined
+    ) {
       throw new BadRequestException('At least one field must be provided')
     }
 
     // If name is not provided, we need to get the current category to preserve the name
     let categoryName = name
     if (!categoryName) {
-      const existingCategory = await this.categoriesRepository.findById(categoryId)
+      const existingCategory =
+        await this.categoriesRepository.findById(categoryId)
       if (!existingCategory) {
         throw new BadRequestException('Category not found')
       }

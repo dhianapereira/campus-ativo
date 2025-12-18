@@ -26,7 +26,8 @@ describe('Delete Location', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryLocationsRepository.items).toHaveLength(0)
+    expect(inMemoryLocationsRepository.items).toHaveLength(1)
+    expect(inMemoryLocationsRepository.items[0].isPermanentlyDeleted).toBe(true)
   })
 
   it('should be able to delete a location permanently as director', async () => {
@@ -40,7 +41,8 @@ describe('Delete Location', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryLocationsRepository.items).toHaveLength(0)
+    expect(inMemoryLocationsRepository.items).toHaveLength(1)
+    expect(inMemoryLocationsRepository.items[0].isPermanentlyDeleted).toBe(true)
   })
 
   it('should be able to delete a location permanently as admin', async () => {
@@ -54,7 +56,8 @@ describe('Delete Location', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryLocationsRepository.items).toHaveLength(0)
+    expect(inMemoryLocationsRepository.items).toHaveLength(1)
+    expect(inMemoryLocationsRepository.items[0].isPermanentlyDeleted).toBe(true)
   })
 
   it('should not be able to delete a location permanently as reporter', async () => {

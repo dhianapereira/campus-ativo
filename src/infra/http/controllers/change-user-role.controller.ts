@@ -9,7 +9,14 @@ import {
   UseGuards,
   UsePipes,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiBody } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiParam,
+  ApiBody,
+} from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { UuidValidationPipe } from '@/infra/http/pipes/uuid-validation-pipe'
 import { z } from 'zod'
@@ -18,6 +25,7 @@ import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
+import { CannotModifyOwnAccountError } from '@/core/errors/cannot-modify-own-account-error'
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/roles.decorator'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
@@ -37,14 +45,15 @@ export class ChangeUserRoleController {
 
   @Patch()
   @Roles(UserRole.DIRECTOR, UserRole.ADMIN)
-  @ApiOperation({ 
-    summary: 'Alterar role do usuário', 
-    description: 'Altera o role de um usuário. ADMIN pode alterar qualquer role, DIRECTOR pode alterar apenas para roles de nível igual ou inferior.' 
+  @ApiOperation({
+    summary: 'Alterar role do usuário',
+    description:
+      'Altera o role de um usuário. ADMIN pode alterar qualquer role, DIRECTOR pode alterar apenas para roles de nível igual ou inferior.',
   })
   @ApiParam({
     name: 'id',
     description: 'ID do usuário cujo role será alterado',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiBody({
     description: 'Novo role para o usuário',
@@ -54,41 +63,42 @@ export class ChangeUserRoleController {
         role: {
           type: 'string',
           enum: ['REPORTER', 'MANAGER', 'DIRECTOR', 'ADMIN'],
-          example: 'MANAGER'
-        }
+          example: 'MANAGER',
+        },
       },
-      required: ['role']
-    }
+      required: ['role'],
+    },
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Role alterado com sucesso',
     schema: {
       type: 'object',
       properties: {
-        message: { type: 'string', example: 'Role updated successfully' }
-      }
-    }
+        message: { type: 'string', example: 'Role updated successfully' },
+      },
+    },
   })
-  @ApiResponse({ 
-    status: 400, 
-    description: 'Dados inválidos'
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos',
   })
-  @ApiResponse({ 
-    status: 401, 
-    description: 'Token JWT inválido ou expirado'
+  @ApiResponse({
+    status: 401,
+    description: 'Token JWT inválido ou expirado',
   })
-  @ApiResponse({ 
-    status: 403, 
-    description: 'Usuário não tem permissão para esta operação'
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão para esta operação',
   })
-  @ApiResponse({ 
-    status: 404, 
-    description: 'Usuário não encontrado'
+  @ApiResponse({
+    status: 404,
+    description: 'Usuário não encontrado',
   })
   async handle(
     @Param('id') targetUserId: string,
-    @Body(new ZodValidationPipe(changeUserRoleBodySchema)) body: ChangeUserRoleBodySchema,
+    @Body(new ZodValidationPipe(changeUserRoleBodySchema))
+    body: ChangeUserRoleBodySchema,
     @CurrentUser() user: UserPayload,
   ) {
     const { role } = body
@@ -97,6 +107,7 @@ export class ChangeUserRoleController {
     const result = await this.changeUserRole.execute({
       targetUserId,
       newRole: role as UserRole,
+      currentUserId: user.sub,
       currentUserRole,
     })
 
@@ -107,6 +118,8 @@ export class ChangeUserRoleController {
         case ResourceNotFoundError:
           throw new NotFoundException(error.message)
         case NotAllowedError:
+          throw new ForbiddenException(error.message)
+        case CannotModifyOwnAccountError:
           throw new ForbiddenException(error.message)
         default:
           throw new BadRequestException(error.message)

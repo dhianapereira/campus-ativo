@@ -1,6 +1,7 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
 import { Problem } from '../../enterprise/entities/problems/problem'
 import { ProblemWithDetails } from '../../enterprise/entities/value-objects/problem-with-details'
+import { DashboardMetrics } from '../../enterprise/entities/value-objects/dashboard-metrics'
 
 export interface FetchProblemsParams extends PaginationParams {
   query?: string
@@ -13,7 +14,10 @@ export abstract class ProblemsRepository {
   abstract findManyWithDetails(
     params: FetchProblemsParams,
   ): Promise<ProblemWithDetails[]>
+
   abstract save(problem: Problem): Promise<void>
   abstract create(problem: Problem): Promise<void>
   abstract delete(problem: Problem): Promise<void>
+  abstract getDashboardMetrics(): Promise<DashboardMetrics>
+  abstract migrateUserProblems(fromUserId: string, toUserId: string): Promise<void>
 }

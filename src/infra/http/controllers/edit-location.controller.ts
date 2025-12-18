@@ -7,7 +7,14 @@ import {
   Patch,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody, ApiParam } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { EditLocationUseCase } from '@/domain/maintenance-problems/application/use-cases/edit-location'
@@ -47,21 +54,27 @@ export class EditLocationController {
   @Roles(UserRole.MANAGER)
   @ApiOperation({
     summary: 'Editar localização',
-    description: 'Edita uma localização existente (requer role MANAGER+)'
+    description: 'Edita uma localização existente (requer role MANAGER+)',
   })
   @ApiParam({
     name: 'id',
     description: 'ID da localização a ser editada',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @ApiBody({ type: EditLocationRequest })
   @ApiResponse({
     status: 204,
     description: 'Localização editada com sucesso',
   })
-  @ApiResponse({ status: 400, description: 'Dados inválidos ou localização na lixeira' })
+  @ApiResponse({
+    status: 400,
+    description: 'Dados inválidos ou localização na lixeira',
+  })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
-  @ApiResponse({ status: 403, description: 'Usuário não tem permissão (requer MANAGER+)' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão (requer MANAGER+)',
+  })
   @ApiResponse({ status: 404, description: 'Localização não encontrada' })
   async handle(
     @CurrentUser() user: UserPayload,
@@ -71,7 +84,12 @@ export class EditLocationController {
     const { name, code, description, isActive } = body
 
     // At least one field must be provided
-    if (name === undefined && code === undefined && description === undefined && isActive === undefined) {
+    if (
+      name === undefined &&
+      code === undefined &&
+      description === undefined &&
+      isActive === undefined
+    ) {
       throw new BadRequestException('At least one field must be provided')
     }
 
@@ -85,7 +103,8 @@ export class EditLocationController {
       locationId,
       name: name ?? existingLocation.name,
       code: code !== undefined ? code : existingLocation.code,
-      description: description !== undefined ? description : existingLocation.description,
+      description:
+        description !== undefined ? description : existingLocation.description,
       isActive: isActive ?? existingLocation.isActive,
       userRole: user.role as UserRole,
     })

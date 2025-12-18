@@ -47,7 +47,7 @@ describe('Change user password (E2E)', () => {
       .patch(`/users/${user.id.toValue()}/password`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
-        oldPassword: oldPassword,
+        oldPassword,
         newPassword: 'newPassword123',
       })
 
@@ -103,7 +103,7 @@ describe('Change user password (E2E)', () => {
       .patch(`/users/${otherUser.id.toValue()}/password`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
-        oldPassword: oldPassword,
+        oldPassword,
         newPassword: 'newPassword123',
       })
 
@@ -133,7 +133,7 @@ describe('Change user password (E2E)', () => {
       .patch(`/users/${targetUser.id.toValue()}/password`)
       .set('Authorization', `Bearer ${accessToken}`)
       .send({
-        oldPassword: oldPassword,
+        oldPassword,
         newPassword: 'newPassword123',
       })
 

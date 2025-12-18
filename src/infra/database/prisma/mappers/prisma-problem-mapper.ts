@@ -1,5 +1,9 @@
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
+import {
+  Problem,
+  ProblemStatus,
+  MaintenanceType,
+} from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { Slug } from '@/domain/maintenance-problems/enterprise/entities/value-objects/slug'
 import { Problem as PrismaProblem, Prisma } from '@prisma/client'
 
@@ -14,8 +18,12 @@ export class PrismaProblemMapper {
         slug: Slug.create(raw.slug),
         title: raw.title,
         description: raw.description,
+        status: raw.status as ProblemStatus,
+        maintenanceType: raw.maintenanceType as MaintenanceType | null,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
+        deletedAt: raw.deletedAt,
+        isPermanentlyDeleted: raw.isPermanentlyDeleted,
       },
       new UniqueEntityID(raw.id),
     )
@@ -31,8 +39,14 @@ export class PrismaProblemMapper {
       title: problem.title,
       description: problem.description,
       slug: problem.slug.value,
+      status: problem.status,
+      maintenanceType: problem.maintenanceType,
       createdAt: problem.createdAt,
       updatedAt: problem.updatedAt,
+      deletedAt: problem.deletedAt,
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore - Type will be available after Prisma migration
+      is_permanently_deleted: problem.isPermanentlyDeleted,
     }
   }
 }

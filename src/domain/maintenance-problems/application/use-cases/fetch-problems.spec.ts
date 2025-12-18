@@ -53,13 +53,22 @@ describe('Fetch Recent Problems', () => {
 
   it('should filter problems by query in title', async () => {
     await inMemoryProblemsRepository.create(
-      makeProblem({ title: 'Water Leak Problem', createdAt: new Date(2022, 0, 20) }),
+      makeProblem({
+        title: 'Water Leak Problem',
+        createdAt: new Date(2022, 0, 20),
+      }),
     )
     await inMemoryProblemsRepository.create(
-      makeProblem({ title: 'Electrical Issue', createdAt: new Date(2022, 0, 21) }),
+      makeProblem({
+        title: 'Electrical Issue',
+        createdAt: new Date(2022, 0, 21),
+      }),
     )
     await inMemoryProblemsRepository.create(
-      makeProblem({ title: 'Water Pressure Low', createdAt: new Date(2022, 0, 22) }),
+      makeProblem({
+        title: 'Water Pressure Low',
+        createdAt: new Date(2022, 0, 22),
+      }),
     )
 
     const result = await sut.execute({
@@ -98,15 +107,9 @@ describe('Fetch Recent Problems', () => {
   })
 
   it('should return all problems when no query is provided', async () => {
-    await inMemoryProblemsRepository.create(
-      makeProblem({ title: 'Problem 1' }),
-    )
-    await inMemoryProblemsRepository.create(
-      makeProblem({ title: 'Problem 2' }),
-    )
-    await inMemoryProblemsRepository.create(
-      makeProblem({ title: 'Problem 3' }),
-    )
+    await inMemoryProblemsRepository.create(makeProblem({ title: 'Problem 1' }))
+    await inMemoryProblemsRepository.create(makeProblem({ title: 'Problem 2' }))
+    await inMemoryProblemsRepository.create(makeProblem({ title: 'Problem 3' }))
 
     const result = await sut.execute({
       page: 1,

@@ -38,7 +38,7 @@ describe('Change user role (E2E)', () => {
       role: UserRole.REPORTER,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: admin.id.toValue(),
       role: admin.role,
     })
@@ -69,7 +69,7 @@ describe('Change user role (E2E)', () => {
       role: UserRole.REPORTER,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: director.id.toValue(),
       role: director.role,
     })
@@ -94,7 +94,7 @@ describe('Change user role (E2E)', () => {
       role: UserRole.ADMIN,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: director.id.toValue(),
       role: director.role,
     })
@@ -118,7 +118,7 @@ describe('Change user role (E2E)', () => {
       role: UserRole.REPORTER,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: director.id.toValue(),
       role: director.role,
     })
@@ -142,7 +142,7 @@ describe('Change user role (E2E)', () => {
       role: UserRole.REPORTER,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: manager.id.toValue(),
       role: manager.role,
     })
@@ -162,7 +162,7 @@ describe('Change user role (E2E)', () => {
       role: UserRole.ADMIN,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: admin.id.toValue(),
       role: admin.role,
     })
@@ -175,5 +175,31 @@ describe('Change user role (E2E)', () => {
       })
 
     expect(response.statusCode).toBe(404)
+  })
+
+  test('[PATCH] /users/:id/role (user trying to change their own role - should fail)', async () => {
+    const admin = await userFactory.makePrismaUser({
+      role: UserRole.ADMIN,
+    })
+
+    const accessToken = jwt.sign({
+      sub: admin.id.toValue(),
+      role: admin.role,
+    })
+
+    const response = await request(app.getHttpServer())
+      .patch(`/users/${admin.id.toValue()}/role`)
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        role: 'REPORTER',
+      })
+
+    expect(response.statusCode).toBe(403)
+
+    const user = await prisma.user.findUnique({
+      where: { id: admin.id.toValue() },
+    })
+
+    expect(user?.role).toBe('ADMIN')
   })
 })

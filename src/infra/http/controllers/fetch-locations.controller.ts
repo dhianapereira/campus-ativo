@@ -34,12 +34,16 @@ const includeDeletedQueryParamSchema = z
 const pageValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
 const queryValidationPipe = new ZodValidationPipe(queryQueryParamSchema)
 const isActiveValidationPipe = new ZodValidationPipe(isActiveQueryParamSchema)
-const includeDeletedValidationPipe = new ZodValidationPipe(includeDeletedQueryParamSchema)
+const includeDeletedValidationPipe = new ZodValidationPipe(
+  includeDeletedQueryParamSchema,
+)
 
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 type QueryQueryParamSchema = z.infer<typeof queryQueryParamSchema>
 type IsActiveQueryParamSchema = z.infer<typeof isActiveQueryParamSchema>
-type IncludeDeletedQueryParamSchema = z.infer<typeof includeDeletedQueryParamSchema>
+type IncludeDeletedQueryParamSchema = z.infer<
+  typeof includeDeletedQueryParamSchema
+>
 
 @Controller('/locations')
 @ApiTags('Locations')
@@ -49,35 +53,37 @@ export class FetchLocationsController {
   @Get()
   @ApiOperation({
     summary: 'Buscar localizações',
-    description: 'Retorna uma lista paginada de localizações disponíveis no sistema'
+    description:
+      'Retorna uma lista paginada de localizações disponíveis no sistema',
   })
   @ApiQuery({
     name: 'page',
     required: false,
     description: 'Número da página (começa em 1)',
     example: 1,
-    type: Number
+    type: Number,
   })
   @ApiQuery({
     name: 'query',
     required: false,
-    description: 'Termo de busca para filtrar localizações por nome, código ou descrição',
+    description:
+      'Termo de busca para filtrar localizações por nome, código ou descrição',
     example: 'Bloco A',
-    type: String
+    type: String,
   })
   @ApiQuery({
     name: 'isActive',
     required: false,
     description: 'Filtrar por status ativo/inativo',
     example: true,
-    type: Boolean
+    type: Boolean,
   })
   @ApiQuery({
     name: 'includeDeleted',
     required: false,
     description: 'Incluir localizações deletadas (na lixeira)',
     example: false,
-    type: Boolean
+    type: Boolean,
   })
   @ApiResponse({
     status: 200,
@@ -87,17 +93,19 @@ export class FetchLocationsController {
       properties: {
         locations: {
           type: 'array',
-          items: { $ref: '#/components/schemas/LocationResponse' }
-        }
-      }
-    }
+          items: { $ref: '#/components/schemas/LocationResponse' },
+        },
+      },
+    },
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
   async handle(
     @Query('page', pageValidationPipe) page: PageQueryParamSchema,
     @Query('query', queryValidationPipe) query: QueryQueryParamSchema,
-    @Query('isActive', isActiveValidationPipe) isActive: IsActiveQueryParamSchema,
-    @Query('includeDeleted', includeDeletedValidationPipe) includeDeleted: IncludeDeletedQueryParamSchema,
+    @Query('isActive', isActiveValidationPipe)
+    isActive: IsActiveQueryParamSchema,
+    @Query('includeDeleted', includeDeletedValidationPipe)
+    includeDeleted: IncludeDeletedQueryParamSchema,
   ) {
     const result = await this.fetchLocations.execute({
       page,

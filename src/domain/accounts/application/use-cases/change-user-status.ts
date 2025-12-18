@@ -3,17 +3,19 @@ import { Injectable } from '@nestjs/common'
 import { UsersRepository } from '../repositories/users-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
+import { CannotModifyOwnAccountError } from '@/core/errors/cannot-modify-own-account-error'
 import { User, UserRole } from '../../enterprise/entities/user'
 import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 
 interface ChangeUserStatusUseCaseRequest {
   userId: string
   isActive: boolean
+  executorId: string
   executorRole: UserRole
 }
 
 type ChangeUserStatusUseCaseResponse = Either<
-  ResourceNotFoundError | NotAllowedError,
+  ResourceNotFoundError | NotAllowedError | CannotModifyOwnAccountError,
   {
     user: User
   }
@@ -26,6 +28,7 @@ export class ChangeUserStatusUseCase {
   async execute({
     userId,
     isActive,
+    executorId,
     executorRole,
   }: ChangeUserStatusUseCaseRequest): Promise<ChangeUserStatusUseCaseResponse> {
     // Only DIRECTOR+ can change user status
@@ -37,6 +40,11 @@ export class ChangeUserStatusUseCase {
 
     if (!user) {
       return left(new ResourceNotFoundError())
+    }
+
+    // ADMIN cannot deactivate their own account
+    if (executorId === userId && !isActive) {
+      return left(new CannotModifyOwnAccountError())
     }
 
     user.changeStatus(isActive)

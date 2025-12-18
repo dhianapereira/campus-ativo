@@ -21,7 +21,7 @@ export function makeUser(
       email: faker.internet.email(),
       password: faker.internet.password(),
       role: UserRole.REPORTER,
-      isActive: true,
+      isActive: true, // Default to active in tests for convenience
       ...override,
     },
     id,
@@ -34,9 +34,7 @@ export function makeUser(
 export class UserFactory {
   constructor(private prisma: PrismaService) {}
 
-  async makePrismaUser(
-    data: Partial<UserProps> = {},
-  ): Promise<User> {
+  async makePrismaUser(data: Partial<UserProps> = {}): Promise<User> {
     const user = makeUser(data)
 
     await this.prisma.user.create({

@@ -5,7 +5,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger'
 import { FetchUsersUseCase } from '@/domain/accounts/application/use-cases/fetch-users'
 import { UserListPresenter } from '../presenters/user-list-presenter'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
@@ -26,21 +32,23 @@ export class FetchUsersController {
   @Roles(UserRole.DIRECTOR, UserRole.ADMIN)
   @ApiOperation({
     summary: 'Listar usuários',
-    description: 'Lista todos os usuários do sistema com filtros baseados no role do usuário autenticado. ADMIN pode ver todos os usuários, DIRECTOR e abaixo não veem usuários ADMIN.'
+    description:
+      'Lista todos os usuários do sistema com filtros baseados no role do usuário autenticado. ADMIN pode ver todos os usuários, DIRECTOR e abaixo não veem usuários ADMIN.',
   })
   @ApiQuery({
     name: 'query',
     required: false,
     description: 'Termo de busca para filtrar usuários por nome ou email',
     type: String,
-    example: 'João'
+    example: 'João',
   })
   @ApiQuery({
     name: 'isActive',
     required: false,
-    description: 'Filtrar usuários por status (true para ativos, false para inativos)',
+    description:
+      'Filtrar usuários por status (true para ativos, false para inativos)',
     type: Boolean,
-    example: true
+    example: true,
   })
   @ApiResponse({
     status: 200,
@@ -53,24 +61,31 @@ export class FetchUsersController {
           items: {
             type: 'object',
             properties: {
-              id: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174000' },
+              id: {
+                type: 'string',
+                example: '123e4567-e89b-12d3-a456-426614174000',
+              },
               name: { type: 'string', example: 'João Silva' },
               email: { type: 'string', example: 'joao.silva@ifal.edu.br' },
               position: { type: 'string', example: 'Técnico em Informática' },
-              role: { type: 'string', enum: ['REPORTER', 'MANAGER', 'DIRECTOR', 'ADMIN'], example: 'REPORTER' }
-            }
-          }
-        }
-      }
-    }
+              role: {
+                type: 'string',
+                enum: ['REPORTER', 'MANAGER', 'DIRECTOR', 'ADMIN'],
+                example: 'REPORTER',
+              },
+            },
+          },
+        },
+      },
+    },
   })
   @ApiResponse({
     status: 401,
-    description: 'Token JWT inválido ou expirado'
+    description: 'Token JWT inválido ou expirado',
   })
   @ApiResponse({
     status: 403,
-    description: 'Usuário não tem permissão (requer DIRECTOR+)'
+    description: 'Usuário não tem permissão (requer DIRECTOR+)',
   })
   async handle(
     @CurrentUser() user: UserPayload,
@@ -90,7 +105,7 @@ export class FetchUsersController {
     }
 
     return {
-      users: result.value.users.map(UserListPresenter.toHTTP)
+      users: result.value.users.map(UserListPresenter.toHTTP),
     }
   }
 }

@@ -35,7 +35,16 @@ export class DeleteCategoryUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    await this.categoriesRepository.delete(category)
+    // Check if category has associated problems
+    const hasProblems = await this.categoriesRepository.hasAssociatedProblems(categoryId)
+
+    if (hasProblems) {
+      return left(new NotAllowedError())
+    }
+
+    // Mark as permanently deleted instead of hard deleting
+    category.permanentDelete()
+    await this.categoriesRepository.save(category)
 
     return right({})
   }

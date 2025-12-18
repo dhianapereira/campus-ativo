@@ -1,5 +1,11 @@
 import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiBody } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiBody,
+} from '@nestjs/swagger'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 
@@ -26,10 +32,13 @@ export class CreateProblemController {
   constructor(private readonly createProblem: CreateProblemUseCase) {}
 
   @Post()
-  @ApiOperation({ summary: 'Criar problema', description: 'Cria um novo problema de infraestrutura' })
+  @ApiOperation({
+    summary: 'Criar problema',
+    description: 'Cria um novo problema de infraestrutura',
+  })
   @ApiBody({ type: CreateProblemRequest })
-  @ApiResponse({ 
-    status: 201, 
+  @ApiResponse({
+    status: 201,
     description: 'Problema criado com sucesso',
   })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })

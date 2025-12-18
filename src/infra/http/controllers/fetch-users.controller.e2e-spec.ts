@@ -45,7 +45,7 @@ describe('Fetch users (E2E)', () => {
       role: UserRole.MANAGER,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: director.id.toValue(),
       role: director.role,
     })
@@ -70,7 +70,7 @@ describe('Fetch users (E2E)', () => {
           name: 'Bob Manager',
           role: 'MANAGER',
         }),
-      ])
+      ]),
     })
   })
 
@@ -80,7 +80,7 @@ describe('Fetch users (E2E)', () => {
       role: UserRole.ADMIN,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: admin.id.toValue(),
       role: admin.role,
     })
@@ -101,7 +101,7 @@ describe('Fetch users (E2E)', () => {
       role: UserRole.REPORTER,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: reporter.id.toValue(),
       role: reporter.role,
     })
@@ -120,7 +120,7 @@ describe('Fetch users (E2E)', () => {
       role: UserRole.MANAGER,
     })
 
-    const accessToken = jwt.sign({ 
+    const accessToken = jwt.sign({
       sub: manager.id.toValue(),
       role: manager.role,
     })

@@ -10,24 +10,24 @@ export class GetProblemBySlugController {
   constructor(private getProblemBySlug: GetProblemBySlugUseCase) {}
 
   @Get()
-  @ApiOperation({ 
-    summary: 'Buscar problema por slug', 
-    description: 'Retorna um problema específico pelo seu slug' 
+  @ApiOperation({
+    summary: 'Buscar problema por slug',
+    description: 'Retorna um problema específico pelo seu slug',
   })
   @ApiParam({
     name: 'slug',
     description: 'Slug do problema',
-    example: 'ar-condicionado-nao-funcionando'
+    example: 'ar-condicionado-nao-funcionando',
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Problema encontrado com sucesso',
     schema: {
       type: 'object',
       properties: {
-        problem: { $ref: '#/components/schemas/ProblemResponse' }
-      }
-    }
+        problem: { $ref: '#/components/schemas/ProblemResponse' },
+      },
+    },
   })
   @ApiResponse({ status: 400, description: 'Slug inválido' })
   @ApiResponse({ status: 404, description: 'Problema não encontrado' })
