@@ -27,6 +27,10 @@ import { EditProblemController } from './controllers/edit-problem.controller'
 import { EditProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/edit-problem'
 import { DeleteProblemController } from './controllers/delete-problem.controller'
 import { DeleteProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/delete-problem'
+import { TrashProblemController } from './controllers/trash-problem.controller'
+import { MoveProblemToTrashUseCase } from '@/domain/maintenance-problems/application/use-cases/move-problem-to-trash'
+import { RestoreProblemController } from './controllers/restore-problem.controller'
+import { RestoreProblemFromTrashUseCase } from '@/domain/maintenance-problems/application/use-cases/restore-problem-from-trash'
 import { GetUserProfileController } from './controllers/get-user-profile.controller'
 import { FetchUsersController } from './controllers/fetch-users.controller'
 import { ChangeUserRoleController } from './controllers/change-user-role.controller'
@@ -57,9 +61,17 @@ import { DeleteUserAccountUseCase } from '@/domain/accounts/application/use-case
 import { UploadAttachmentController } from './controllers/upload-attachment.controller'
 import { UploadAttachmentUseCase } from '@/domain/maintenance-problems/application/use-cases/upload-attachment'
 import { UploadModule } from '../upload/upload.module'
+import { SyncGoogleSheetController } from './controllers/sync-google-sheet.controller'
+import { SyncProblemsFromGoogleSheetUseCase } from '@/domain/maintenance-problems/application/use-cases/sync-problems-from-google-sheet'
+import { GoogleSheetsModule } from '../google-sheets/google-sheets.module'
 
 @Module({
-  imports: [DatabaseModule, CryptographyModule, UploadModule],
+  imports: [
+    DatabaseModule,
+    CryptographyModule,
+    UploadModule,
+    GoogleSheetsModule,
+  ],
   controllers: [
     CreateAccountController,
     AuthenticateController,
@@ -88,7 +100,10 @@ import { UploadModule } from '../upload/upload.module'
     DeleteLocationController,
     EditProblemController,
     DeleteProblemController,
+    TrashProblemController,
+    RestoreProblemController,
     UploadAttachmentController,
+    SyncGoogleSheetController,
   ],
   providers: [
     RegisterUserUseCase,
@@ -117,7 +132,10 @@ import { UploadModule } from '../upload/upload.module'
     DeleteLocationUseCase,
     EditProblemUseCase,
     DeleteProblemUseCase,
+    MoveProblemToTrashUseCase,
+    RestoreProblemFromTrashUseCase,
     UploadAttachmentUseCase,
+    SyncProblemsFromGoogleSheetUseCase,
   ],
 })
 export class HttpModule {}

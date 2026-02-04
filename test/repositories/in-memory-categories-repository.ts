@@ -56,6 +56,18 @@ export class InMemoryCategoriesRepository implements CategoriesRepository {
     return category
   }
 
+  async findByName(name: string) {
+    const category = this.items.find(
+      (item) => item.name.toLowerCase() === name.toLowerCase(),
+    )
+
+    if (!category) {
+      return null
+    }
+
+    return category
+  }
+
   async create(category: Category) {
     this.items.push(category)
   }

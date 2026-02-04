@@ -30,6 +30,16 @@ export class PrismaAttachmentsRepository implements AttachmentsRepository {
     return PrismaAttachmentMapper.toDomain(attachment)
   }
 
+  async findManyByProblemId(problemId: string): Promise<Attachment[]> {
+    const attachments = await this.prisma.attachment.findMany({
+      where: {
+        problemId,
+      },
+    })
+
+    return attachments.map(PrismaAttachmentMapper.toDomain)
+  }
+
   async delete(attachment: Attachment): Promise<void> {
     await this.prisma.attachment.delete({
       where: {

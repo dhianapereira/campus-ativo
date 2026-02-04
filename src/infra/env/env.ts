@@ -6,6 +6,9 @@ export const envSchema = z.object({
   JWT_PUBLIC_KEY: z.string(),
   PORT: z.coerce.number().optional().default(3333),
   IMGBB_API_KEY: z.string(),
+  // Google Sheets (opcional - para integração com formulário)
+  GOOGLE_SHEETS_CLIENT_EMAIL: z.string().optional(),
+  GOOGLE_SHEETS_PRIVATE_KEY: z.string().optional(),
 })
 
 export type Env = z.infer<typeof envSchema>

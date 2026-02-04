@@ -11,7 +11,10 @@ describe('Upload Attachment', () => {
   beforeEach(() => {
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     fakeUploader = new FakeUploader()
-    sut = new UploadAttachmentUseCase(fakeUploader, inMemoryAttachmentsRepository)
+    sut = new UploadAttachmentUseCase(
+      fakeUploader,
+      inMemoryAttachmentsRepository,
+    )
   })
 
   it('should be able to upload an image', async () => {
@@ -24,7 +27,9 @@ describe('Upload Attachment', () => {
     expect(result.isRight()).toBe(true)
     expect(inMemoryAttachmentsRepository.items).toHaveLength(1)
     expect(inMemoryAttachmentsRepository.items[0].title).toBe('test-image.png')
-    expect(inMemoryAttachmentsRepository.items[0].link).toContain('https://fake-imgbb.com/')
+    expect(inMemoryAttachmentsRepository.items[0].link).toContain(
+      'https://fake-imgbb.com/',
+    )
   })
 
   it('should upload file to image uploader', async () => {
@@ -132,7 +137,9 @@ describe('Upload Attachment', () => {
     expect(result.isRight()).toBe(true)
     if (result.isRight()) {
       expect(result.value.attachment.title).toBe('important-image.png')
-      expect(result.value.attachment.link).toMatch(/^https:\/\/fake-imgbb\.com\//)
+      expect(result.value.attachment.link).toMatch(
+        /^https:\/\/fake-imgbb\.com\//,
+      )
     }
   })
 

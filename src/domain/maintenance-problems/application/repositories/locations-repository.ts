@@ -10,6 +10,7 @@ export interface FetchLocationsParams extends PaginationParams {
 export abstract class LocationsRepository {
   abstract findMany(params: FetchLocationsParams): Promise<Location[]>
   abstract findById(id: string): Promise<Location | null>
+  abstract findByName(name: string): Promise<Location | null>
   abstract create(location: Location): Promise<void>
   abstract save(location: Location): Promise<void>
   abstract delete(location: Location): Promise<void>

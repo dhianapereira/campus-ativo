@@ -81,6 +81,14 @@ export class CreateProblemRequest {
     example: '123e4567-e89b-12d3-a456-426614174001',
   })
   locationId!: string
+
+  @ApiProperty({
+    description: 'IDs dos anexos (retornados pelo upload)',
+    example: ['123e4567-e89b-12d3-a456-426614174002'],
+    required: false,
+    type: [String],
+  })
+  attachmentIds?: string[]
 }
 
 export class EditProblemRequest {
@@ -96,6 +104,15 @@ export class EditProblemRequest {
       'O ar condicionado da sala 201 está fazendo ruído estranho e não resfriando adequadamente',
   })
   description!: string
+
+  @ApiProperty({
+    description:
+      'IDs dos anexos. Envie array vazio para remover todos os anexos.',
+    example: ['123e4567-e89b-12d3-a456-426614174002'],
+    required: false,
+    type: [String],
+  })
+  attachmentIds?: string[]
 }
 
 export class CreateCategoryRequest {
@@ -243,12 +260,68 @@ export class ProblemLocationInfo {
   name!: string
 }
 
+export enum ProblemStatusEnum {
+  TO_ANALYSIS = 'TO_ANALYSIS',
+  IN_ANALYSIS = 'IN_ANALYSIS',
+  ACCEPTED = 'ACCEPTED',
+  REJECTED = 'REJECTED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  FINISHED = 'FINISHED',
+}
+
+export enum MaintenanceTypeEnum {
+  PREVENTIVE = 'PREVENTIVE',
+  CORRECTIVE = 'CORRECTIVE',
+}
+
+export class AttachmentInfo {
+  @ApiProperty({
+    description: 'ID do anexo',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  id!: string
+
+  @ApiProperty({
+    description: 'Título do anexo',
+    example: 'foto-ar-condicionado.jpg',
+  })
+  title!: string
+
+  @ApiProperty({
+    description: 'URL do anexo',
+    example: 'https://i.ibb.co/xxxxx/foto-ar-condicionado.jpg',
+  })
+  url!: string
+}
+
 export class ProblemResponse {
   @ApiProperty({
     description: 'ID do problema',
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   id!: string
+
+  @ApiProperty({
+    description: 'ID do autor do problema',
+    example: '123e4567-e89b-12d3-a456-426614174001',
+    required: false,
+    nullable: true,
+  })
+  reporterId?: string | null
+
+  @ApiProperty({
+    description: 'ID da categoria do problema',
+    example: '123e4567-e89b-12d3-a456-426614174002',
+  })
+  categoryId!: string
+
+  @ApiProperty({
+    description: 'ID da localização do problema',
+    example: '123e4567-e89b-12d3-a456-426614174003',
+    required: false,
+    nullable: true,
+  })
+  locationId?: string | null
 
   @ApiProperty({
     description: 'Título do problema',
@@ -269,6 +342,28 @@ export class ProblemResponse {
   slug!: string
 
   @ApiProperty({
+    description: 'Trecho da descrição do problema (primeiros 120 caracteres)',
+    example: 'O ar condicionado da sala 201 não está ligando há 3 dias...',
+  })
+  excerpt!: string
+
+  @ApiProperty({
+    description: 'Status do problema',
+    enum: ProblemStatusEnum,
+    example: ProblemStatusEnum.TO_ANALYSIS,
+  })
+  status!: ProblemStatusEnum
+
+  @ApiProperty({
+    description: 'Tipo de manutenção',
+    enum: MaintenanceTypeEnum,
+    example: MaintenanceTypeEnum.CORRECTIVE,
+    required: false,
+    nullable: true,
+  })
+  maintenanceType?: MaintenanceTypeEnum | null
+
+  @ApiProperty({
     description: 'Data de criação',
     example: '2025-01-15T10:30:00Z',
   })
@@ -277,8 +372,24 @@ export class ProblemResponse {
   @ApiProperty({
     description: 'Data de atualização',
     example: '2025-01-15T10:30:00Z',
+    required: false,
   })
-  updatedAt!: Date
+  updatedAt?: Date
+
+  @ApiProperty({
+    description: 'Data de exclusão (null se não deletado)',
+    example: '2025-01-15T10:30:00Z',
+    required: false,
+    nullable: true,
+  })
+  deletedAt?: Date | null
+
+  @ApiProperty({
+    description: 'Anexos do problema',
+    type: [AttachmentInfo],
+    required: false,
+  })
+  attachments?: AttachmentInfo[]
 }
 
 export class ProblemWithDetailsResponse {
@@ -287,6 +398,14 @@ export class ProblemWithDetailsResponse {
     example: '123e4567-e89b-12d3-a456-426614174000',
   })
   id!: string
+
+  @ApiProperty({
+    description: 'ID do autor do problema',
+    example: '123e4567-e89b-12d3-a456-426614174001',
+    required: false,
+    nullable: true,
+  })
+  reporterId?: string | null
 
   @ApiProperty({
     description: 'Título do problema',
@@ -324,6 +443,21 @@ export class ProblemWithDetailsResponse {
     required: false,
   })
   updatedAt?: Date
+
+  @ApiProperty({
+    description: 'Data de exclusão (null se não deletado)',
+    example: '2025-01-15T10:30:00Z',
+    required: false,
+    nullable: true,
+  })
+  deletedAt?: Date | null
+
+  @ApiProperty({
+    description: 'Anexos do problema',
+    type: [AttachmentInfo],
+    required: false,
+  })
+  attachments?: AttachmentInfo[]
 }
 
 export class LocationResponse {

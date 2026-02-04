@@ -23,7 +23,10 @@ describe('Delete User Account', () => {
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
       mockProblemAttachmentsRepository,
     )
-    sut = new DeleteUserAccountUseCase(inMemoryUsersRepository, inMemoryProblemsRepository)
+    sut = new DeleteUserAccountUseCase(
+      inMemoryUsersRepository,
+      inMemoryProblemsRepository,
+    )
   })
 
   it('should be able to delete own account', async () => {
@@ -118,6 +121,8 @@ describe('Delete User Account', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryUsersRepository.items).toHaveLength(1)
-    expect(inMemoryUsersRepository.items[0].id.toValue()).toBe(systemUser.id.toValue())
+    expect(inMemoryUsersRepository.items[0].id.toValue()).toBe(
+      systemUser.id.toValue(),
+    )
   })
 })

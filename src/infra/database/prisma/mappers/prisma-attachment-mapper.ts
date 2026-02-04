@@ -13,7 +13,9 @@ export class PrismaAttachmentMapper {
     )
   }
 
-  static toPrisma(attachment: Attachment): Prisma.AttachmentUncheckedCreateInput {
+  static toPrisma(
+    attachment: Attachment,
+  ): Prisma.AttachmentUncheckedCreateInput {
     return {
       id: attachment.id.toValue(),
       title: attachment.title,

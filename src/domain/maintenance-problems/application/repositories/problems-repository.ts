@@ -5,6 +5,7 @@ import { DashboardMetrics } from '../../enterprise/entities/value-objects/dashbo
 
 export interface FetchProblemsParams extends PaginationParams {
   query?: string
+  includeDeleted?: boolean
 }
 
 export abstract class ProblemsRepository {
@@ -19,5 +20,8 @@ export abstract class ProblemsRepository {
   abstract create(problem: Problem): Promise<void>
   abstract delete(problem: Problem): Promise<void>
   abstract getDashboardMetrics(): Promise<DashboardMetrics>
-  abstract migrateUserProblems(fromUserId: string, toUserId: string): Promise<void>
+  abstract migrateUserProblems(
+    fromUserId: string,
+    toUserId: string,
+  ): Promise<void>
 }

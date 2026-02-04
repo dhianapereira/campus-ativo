@@ -44,14 +44,19 @@ export class DeleteUserAccountUseCase {
     }
 
     // Find system user to migrate problems to
-    const systemUser = await this.usersRepository.findByEmail('sistema@ifal-arapiraca.edu.br')
+    const systemUser = await this.usersRepository.findByEmail(
+      'sistema@ifal-arapiraca.edu.br',
+    )
 
     if (!systemUser) {
       return left(new ResourceNotFoundError())
     }
 
     // Migrate all user's problems to the system user
-    await this.problemsRepository.migrateUserProblems(userId, systemUser.id.toValue())
+    await this.problemsRepository.migrateUserProblems(
+      userId,
+      systemUser.id.toValue(),
+    )
 
     await this.usersRepository.delete(user)
 
