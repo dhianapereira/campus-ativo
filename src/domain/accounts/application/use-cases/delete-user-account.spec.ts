@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { makeUser } from 'test/factories/make-user'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems-repository'
@@ -8,9 +9,9 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
 // Mock para o ProblemAttachmentsRepository
 const mockProblemAttachmentsRepository: ProblemAttachmentsRepository = {
-  create: jest.fn(),
-  findManyByProblemId: jest.fn().mockResolvedValue([]),
-  deleteManyByProblemId: jest.fn(),
+  create: vi.fn(),
+  findManyByProblemId: vi.fn().mockResolvedValue([]),
+  deleteManyByProblemId: vi.fn(),
 }
 
 let inMemoryUsersRepository: InMemoryUsersRepository
@@ -31,10 +32,14 @@ describe('Delete User Account', () => {
 
   it('should be able to delete own account', async () => {
     const user = makeUser()
+    const systemUser = makeUser({
+      email: 'sistema@ifal-arapiraca.edu.br',
+    })
 
     inMemoryUsersRepository.items.push(user)
+    inMemoryUsersRepository.items.push(systemUser)
 
-    expect(inMemoryUsersRepository.items).toHaveLength(1)
+    expect(inMemoryUsersRepository.items).toHaveLength(2)
 
     const result = await sut.execute({
       userId: user.id.toValue(),
@@ -42,7 +47,10 @@ describe('Delete User Account', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryUsersRepository.items).toHaveLength(0)
+    expect(inMemoryUsersRepository.items).toHaveLength(1)
+    expect(inMemoryUsersRepository.items[0].id.toValue()).toBe(
+      systemUser.id.toValue(),
+    )
   })
 
   it('should not be able to delete another user account', async () => {

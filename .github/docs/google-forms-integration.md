@@ -19,6 +19,7 @@ Relatores sem acesso à plataforma podem enviar problemas através de um formul�
 | 3 | Descrição detalhada | Parágrafo | Sim |
 | 4 | Categoria | Lista suspensa | Sim |
 | 5 | Localização | Lista suspensa ou Resposta curta | Sim |
+| 6 | Imagem (opcional) | Carregar arquivo | Não |
 
 ### Configurar opções de Categoria e Localização
 
@@ -37,9 +38,11 @@ As opções de **Categoria** e **Localização** devem corresponder **exatamente
 
 A planilha terá colunas na seguinte ordem:
 
-| A | B | C | D | E |
-|---|---|---|---|---|
-| Carimbo de data/hora | Título do problema | Descrição detalhada | Categoria | Localização |
+| A | B | C | D | E | F |
+|---|---|---|---|---|---|
+| Carimbo de data/hora | Título do problema | Descrição detalhada | Categoria | Localização | Imagem (opcional) |
+
+**Sobre a coluna Imagem:** Se você adicionar a pergunta "Carregar arquivo" no formulário, o Google Forms armazena os arquivos no Google Drive e a planilha recebe o **link** do arquivo. O sistema importa esse link e associa a imagem ao problema. Se a linha não tiver imagem, deixe a célula em branco.
 
 ## 3. Configurar o Backend
 
@@ -96,6 +99,7 @@ Apenas usuários com role **MANAGER**, **DIRECTOR** ou **ADMIN**.
 - **Linhas com título ou descrição vazios** são ignoradas
 - **Categoria inexistente** no sistema: linha é ignorada e erro registrado
 - **Localização inexistente**: o problema é criado com o nome informado (campo `locationName`)
+- **Coluna Imagem (F)**: Se a célula tiver uma URL válida (http/https), um anexo é criado e vinculado ao problema; se estiver vazia ou inválida, o problema é criado normalmente sem imagem
 
 ### Agendamento (opcional)
 
@@ -116,5 +120,6 @@ Para cada linha não importada:
   - Valida dados
   - Busca categoria e localização por nome
   - Cria problema (sem reporter)
-  - Registra importação
+  - Registra importação (evita duplicata na próxima sync)
+  - Se houver URL de imagem na coluna F, cria anexo e vincula ao problema
 ```

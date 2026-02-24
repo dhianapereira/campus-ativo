@@ -1,21 +1,24 @@
 import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
+import { Attachment } from '@/domain/maintenance-problems/enterprise/entities/attachment'
 import { ProblemsRepository } from '../repositories/problems-repository'
 import { CategoriesRepository } from '../repositories/categories-repository'
 import { LocationsRepository } from '../repositories/locations-repository'
 import { GoogleSheetImportsRepository } from '../repositories/google-sheet-imports-repository'
+import { AttachmentsRepository } from '../repositories/attachments-repository'
 import { GoogleSheetsFetcher } from '../services/google-sheets-fetcher'
 import { right, Either } from '@/core/either'
 import { Injectable } from '@nestjs/common'
 
 /**
  * Índices das colunas na planilha (0-based).
- * Formato esperado: [Timestamp, Título, Descrição, Categoria, Localização]
+ * Formato esperado: [Timestamp, Título, Descrição, Categoria, Localização, Imagem (opcional)]
  */
 const COLUMN_INDEX = {
   TITLE: 1,
   DESCRIPTION: 2,
   CATEGORY: 3,
   LOCATION: 4,
+  IMAGE_URL: 5,
 } as const
 
 export interface SyncProblemsFromGoogleSheetRequest {
@@ -42,6 +45,7 @@ export class SyncProblemsFromGoogleSheetUseCase {
     private problemsRepository: ProblemsRepository,
     private categoriesRepository: CategoriesRepository,
     private locationsRepository: LocationsRepository,
+    private attachmentsRepository: AttachmentsRepository,
   ) {}
 
   async execute({
@@ -117,6 +121,21 @@ export class SyncProblemsFromGoogleSheetUseCase {
           problemId: problem.id.toValue(),
         })
 
+        const imageUrl = row.values[COLUMN_INDEX.IMAGE_URL]?.trim()
+        if (imageUrl && this.isValidUrl(imageUrl)) {
+          try {
+            const attachment = Attachment.create({
+              title: 'Imagem do formulário',
+              link: imageUrl,
+            })
+            await this.attachmentsRepository.create(attachment, {
+              problemId: problem.id.toValue(),
+            })
+          } catch {
+            // Linha já registrada como importada; problema fica sem anexo
+          }
+        }
+
         result.imported++
       } catch (error) {
         const message =
@@ -127,5 +146,14 @@ export class SyncProblemsFromGoogleSheetUseCase {
     }
 
     return right(result)
+  }
+
+  private isValidUrl(str: string): boolean {
+    try {
+      const url = new URL(str)
+      return url.protocol === 'http:' || url.protocol === 'https:'
+    } catch {
+      return false
+    }
   }
 }

@@ -6,8 +6,14 @@ export class InMemoryAttachmentsRepository implements AttachmentsRepository {
   // Map to track problemId -> attachmentIds relationship
   public problemAttachmentMap: Map<string, string[]> = new Map()
 
-  async create(attachment: Attachment): Promise<void> {
+  async create(
+    attachment: Attachment,
+    options?: { problemId: string },
+  ): Promise<void> {
     this.items.push(attachment)
+    if (options?.problemId) {
+      this.linkAttachmentToProblem(attachment.id.toValue(), options.problemId)
+    }
   }
 
   async findById(id: string): Promise<Attachment | null> {

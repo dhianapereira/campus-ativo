@@ -29,9 +29,7 @@ export class PrismaLocationMapper {
       createdAt: location.createdAt,
       updatedAt: location.updatedAt,
       deletedAt: location.deletedAt,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore - Type will be available after Prisma migration
-      is_permanently_deleted: location.isPermanentlyDeleted,
+      isPermanentlyDeleted: location.isPermanentlyDeleted,
     }
   }
 }

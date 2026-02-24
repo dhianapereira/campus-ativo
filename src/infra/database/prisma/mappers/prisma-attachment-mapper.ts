@@ -15,11 +15,13 @@ export class PrismaAttachmentMapper {
 
   static toPrisma(
     attachment: Attachment,
+    problemId?: string,
   ): Prisma.AttachmentUncheckedCreateInput {
     return {
       id: attachment.id.toValue(),
       title: attachment.title,
       url: attachment.link,
+      ...(problemId && { problemId }),
     }
   }
 }

@@ -44,9 +44,7 @@ export class PrismaProblemMapper {
       createdAt: problem.createdAt,
       updatedAt: problem.updatedAt,
       deletedAt: problem.deletedAt,
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore - Type will be available after Prisma migration
-      is_permanently_deleted: problem.isPermanentlyDeleted,
+      isPermanentlyDeleted: problem.isPermanentlyDeleted,
     }
   }
 }
