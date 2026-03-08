@@ -73,6 +73,11 @@ export class FetchUsersController {
                 enum: ['REPORTER', 'MANAGER', 'DIRECTOR', 'ADMIN'],
                 example: 'REPORTER',
               },
+              isActive: {
+                type: 'boolean',
+                example: true,
+                description: 'Indica se o usuário está ativo no sistema',
+              },
             },
           },
         },

@@ -45,7 +45,10 @@ export class CreateAccountController {
     status: 201,
     description: 'Conta criada com sucesso',
   })
-  @ApiResponse({ status: 409, description: 'Email já existe no sistema' })
+  @ApiResponse({
+    status: 409,
+    description: 'Não foi possível completar o cadastro. Verifique suas informações.',
+  })
   @ApiResponse({
     status: 400,
     description: 'Dados inválidos ou domínio de email não permitido',
@@ -66,7 +69,10 @@ export class CreateAccountController {
 
       switch (error.constructor) {
         case UserAlreadyExistsError:
-          throw new ConflictException(error.message)
+          // Não revelar que o e-mail já existe (segurança/privacidade)
+          throw new ConflictException(
+            'Não foi possível completar o cadastro. Verifique suas informações.',
+          )
         case InvalidEmailDomainError:
         case InvalidPasswordError:
           throw new BadRequestException(error.message)

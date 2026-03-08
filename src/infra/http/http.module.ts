@@ -64,6 +64,9 @@ import { UploadModule } from '../upload/upload.module'
 import { SyncGoogleSheetController } from './controllers/sync-google-sheet.controller'
 import { SyncProblemsFromGoogleSheetUseCase } from '@/domain/maintenance-problems/application/use-cases/sync-problems-from-google-sheet'
 import { GoogleSheetsModule } from '../google-sheets/google-sheets.module'
+import { GetDashboardMetricsController } from './controllers/get-dashboard-metrics.controller'
+import { GetDashboardMetricsUseCase } from '@/domain/maintenance-problems/application/use-cases/get-dashboard-metrics'
+import { GetDashboardReportController } from './controllers/get-dashboard-report.controller'
 
 @Module({
   imports: [
@@ -104,6 +107,8 @@ import { GoogleSheetsModule } from '../google-sheets/google-sheets.module'
     RestoreProblemController,
     UploadAttachmentController,
     SyncGoogleSheetController,
+    GetDashboardMetricsController,
+    GetDashboardReportController,
   ],
   providers: [
     RegisterUserUseCase,
@@ -136,6 +141,7 @@ import { GoogleSheetsModule } from '../google-sheets/google-sheets.module'
     RestoreProblemFromTrashUseCase,
     UploadAttachmentUseCase,
     SyncProblemsFromGoogleSheetUseCase,
+    GetDashboardMetricsUseCase,
   ],
 })
 export class HttpModule {}

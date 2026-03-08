@@ -19,7 +19,7 @@
           "400": {
             "description": "Dados inválidos ou domínio de email não permitido"
           },
-          "409": { "description": "Email já existe no sistema" }
+          "409": { "description": "Não foi possível completar o cadastro. Verifique suas informações." }
         },
         "summary": "Criar conta",
         "tags": ["Authentication"]
@@ -146,6 +146,10 @@
                               "ADMIN"
                             ],
                             "example": "REPORTER"
+                          },
+                          "isActive": {
+                            "type": "boolean",
+                            "example": true
                           }
                         }
                       }
