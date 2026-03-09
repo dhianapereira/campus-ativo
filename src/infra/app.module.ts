@@ -8,6 +8,7 @@ import { EnvModule } from './env/env.module'
 @Module({
   imports: [
     ConfigModule.forRoot({
+      expandVariables: true,
       validate: (env) => envSchema.parse(env),
       isGlobal: true,
     }),
