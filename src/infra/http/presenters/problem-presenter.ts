@@ -7,7 +7,7 @@ export class ProblemPresenter {
     return {
       id: problem.id.toValue(),
       reporterId: problem.reporterId?.toValue() ?? null,
-      categoryId: problem.categoryId.toValue(),
+      categoryId: problem.categoryId?.toValue() ?? null,
       locationId: problem.locationId?.toValue() ?? null,
       title: problem.title,
       slug: problem.slug.value,
@@ -25,7 +25,7 @@ export class ProblemPresenter {
     return {
       id: problem.id.toValue(),
       reporterId: problem.reporterId?.toValue() ?? null,
-      categoryId: problem.categoryId.toValue(),
+      categoryId: problem.categoryId?.toValue() ?? null,
       locationId: problem.locationId?.toValue() ?? null,
       title: problem.title,
       slug: problem.slug.value,

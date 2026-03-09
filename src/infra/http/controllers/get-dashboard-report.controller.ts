@@ -113,7 +113,13 @@ export class GetDashboardReportController {
       }),
     ])
 
-    const categoryIds = [...new Set(byCategory.map((c) => c.categoryId))]
+    const categoryIds = [
+      ...new Set(
+        byCategory
+          .map((c) => c.categoryId)
+          .filter((id): id is string => id != null),
+      ),
+    ]
     const locationIds = [
       ...new Set(
         byLocation
@@ -168,7 +174,7 @@ export class GetDashboardReportController {
       })),
       byCategory: byCategory.map((c) => ({
         categoryId: c.categoryId,
-        name: categoryMap.get(c.categoryId) ?? 'Não informado',
+        name: c.categoryId ? categoryMap.get(c.categoryId) ?? 'Não informado' : 'Não informado',
         count: c._count.categoryId,
       })),
       byLocation: byLocation.map((l) => ({

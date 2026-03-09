@@ -20,7 +20,7 @@ export enum MaintenanceType {
 
 export interface ProblemProps {
   reporterId: UniqueEntityID | null
-  categoryId: UniqueEntityID
+  categoryId: UniqueEntityID | null
   locationId: UniqueEntityID | null
   locationName: string
   title: string
@@ -62,7 +62,7 @@ export class Problem extends AggregateRoot<ProblemProps> {
     return this.props.categoryId
   }
 
-  set categoryId(categoryId: UniqueEntityID) {
+  set categoryId(categoryId: UniqueEntityID | null) {
     this.props.categoryId = categoryId
     this.touch()
   }
@@ -136,7 +136,7 @@ export class Problem extends AggregateRoot<ProblemProps> {
     this.touch()
   }
 
-  changeCategory(categoryId: UniqueEntityID) {
+  changeCategory(categoryId: UniqueEntityID | null) {
     this.props.categoryId = categoryId
     this.touch()
   }

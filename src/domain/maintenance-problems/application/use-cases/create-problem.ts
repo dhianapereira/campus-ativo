@@ -1,6 +1,7 @@
 import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { ProblemsRepository } from '../repositories/problems-repository'
 import { LocationsRepository } from '../repositories/locations-repository'
+import { CategoriesRepository } from '../repositories/categories-repository'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { right, left, Either } from '@/core/either'
 import { ProblemAttachment } from '../../enterprise/entities/problems/problem-attachment'
@@ -11,7 +12,7 @@ import { Injectable } from '@nestjs/common'
 interface CreateProblemUseCaseRequest {
   reporterId: string
   locationId: string
-  categoryId: string
+  categoryId?: string
   title: string
   description: string
   attachmentsIds: string[]
@@ -29,6 +30,7 @@ export class CreateProblemUseCase {
   constructor(
     private problemsRepository: ProblemsRepository,
     private locationsRepository: LocationsRepository,
+    private categoriesRepository: CategoriesRepository,
   ) {}
 
   async execute({
@@ -45,11 +47,19 @@ export class CreateProblemUseCase {
       return left(new ResourceNotFoundError())
     }
 
+    if (categoryId) {
+      const category = await this.categoriesRepository.findById(categoryId)
+
+      if (!category) {
+        return left(new ResourceNotFoundError())
+      }
+    }
+
     const problem = Problem.create({
       reporterId: new UniqueEntityID(reporterId),
       locationId: new UniqueEntityID(locationId),
       locationName: location.name,
-      categoryId: new UniqueEntityID(categoryId),
+      categoryId: categoryId ? new UniqueEntityID(categoryId) : null,
       title,
       description,
     })

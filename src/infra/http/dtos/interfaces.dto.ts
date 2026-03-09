@@ -73,8 +73,9 @@ export class CreateProblemRequest {
   @ApiProperty({
     description: 'ID da categoria do problema',
     example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
   })
-  categoryId!: string
+  categoryId?: string
 
   @ApiProperty({
     description: 'ID da localização onde ocorreu o problema',
@@ -312,8 +313,10 @@ export class ProblemResponse {
   @ApiProperty({
     description: 'ID da categoria do problema',
     example: '123e4567-e89b-12d3-a456-426614174002',
+    required: false,
+    nullable: true,
   })
-  categoryId!: string
+  categoryId?: string | null
 
   @ApiProperty({
     description: 'ID da localização do problema',

@@ -68,7 +68,10 @@ export class GetDashboardMetricsController {
       .slice(0, 3)
       .map((r) => r.locationId)
       .filter((id): id is string => id != null)
-    const categoryIds = topCategoriesSorted.slice(0, 3).map((r) => r.categoryId)
+    const categoryIds = topCategoriesSorted
+      .slice(0, 3)
+      .map((r) => r.categoryId)
+      .filter((id): id is string => id != null)
 
     const [locations, categories] = await Promise.all([
       locationIds.length > 0
@@ -98,7 +101,7 @@ export class GetDashboardMetricsController {
     }))
 
     const top3Categories = topCategoriesSorted.slice(0, 3).map((r) => ({
-      name: categoryMap.get(r.categoryId) ?? 'Sem categoria',
+      name: r.categoryId ? categoryMap.get(r.categoryId) ?? 'Sem categoria' : 'Sem categoria',
       count: r._count.categoryId,
     }))
 

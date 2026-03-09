@@ -67,4 +67,34 @@ describe('Create problem (E2E)', () => {
 
     expect(problemOnDatabase).toBeTruthy()
   })
+
+  test('[POST] /problems (without category)', async () => {
+    const user = await userFactory.makePrismaUser()
+
+    const accessToken = jwt.sign({ sub: user.id.toValue() })
+
+    const location = await locationFactory.makePrismaLocation({
+      name: 'Location without category',
+    })
+
+    const response = await request(app.getHttpServer())
+      .post('/problems')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send({
+        title: 'Problem without category',
+        description: 'Problem description',
+        locationId: location.id.toValue(),
+      })
+
+    expect(response.statusCode).toBe(201)
+
+    const problemOnDatabase = await prisma.problem.findFirst({
+      where: {
+        title: 'Problem without category',
+      },
+    })
+
+    expect(problemOnDatabase).toBeTruthy()
+    expect(problemOnDatabase?.categoryId).toBeNull()
+  })
 })
