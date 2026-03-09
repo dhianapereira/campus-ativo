@@ -19,6 +19,7 @@ const createProblemBodySchema = z.object({
   description: z.string(),
   locationId: z.string(),
   categoryId: z.string(),
+  attachmentIds: z.array(z.string()).optional().default([]),
 })
 
 const bodyValidationPipe = new ZodValidationPipe(createProblemBodySchema)
@@ -47,7 +48,7 @@ export class CreateProblemController {
     @Body(bodyValidationPipe) body: CreateProblemBodySchema,
     @CurrentUser() user: UserPayload,
   ) {
-    const { title, description, locationId, categoryId } = body
+    const { title, description, locationId, categoryId, attachmentIds } = body
     const userId = user.sub
 
     const result = await this.createProblem.execute({
@@ -56,7 +57,7 @@ export class CreateProblemController {
       locationId,
       categoryId,
       reporterId: userId,
-      attachmentsIds: [],
+      attachmentsIds: attachmentIds,
     })
 
     if (result.isLeft()) {

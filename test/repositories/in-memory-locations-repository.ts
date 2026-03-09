@@ -54,6 +54,18 @@ export class InMemoryLocationsRepository implements LocationsRepository {
     return location
   }
 
+  async findByName(name: string) {
+    const location = this.items.find(
+      (item) => item.name.toLowerCase() === name.toLowerCase(),
+    )
+
+    if (!location) {
+      return null
+    }
+
+    return location
+  }
+
   async create(location: Location) {
     this.items.push(location)
   }

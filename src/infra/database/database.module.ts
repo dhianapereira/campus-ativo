@@ -14,6 +14,8 @@ import { ProblemHistoryRepository } from '@/domain/maintenance-problems/applicat
 import { PrismaProblemHistoryRepository } from './prisma/repositories/prisma-problem-history-repository'
 import { AttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/attachments-repository'
 import { PrismaAttachmentsRepository } from './prisma/repositories/prisma-attachments-repository'
+import { GoogleSheetImportsRepository } from '@/domain/maintenance-problems/application/repositories/google-sheet-imports-repository'
+import { PrismaGoogleSheetImportsRepository } from './prisma/repositories/prisma-google-sheet-imports-repository'
 
 @Module({
   providers: [
@@ -46,6 +48,10 @@ import { PrismaAttachmentsRepository } from './prisma/repositories/prisma-attach
       provide: AttachmentsRepository,
       useClass: PrismaAttachmentsRepository,
     },
+    {
+      provide: GoogleSheetImportsRepository,
+      useClass: PrismaGoogleSheetImportsRepository,
+    },
   ],
   exports: [
     PrismaService,
@@ -56,6 +62,7 @@ import { PrismaAttachmentsRepository } from './prisma/repositories/prisma-attach
     ProblemAttachmentsRepository,
     ProblemHistoryRepository,
     AttachmentsRepository,
+    GoogleSheetImportsRepository,
   ],
 })
 export class DatabaseModule {}

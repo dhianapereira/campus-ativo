@@ -36,7 +36,8 @@ export class DeleteCategoryUseCase {
     }
 
     // Check if category has associated problems
-    const hasProblems = await this.categoriesRepository.hasAssociatedProblems(categoryId)
+    const hasProblems =
+      await this.categoriesRepository.hasAssociatedProblems(categoryId)
 
     if (hasProblems) {
       return left(new NotAllowedError())

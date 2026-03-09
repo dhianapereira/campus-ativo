@@ -15,11 +15,25 @@ const pageQueryParamSchema = z
 
 const queryQueryParamSchema = z.string().optional()
 
+const includeDeletedQueryParamSchema = z
+  .string()
+  .optional()
+  .transform((val) => {
+    if (val === undefined) return undefined
+    return val === 'true'
+  })
+
 const pageValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
 const queryValidationPipe = new ZodValidationPipe(queryQueryParamSchema)
+const includeDeletedValidationPipe = new ZodValidationPipe(
+  includeDeletedQueryParamSchema,
+)
 
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
 type QueryQueryParamSchema = z.infer<typeof queryQueryParamSchema>
+type IncludeDeletedQueryParamSchema = z.infer<
+  typeof includeDeletedQueryParamSchema
+>
 
 @Controller('/problems')
 @ApiTags('Problems')
@@ -47,6 +61,13 @@ export class FetchProblemsController {
     example: 'ar condicionado',
     type: String,
   })
+  @ApiQuery({
+    name: 'includeDeleted',
+    required: false,
+    description: 'Incluir problemas deletados (na lixeira)',
+    example: false,
+    type: Boolean,
+  })
   @ApiResponse({
     status: 200,
     description: 'Lista de problemas retornada com sucesso',
@@ -64,8 +85,14 @@ export class FetchProblemsController {
   async handle(
     @Query('page', pageValidationPipe) page: PageQueryParamSchema,
     @Query('query', queryValidationPipe) query: QueryQueryParamSchema,
+    @Query('includeDeleted', includeDeletedValidationPipe)
+    includeDeleted: IncludeDeletedQueryParamSchema,
   ) {
-    const result = await this.fetchProblems.execute({ page, query })
+    const result = await this.fetchProblems.execute({
+      page,
+      query,
+      includeDeleted,
+    })
 
     if (result.isLeft()) {
       throw new BadRequestException()

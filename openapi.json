@@ -19,7 +19,7 @@
           "400": {
             "description": "Dados inválidos ou domínio de email não permitido"
           },
-          "409": { "description": "Email já existe no sistema" }
+          "409": { "description": "Não foi possível completar o cadastro. Verifique suas informações." }
         },
         "summary": "Criar conta",
         "tags": ["Authentication"]
@@ -146,6 +146,10 @@
                               "ADMIN"
                             ],
                             "example": "REPORTER"
+                          },
+                          "isActive": {
+                            "type": "boolean",
+                            "example": true
                           }
                         }
                       }
@@ -511,6 +515,13 @@
             "in": "query",
             "description": "Número da página (começa em 1)",
             "schema": { "example": 1, "type": "number" }
+          },
+          {
+            "name": "includeDeleted",
+            "required": false,
+            "in": "query",
+            "description": "Incluir problemas deletados (na lixeira)",
+            "schema": { "example": false, "type": "boolean" }
           },
           {
             "name": "query",
@@ -1068,6 +1079,66 @@
         "tags": ["Problems"]
       }
     },
+    "/problems/{id}/trash": {
+      "patch": {
+        "description": "Move um problema para a lixeira (soft delete). Apenas o autor do problema pode movê-lo para a lixeira e somente quando o status for TO_ANALYSIS.",
+        "operationId": "TrashProblemController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do problema a ser movido para lixeira",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Problema movido para lixeira com sucesso" },
+          "400": {
+            "description": "Problema não encontrado ou não pode ser deletado"
+          },
+          "401": { "description": "Token JWT inválido ou expirado" },
+          "403": {
+            "description": "Usuário não tem permissão (apenas o autor pode mover para lixeira)"
+          }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Mover problema para lixeira",
+        "tags": ["Problems"]
+      }
+    },
+    "/problems/{id}/restore": {
+      "patch": {
+        "description": "Restaura um problema que estava na lixeira. Apenas o autor do problema pode restaurá-lo.",
+        "operationId": "RestoreProblemController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do problema a ser restaurado",
+            "schema": {
+              "example": "123e4567-e89b-12d3-a456-426614174000",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Problema restaurado com sucesso" },
+          "400": { "description": "Problema não encontrado" },
+          "401": { "description": "Token JWT inválido ou expirado" },
+          "403": {
+            "description": "Usuário não tem permissão (apenas o autor pode restaurar)"
+          }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Restaurar problema da lixeira",
+        "tags": ["Problems"]
+      }
+    },
     "/attachments": {
       "post": {
         "description": "Faz upload de uma imagem para o ImgBB e retorna o ID do attachment criado",
@@ -1248,9 +1319,136 @@
             "type": "string",
             "description": "ID da localização onde ocorreu o problema",
             "example": "123e4567-e89b-12d3-a456-426614174001"
+          },
+          "attachmentIds": {
+            "description": "IDs dos anexos (retornados pelo upload)",
+            "example": ["123e4567-e89b-12d3-a456-426614174002"],
+            "type": "array",
+            "items": { "type": "string" }
           }
         },
         "required": ["title", "description", "categoryId", "locationId"]
+      },
+      "AttachmentInfo": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do anexo",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "title": {
+            "type": "string",
+            "description": "Título do anexo",
+            "example": "foto-ar-condicionado.jpg"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL do anexo",
+            "example": "https://i.ibb.co/xxxxx/foto-ar-condicionado.jpg"
+          }
+        },
+        "required": ["id", "title", "url"]
+      },
+      "ProblemResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID do problema",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "reporterId": {
+            "type": "object",
+            "description": "ID do autor do problema",
+            "example": "123e4567-e89b-12d3-a456-426614174001",
+            "nullable": true
+          },
+          "categoryId": {
+            "type": "string",
+            "description": "ID da categoria do problema",
+            "example": "123e4567-e89b-12d3-a456-426614174002"
+          },
+          "locationId": {
+            "type": "object",
+            "description": "ID da localização do problema",
+            "example": "123e4567-e89b-12d3-a456-426614174003",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "description": "Título do problema",
+            "example": "Ar condicionado não funcionando"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição do problema",
+            "example": "O ar condicionado da sala 201 não está ligando"
+          },
+          "slug": {
+            "type": "string",
+            "description": "Slug do problema",
+            "example": "ar-condicionado-nao-funcionando"
+          },
+          "excerpt": {
+            "type": "string",
+            "description": "Trecho da descrição do problema (primeiros 120 caracteres)",
+            "example": "O ar condicionado da sala 201 não está ligando há 3 dias..."
+          },
+          "status": {
+            "type": "string",
+            "description": "Status do problema",
+            "enum": [
+              "TO_ANALYSIS",
+              "IN_ANALYSIS",
+              "ACCEPTED",
+              "REJECTED",
+              "IN_PROGRESS",
+              "FINISHED"
+            ],
+            "example": "TO_ANALYSIS"
+          },
+          "maintenanceType": {
+            "type": "string",
+            "description": "Tipo de manutenção",
+            "enum": ["PREVENTIVE", "CORRECTIVE"],
+            "example": "CORRECTIVE",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Data de criação",
+            "example": "2025-01-15T10:30:00Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Data de atualização",
+            "example": "2025-01-15T10:30:00Z"
+          },
+          "deletedAt": {
+            "type": "object",
+            "description": "Data de exclusão (null se não deletado)",
+            "example": "2025-01-15T10:30:00Z",
+            "nullable": true
+          },
+          "attachments": {
+            "description": "Anexos do problema",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/AttachmentInfo" }
+          }
+        },
+        "required": [
+          "id",
+          "categoryId",
+          "title",
+          "description",
+          "slug",
+          "excerpt",
+          "status",
+          "createdAt"
+        ]
       },
       "CreateCategoryRequest": {
         "type": "object",
@@ -1346,6 +1544,12 @@
             "type": "string",
             "description": "Nova descrição do problema",
             "example": "O ar condicionado da sala 201 está fazendo ruído estranho e não resfriando adequadamente"
+          },
+          "attachmentIds": {
+            "description": "IDs dos anexos. Envie array vazio para remover todos os anexos.",
+            "example": ["123e4567-e89b-12d3-a456-426614174002"],
+            "type": "array",
+            "items": { "type": "string" }
           }
         },
         "required": ["title", "description"]

@@ -8,8 +8,11 @@ import { PrismaAttachmentMapper } from '../mappers/prisma-attachment-mapper'
 export class PrismaAttachmentsRepository implements AttachmentsRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(attachment: Attachment): Promise<void> {
-    const data = PrismaAttachmentMapper.toPrisma(attachment)
+  async create(
+    attachment: Attachment,
+    options?: { problemId: string },
+  ): Promise<void> {
+    const data = PrismaAttachmentMapper.toPrisma(attachment, options?.problemId)
 
     await this.prisma.attachment.create({
       data,
@@ -28,6 +31,16 @@ export class PrismaAttachmentsRepository implements AttachmentsRepository {
     }
 
     return PrismaAttachmentMapper.toDomain(attachment)
+  }
+
+  async findManyByProblemId(problemId: string): Promise<Attachment[]> {
+    const attachments = await this.prisma.attachment.findMany({
+      where: {
+        problemId,
+      },
+    })
+
+    return attachments.map(PrismaAttachmentMapper.toDomain)
   }
 
   async delete(attachment: Attachment): Promise<void> {

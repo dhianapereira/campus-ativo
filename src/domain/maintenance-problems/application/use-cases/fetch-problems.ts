@@ -6,6 +6,7 @@ import { Injectable } from '@nestjs/common'
 interface FetchProblemsUseCaseRequest {
   page: number
   query?: string
+  includeDeleted?: boolean
 }
 
 type FetchProblemsUseCaseResponse = Either<
@@ -22,10 +23,12 @@ export class FetchProblemsUseCase {
   async execute({
     page,
     query,
+    includeDeleted = false,
   }: FetchProblemsUseCaseRequest): Promise<FetchProblemsUseCaseResponse> {
     const problems = await this.problemsRepository.findManyWithDetails({
       page,
       query,
+      includeDeleted,
     })
 
     return right({

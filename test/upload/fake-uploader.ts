@@ -1,4 +1,8 @@
-import { ImageUploader, UploadParams, UploadResponse } from '@/domain/maintenance-problems/application/upload/image-uploader'
+import {
+  ImageUploader,
+  UploadParams,
+  UploadResponse,
+} from '@/domain/maintenance-problems/application/upload/image-uploader'
 import { randomUUID } from 'crypto'
 
 export class FakeUploader implements ImageUploader {

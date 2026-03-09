@@ -2,7 +2,10 @@ import {
   ProblemsRepository,
   FetchProblemsParams,
 } from '@/domain/maintenance-problems/application/repositories/problems-repository'
-import { Problem, ProblemStatus } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
+import {
+  Problem,
+  ProblemStatus,
+} from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
 import { DashboardMetrics } from '@/domain/maintenance-problems/enterprise/entities/value-objects/dashboard-metrics'
 import { Injectable } from '@nestjs/common'
@@ -42,10 +45,14 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     return PrismaProblemMapper.toDomain(problem)
   }
 
-  async findMany({ page, query }: FetchProblemsParams): Promise<Problem[]> {
+  async findMany({
+    page,
+    query,
+    includeDeleted = false,
+  }: FetchProblemsParams): Promise<Problem[]> {
     const problems = await this.prisma.problem.findMany({
       where: {
-        deletedAt: null,
+        ...(!includeDeleted && { deletedAt: null }),
         ...(query && {
           OR: [
             {
@@ -76,10 +83,11 @@ export class PrismaProblemsRepository implements ProblemsRepository {
   async findManyWithDetails({
     page,
     query,
+    includeDeleted = false,
   }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
     const problems = await this.prisma.problem.findMany({
       where: {
-        deletedAt: null,
+        ...(!includeDeleted && { deletedAt: null }),
         ...(query && {
           OR: [
             {
@@ -210,7 +218,10 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     })
   }
 
-  async migrateUserProblems(fromUserId: string, toUserId: string): Promise<void> {
+  async migrateUserProblems(
+    fromUserId: string,
+    toUserId: string,
+  ): Promise<void> {
     await this.prisma.problem.updateMany({
       where: {
         reporterId: fromUserId,

@@ -120,7 +120,10 @@ export class Problem extends AggregateRoot<ProblemProps> {
   }
 
   get isDeleted() {
-    return (this.props.deletedAt !== null && this.props.deletedAt !== undefined) || this.isPermanentlyDeleted
+    return (
+      (this.props.deletedAt !== null && this.props.deletedAt !== undefined) ||
+      this.isPermanentlyDeleted
+    )
   }
 
   get excerpt() {
@@ -170,7 +173,10 @@ export class Problem extends AggregateRoot<ProblemProps> {
   }
 
   static create(
-    props: Optional<ProblemProps, 'createdAt' | 'slug' | 'attachments' | 'status' | 'maintenanceType'>,
+    props: Optional<
+      ProblemProps,
+      'createdAt' | 'slug' | 'attachments' | 'status' | 'maintenanceType'
+    >,
     id?: UniqueEntityID,
   ) {
     const problem = new Problem(

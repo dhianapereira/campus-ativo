@@ -36,7 +36,8 @@ export class DeleteLocationUseCase {
     }
 
     // Check if location has associated problems
-    const hasProblems = await this.locationsRepository.hasAssociatedProblems(locationId)
+    const hasProblems =
+      await this.locationsRepository.hasAssociatedProblems(locationId)
 
     if (hasProblems) {
       return left(new NotAllowedError())

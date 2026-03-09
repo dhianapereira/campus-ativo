@@ -4,7 +4,10 @@ import {
   ProblemsRepository,
   FetchProblemsParams,
 } from '@/domain/maintenance-problems/application/repositories/problems-repository'
-import { Problem, ProblemStatus } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
+import {
+  Problem,
+  ProblemStatus,
+} from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
 import { DashboardMetrics } from '@/domain/maintenance-problems/enterprise/entities/value-objects/dashboard-metrics'
 import { LocationsRepository } from '@/domain/maintenance-problems/application/repositories/locations-repository'
@@ -37,9 +40,11 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     return problem
   }
 
-  async findMany({ page, query }: FetchProblemsParams) {
-    // Filter out deleted problems
-    let problems = this.items.filter((problem) => !problem.isDeleted)
+  async findMany({ page, query, includeDeleted = false }: FetchProblemsParams) {
+    // Filter out deleted problems unless includeDeleted is true
+    let problems = includeDeleted
+      ? this.items
+      : this.items.filter((problem) => !problem.isDeleted)
 
     // Filter by query (case-insensitive search in title and description)
     if (query) {
@@ -64,9 +69,12 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
   async findManyWithDetails({
     page,
     query,
+    includeDeleted = false,
   }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
-    // Filter out deleted problems
-    let problems = this.items.filter((problem) => !problem.isDeleted)
+    // Filter out deleted problems unless includeDeleted is true
+    let problems = includeDeleted
+      ? this.items
+      : this.items.filter((problem) => !problem.isDeleted)
 
     // Filter by query (case-insensitive search in title and description)
     if (query) {
@@ -94,6 +102,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
 
         return new ProblemWithDetails({
           problemId: problem.id,
+          reporterId: problem.reporterId,
           title: problem.title,
           slug: problem.slug,
           excerpt: problem.excerpt,
@@ -101,6 +110,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
           locationName: location?.name ?? 'Local não informado',
           createdAt: problem.createdAt,
           updatedAt: problem.updatedAt,
+          deletedAt: problem.deletedAt,
         })
       }),
     )
@@ -184,7 +194,10 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     })
   }
 
-  async migrateUserProblems(fromUserId: string, toUserId: string): Promise<void> {
+  async migrateUserProblems(
+    fromUserId: string,
+    toUserId: string,
+  ): Promise<void> {
     // Find all problems belonging to the user
     const userProblems = this.items.filter(
       (problem) => problem.reporterId?.toValue() === fromUserId,

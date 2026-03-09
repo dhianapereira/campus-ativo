@@ -1,13 +1,24 @@
 import { BadRequestException, Controller, Get, Param } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiParam,
+  ApiExtraModels,
+} from '@nestjs/swagger'
 import { GetProblemBySlugUseCase } from '@/domain/maintenance-problems/application/use-cases/get-problem-by-slug'
+import { AttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/attachments-repository'
 import { ProblemPresenter } from '../presenters/problem-presenter'
 import { ProblemResponse } from '../dtos/interfaces.dto'
 
 @Controller('/problems/:slug')
 @ApiTags('Problems')
+@ApiExtraModels(ProblemResponse)
 export class GetProblemBySlugController {
-  constructor(private getProblemBySlug: GetProblemBySlugUseCase) {}
+  constructor(
+    private getProblemBySlug: GetProblemBySlugUseCase,
+    private attachmentsRepository: AttachmentsRepository,
+  ) {}
 
   @Get()
   @ApiOperation({
@@ -40,6 +51,13 @@ export class GetProblemBySlugController {
       throw new BadRequestException()
     }
 
-    return { problem: ProblemPresenter.toHTTP(result.value.problem) }
+    const problem = result.value.problem
+    const attachments = await this.attachmentsRepository.findManyByProblemId(
+      problem.id.toValue(),
+    )
+
+    return {
+      problem: ProblemPresenter.toHTTPWithAttachments(problem, attachments),
+    }
   }
 }

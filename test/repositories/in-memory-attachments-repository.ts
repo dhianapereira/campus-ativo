@@ -3,9 +3,17 @@ import { Attachment } from '@/domain/maintenance-problems/enterprise/entities/at
 
 export class InMemoryAttachmentsRepository implements AttachmentsRepository {
   public items: Attachment[] = []
+  // Map to track problemId -> attachmentIds relationship
+  public problemAttachmentMap: Map<string, string[]> = new Map()
 
-  async create(attachment: Attachment): Promise<void> {
+  async create(
+    attachment: Attachment,
+    options?: { problemId: string },
+  ): Promise<void> {
     this.items.push(attachment)
+    if (options?.problemId) {
+      this.linkAttachmentToProblem(attachment.id.toValue(), options.problemId)
+    }
   }
 
   async findById(id: string): Promise<Attachment | null> {
@@ -16,6 +24,21 @@ export class InMemoryAttachmentsRepository implements AttachmentsRepository {
     }
 
     return attachment
+  }
+
+  async findManyByProblemId(problemId: string): Promise<Attachment[]> {
+    const attachmentIds = this.problemAttachmentMap.get(problemId) ?? []
+    return this.items.filter((item) =>
+      attachmentIds.includes(item.id.toValue()),
+    )
+  }
+
+  // Helper method for tests to associate attachments with problems
+  linkAttachmentToProblem(attachmentId: string, problemId: string): void {
+    const existing = this.problemAttachmentMap.get(problemId) ?? []
+    if (!existing.includes(attachmentId)) {
+      this.problemAttachmentMap.set(problemId, [...existing, attachmentId])
+    }
   }
 
   async delete(attachment: Attachment): Promise<void> {

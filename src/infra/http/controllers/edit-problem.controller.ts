@@ -24,6 +24,7 @@ import { EditProblemRequest } from '../dtos/interfaces.dto'
 const editProblemBodySchema = z.object({
   title: z.string(),
   description: z.string(),
+  attachmentIds: z.array(z.string()).optional().default([]),
 })
 
 const bodyValidationPipe = new ZodValidationPipe(editProblemBodySchema)
@@ -64,14 +65,14 @@ export class EditProblemController {
     @CurrentUser() user: UserPayload,
     @Param('id') problemId: string,
   ) {
-    const { title, description } = body
+    const { title, description, attachmentIds } = body
     const userId = user.sub
 
     const result = await this.editProblem.execute({
       title,
       description,
       reporterId: userId,
-      attachmentsIds: [],
+      attachmentsIds: attachmentIds,
       problemId,
     })
 

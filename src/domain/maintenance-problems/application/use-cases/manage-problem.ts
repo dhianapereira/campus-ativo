@@ -1,5 +1,9 @@
 import { left, right, Either } from '@/core/either'
-import { Problem, ProblemStatus } from '../../enterprise/entities/problems/problem'
+import {
+  Problem,
+  ProblemStatus,
+  MaintenanceType,
+} from '../../enterprise/entities/problems/problem'
 import { ProblemsRepository } from '../repositories/problems-repository'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
@@ -7,7 +11,6 @@ import { Injectable } from '@nestjs/common'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { MaintenanceType } from '../../enterprise/entities/problems/problem'
 import { ProblemHistoryRepository } from '../repositories/problem-history-repository'
 import {
   ProblemHistory,
@@ -85,10 +88,7 @@ export class ManageProblemUseCase {
 
     if (categoryId !== undefined) {
       const newCategoryId = new UniqueEntityID(categoryId)
-      if (
-        !problem.categoryId ||
-        problem.categoryId.toValue() !== categoryId
-      ) {
+      if (!problem.categoryId || problem.categoryId.toValue() !== categoryId) {
         const oldCategoryId = problem.categoryId?.toValue() ?? null
         problem.changeCategory(newCategoryId)
 

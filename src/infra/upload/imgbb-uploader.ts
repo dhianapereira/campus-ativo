@@ -1,4 +1,8 @@
-import { ImageUploader, UploadParams, UploadResponse } from '@/domain/maintenance-problems/application/upload/image-uploader'
+import {
+  ImageUploader,
+  UploadParams,
+  UploadResponse,
+} from '@/domain/maintenance-problems/application/upload/image-uploader'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { Env } from '../env/env'
