@@ -19,6 +19,7 @@ export class PrismaLocationsRepository implements LocationsRepository {
   }: FetchLocationsParams): Promise<Location[]> {
     const locations = await this.prisma.location.findMany({
       where: {
+        purgedAt: null,
         ...(query && {
           OR: [
             {
@@ -76,6 +77,7 @@ export class PrismaLocationsRepository implements LocationsRepository {
           mode: 'insensitive',
         },
         deletedAt: null,
+        purgedAt: null,
       },
     })
 

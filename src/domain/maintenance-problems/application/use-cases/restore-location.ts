@@ -38,6 +38,10 @@ export class RestoreLocationUseCase {
       return left(new ResourceNotFoundError())
     }
 
+    if (location.isPurged || !location.isInTrash) {
+      return left(new NotAllowedError())
+    }
+
     location.restoreFromTrash()
 
     await this.locationsRepository.save(location)

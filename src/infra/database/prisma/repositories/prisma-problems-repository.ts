@@ -52,6 +52,7 @@ export class PrismaProblemsRepository implements ProblemsRepository {
   }: FetchProblemsParams): Promise<Problem[]> {
     const problems = await this.prisma.problem.findMany({
       where: {
+        purgedAt: null,
         ...(!includeDeleted && { deletedAt: null }),
         ...(query && {
           OR: [
@@ -87,6 +88,7 @@ export class PrismaProblemsRepository implements ProblemsRepository {
   }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
     const problems = await this.prisma.problem.findMany({
       where: {
+        purgedAt: null,
         ...(!includeDeleted && { deletedAt: null }),
         ...(query && {
           OR: [
@@ -155,6 +157,7 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     const totalProblems = await this.prisma.problem.count({
       where: {
         deletedAt: null,
+        purgedAt: null,
       },
     })
 
@@ -163,6 +166,7 @@ export class PrismaProblemsRepository implements ProblemsRepository {
       by: ['status'],
       where: {
         deletedAt: null,
+        purgedAt: null,
       },
       _count: {
         status: true,
@@ -173,6 +177,7 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     const recentProblems = await this.prisma.problem.count({
       where: {
         deletedAt: null,
+        purgedAt: null,
         createdAt: {
           gte: sevenDaysAgo,
         },
@@ -183,6 +188,7 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     const finishedProblems = await this.prisma.problem.findMany({
       where: {
         deletedAt: null,
+        purgedAt: null,
         status: 'FINISHED',
         updatedAt: {
           not: null,

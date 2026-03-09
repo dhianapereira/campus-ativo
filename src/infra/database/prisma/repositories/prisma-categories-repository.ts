@@ -19,6 +19,7 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
   }: FetchCategoriesParams): Promise<Category[]> {
     const categories = await this.prisma.category.findMany({
       where: {
+        purgedAt: null,
         ...(query && {
           OR: [
             {
@@ -70,6 +71,7 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
           mode: 'insensitive',
         },
         deletedAt: null,
+        purgedAt: null,
       },
     })
 

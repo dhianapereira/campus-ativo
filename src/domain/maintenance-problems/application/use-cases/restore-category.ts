@@ -38,6 +38,10 @@ export class RestoreCategoryUseCase {
       return left(new ResourceNotFoundError())
     }
 
+    if (category.isPurged || !category.isInTrash) {
+      return left(new NotAllowedError())
+    }
+
     category.restoreFromTrash()
 
     await this.categoriesRepository.save(category)

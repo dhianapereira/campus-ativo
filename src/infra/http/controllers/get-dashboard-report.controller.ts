@@ -62,6 +62,7 @@ export class GetDashboardReportController {
 
     const baseWhere = {
       deletedAt: null,
+      purgedAt: null,
       createdAt: {
         gte: startDate,
         lte: endDate,

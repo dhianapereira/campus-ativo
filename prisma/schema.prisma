@@ -63,7 +63,7 @@ model Problem {
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime?        @updatedAt @map("updated_at")
   deletedAt       DateTime?        @map("deleted_at")
-  isPermanentlyDeleted Boolean @default(false) @map("is_permanently_deleted")
+  purgedAt        DateTime?        @map("purged_at")
 
   reporter    User?               @relation(fields: [reporterId], references: [id], onDelete: SetNull)
   location    Location?           @relation(fields: [locationId], references: [id], onDelete: SetNull)
@@ -118,7 +118,7 @@ model Location {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
-  isPermanentlyDeleted Boolean @default(false) @map("is_permanently_deleted")
+  purgedAt    DateTime? @map("purged_at")
 
   problems Problem[]
 
@@ -133,7 +133,7 @@ model Category {
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime? @updatedAt @map("updated_at")
   deletedAt   DateTime? @map("deleted_at")
-  isPermanentlyDeleted Boolean @default(false) @map("is_permanently_deleted")
+  purgedAt    DateTime? @map("purged_at")
 
   problems Problem[]
 

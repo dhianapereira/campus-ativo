@@ -24,6 +24,7 @@ describe('Delete Category', () => {
     )
 
     await inMemoryCategoriesRepository.create(category)
+    category.moveToTrash()
 
     expect(inMemoryCategoriesRepository.items).toHaveLength(1)
 
@@ -34,15 +35,14 @@ describe('Delete Category', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryCategoriesRepository.items).toHaveLength(1)
-    expect(inMemoryCategoriesRepository.items[0].isPermanentlyDeleted).toBe(
-      true,
-    )
+    expect(inMemoryCategoriesRepository.items[0].purgedAt).toBeInstanceOf(Date)
   })
 
   it('should be able to delete a category as director', async () => {
     const category = makeCategory({}, new UniqueEntityID('category-1'))
 
     await inMemoryCategoriesRepository.create(category)
+    category.moveToTrash()
 
     const result = await sut.execute({
       categoryId: 'category-1',
@@ -51,15 +51,14 @@ describe('Delete Category', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryCategoriesRepository.items).toHaveLength(1)
-    expect(inMemoryCategoriesRepository.items[0].isPermanentlyDeleted).toBe(
-      true,
-    )
+    expect(inMemoryCategoriesRepository.items[0].purgedAt).toBeInstanceOf(Date)
   })
 
   it('should be able to delete a category as admin', async () => {
     const category = makeCategory({}, new UniqueEntityID('category-1'))
 
     await inMemoryCategoriesRepository.create(category)
+    category.moveToTrash()
 
     const result = await sut.execute({
       categoryId: 'category-1',
@@ -68,9 +67,7 @@ describe('Delete Category', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryCategoriesRepository.items).toHaveLength(1)
-    expect(inMemoryCategoriesRepository.items[0].isPermanentlyDeleted).toBe(
-      true,
-    )
+    expect(inMemoryCategoriesRepository.items[0].purgedAt).toBeInstanceOf(Date)
   })
 
   it('should not be able to delete a category as reporter', async () => {
@@ -96,5 +93,18 @@ describe('Delete Category', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should not be able to permanently delete a category that is not in trash', async () => {
+    const category = makeCategory({}, new UniqueEntityID('category-1'))
+    await inMemoryCategoriesRepository.create(category)
+
+    const result = await sut.execute({
+      categoryId: 'category-1',
+      userRole: UserRole.MANAGER,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })

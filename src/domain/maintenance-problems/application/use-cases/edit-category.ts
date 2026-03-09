@@ -45,7 +45,7 @@ export class EditCategoryUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    if (category.isInTrash) {
+    if (category.deletedAt) {
       return left(new CategoryInTrashError())
     }
 

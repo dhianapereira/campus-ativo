@@ -15,7 +15,10 @@ export class InMemoryLocationsRepository implements LocationsRepository {
   }: FetchLocationsParams) {
     let locations = this.items
 
-    // Filter by deleted status (default: exclude deleted)
+    // Purged entities are never listed.
+    locations = locations.filter((location) => !location.isPurged)
+
+    // Filter by deleted status (default: exclude trashed)
     if (!includeDeleted) {
       locations = locations.filter((location) => !location.isInTrash)
     }

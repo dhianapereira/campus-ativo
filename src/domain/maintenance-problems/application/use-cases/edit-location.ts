@@ -47,7 +47,7 @@ export class EditLocationUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    if (location.isInTrash) {
+    if (location.deletedAt) {
       return left(new LocationInTrashError())
     }
 

@@ -10,7 +10,7 @@ export interface LocationProps {
   createdAt: Date
   updatedAt?: Date | null
   deletedAt?: Date | null
-  isPermanentlyDeleted?: boolean
+  purgedAt?: Date | null
 }
 
 export class Location extends Entity<LocationProps> {
@@ -42,12 +42,16 @@ export class Location extends Entity<LocationProps> {
     return this.props.deletedAt
   }
 
-  get isPermanentlyDeleted() {
-    return this.props.isPermanentlyDeleted ?? false
+  get purgedAt() {
+    return this.props.purgedAt
+  }
+
+  get isPurged() {
+    return this.props.purgedAt !== null && this.props.purgedAt !== undefined
   }
 
   get isInTrash() {
-    return !!this.props.deletedAt && !this.isPermanentlyDeleted
+    return !!this.props.deletedAt && !this.isPurged
   }
 
   set name(name: string) {
@@ -72,19 +76,21 @@ export class Location extends Entity<LocationProps> {
 
   moveToTrash() {
     this.props.deletedAt = new Date()
-    this.props.isPermanentlyDeleted = false
     this.touch()
   }
 
   restoreFromTrash() {
+    if (this.isPurged) {
+      return
+    }
+
     this.props.deletedAt = null
-    this.props.isPermanentlyDeleted = false
     this.touch()
   }
 
   permanentDelete() {
-    this.props.deletedAt = new Date()
-    this.props.isPermanentlyDeleted = true
+    this.props.deletedAt = this.props.deletedAt ?? new Date()
+    this.props.purgedAt = new Date()
     this.touch()
   }
 

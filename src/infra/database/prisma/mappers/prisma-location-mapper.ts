@@ -13,7 +13,7 @@ export class PrismaLocationMapper {
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
         deletedAt: raw.deletedAt,
-        isPermanentlyDeleted: raw.isPermanentlyDeleted,
+        purgedAt: raw.purgedAt,
       },
       new UniqueEntityID(raw.id),
     )
@@ -29,7 +29,7 @@ export class PrismaLocationMapper {
       createdAt: location.createdAt,
       updatedAt: location.updatedAt,
       deletedAt: location.deletedAt,
-      isPermanentlyDeleted: location.isPermanentlyDeleted,
+      purgedAt: location.purgedAt,
     }
   }
 }

@@ -23,7 +23,7 @@ export class PrismaProblemMapper {
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
         deletedAt: raw.deletedAt,
-        isPermanentlyDeleted: raw.isPermanentlyDeleted,
+        purgedAt: raw.purgedAt,
       },
       new UniqueEntityID(raw.id),
     )
@@ -44,7 +44,7 @@ export class PrismaProblemMapper {
       createdAt: problem.createdAt,
       updatedAt: problem.updatedAt,
       deletedAt: problem.deletedAt,
-      isPermanentlyDeleted: problem.isPermanentlyDeleted,
+      purgedAt: problem.purgedAt,
     }
   }
 }

@@ -35,6 +35,11 @@ export class DeleteCategoryUseCase {
       return left(new ResourceNotFoundError())
     }
 
+    // Permanent delete is only allowed for categories already in trash.
+    if (!category.isInTrash || category.isPurged) {
+      return left(new NotAllowedError())
+    }
+
     // Check if category has associated problems
     const hasProblems =
       await this.categoriesRepository.hasAssociatedProblems(categoryId)

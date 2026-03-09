@@ -35,6 +35,11 @@ export class DeleteLocationUseCase {
       return left(new ResourceNotFoundError())
     }
 
+    // Permanent delete is only allowed for locations already in trash.
+    if (!location.isInTrash || location.isPurged) {
+      return left(new NotAllowedError())
+    }
+
     // Check if location has associated problems
     const hasProblems =
       await this.locationsRepository.hasAssociatedProblems(locationId)

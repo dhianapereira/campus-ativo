@@ -12,7 +12,7 @@ export class PrismaCategoryMapper {
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
         deletedAt: raw.deletedAt,
-        isPermanentlyDeleted: raw.isPermanentlyDeleted,
+        purgedAt: raw.purgedAt,
       },
       new UniqueEntityID(raw.id),
     )
@@ -27,7 +27,7 @@ export class PrismaCategoryMapper {
       createdAt: category.createdAt,
       updatedAt: category.updatedAt,
       deletedAt: category.deletedAt,
-      isPermanentlyDeleted: category.isPermanentlyDeleted,
+      purgedAt: category.purgedAt,
     }
   }
 }

@@ -31,7 +31,7 @@ export class GetDashboardMetricsController {
 
     const metrics = result.value.metrics
 
-    const baseWhere = { deletedAt: null }
+    const baseWhere = { deletedAt: null, purgedAt: null }
 
     const [topLocationsRaw, topCategoriesRaw, problemsForChart] =
       await Promise.all([

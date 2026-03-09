@@ -15,7 +15,10 @@ export class InMemoryCategoriesRepository implements CategoriesRepository {
   }: FetchCategoriesParams) {
     let categories = this.items
 
-    // Filter by deleted status (default: exclude deleted)
+    // Purged entities are never listed.
+    categories = categories.filter((category) => !category.isPurged)
+
+    // Filter by deleted status (default: exclude trashed)
     if (!includeDeleted) {
       categories = categories.filter((category) => !category.isInTrash)
     }

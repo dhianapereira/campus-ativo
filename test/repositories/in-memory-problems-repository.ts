@@ -41,10 +41,13 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
   }
 
   async findMany({ page, query, includeDeleted = false }: FetchProblemsParams) {
-    // Filter out deleted problems unless includeDeleted is true
-    let problems = includeDeleted
-      ? this.items
-      : this.items.filter((problem) => !problem.isDeleted)
+    // Purged problems are never listed.
+    let problems = this.items.filter((problem) => !problem.isPurged)
+
+    // Filter out trashed problems unless includeDeleted is true
+    if (!includeDeleted) {
+      problems = problems.filter((problem) => !problem.isDeleted)
+    }
 
     // Filter by query (case-insensitive search in title and description)
     if (query) {
@@ -71,10 +74,13 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     query,
     includeDeleted = false,
   }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
-    // Filter out deleted problems unless includeDeleted is true
-    let problems = includeDeleted
-      ? this.items
-      : this.items.filter((problem) => !problem.isDeleted)
+    // Purged problems are never listed.
+    let problems = this.items.filter((problem) => !problem.isPurged)
+
+    // Filter out trashed problems unless includeDeleted is true
+    if (!includeDeleted) {
+      problems = problems.filter((problem) => !problem.isDeleted)
+    }
 
     // Filter by query (case-insensitive search in title and description)
     if (query) {
@@ -142,7 +148,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
-    // Filter out deleted problems
+    // Filter out trashed/purged problems
     const activeProblems = this.items.filter((problem) => !problem.isDeleted)
 
     // Count total problems

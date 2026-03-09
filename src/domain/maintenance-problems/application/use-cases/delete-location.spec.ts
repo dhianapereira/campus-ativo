@@ -19,6 +19,7 @@ describe('Delete Location', () => {
     const location = makeLocation({}, new UniqueEntityID('location-1'))
 
     await inMemoryLocationsRepository.create(location)
+    location.moveToTrash()
 
     const result = await sut.execute({
       locationId: 'location-1',
@@ -27,13 +28,14 @@ describe('Delete Location', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryLocationsRepository.items).toHaveLength(1)
-    expect(inMemoryLocationsRepository.items[0].isPermanentlyDeleted).toBe(true)
+    expect(inMemoryLocationsRepository.items[0].purgedAt).toBeInstanceOf(Date)
   })
 
   it('should be able to delete a location permanently as director', async () => {
     const location = makeLocation({}, new UniqueEntityID('location-1'))
 
     await inMemoryLocationsRepository.create(location)
+    location.moveToTrash()
 
     const result = await sut.execute({
       locationId: 'location-1',
@@ -42,13 +44,14 @@ describe('Delete Location', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryLocationsRepository.items).toHaveLength(1)
-    expect(inMemoryLocationsRepository.items[0].isPermanentlyDeleted).toBe(true)
+    expect(inMemoryLocationsRepository.items[0].purgedAt).toBeInstanceOf(Date)
   })
 
   it('should be able to delete a location permanently as admin', async () => {
     const location = makeLocation({}, new UniqueEntityID('location-1'))
 
     await inMemoryLocationsRepository.create(location)
+    location.moveToTrash()
 
     const result = await sut.execute({
       locationId: 'location-1',
@@ -57,7 +60,7 @@ describe('Delete Location', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryLocationsRepository.items).toHaveLength(1)
-    expect(inMemoryLocationsRepository.items[0].isPermanentlyDeleted).toBe(true)
+    expect(inMemoryLocationsRepository.items[0].purgedAt).toBeInstanceOf(Date)
   })
 
   it('should not be able to delete a location permanently as reporter', async () => {
@@ -83,5 +86,18 @@ describe('Delete Location', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should not be able to permanently delete a location that is not in trash', async () => {
+    const location = makeLocation({}, new UniqueEntityID('location-1'))
+    await inMemoryLocationsRepository.create(location)
+
+    const result = await sut.execute({
+      locationId: 'location-1',
+      userRole: UserRole.MANAGER,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })
