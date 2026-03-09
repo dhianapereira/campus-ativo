@@ -4,7 +4,6 @@ import { UsersRepository } from '../repositories/users-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ProblemsRepository } from '@/domain/maintenance-problems/application/repositories/problems-repository'
-import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 interface DeleteUserAccountUseCaseRequest {
   userId: string
@@ -33,8 +32,8 @@ export class DeleteUserAccountUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Only the user can delete their own account, unless it's an admin
-    if (executorId !== userId && user.role !== UserRole.ADMIN) {
+    // Only the user can delete their own account
+    if (executorId !== userId) {
       return left(new NotAllowedError())
     }
 
