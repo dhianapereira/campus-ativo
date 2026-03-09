@@ -71,5 +71,12 @@
     "unplugin-swc": "1.5.4",
     "vite-tsconfig-paths": "5.1.4",
     "vitest": "3.2.3"
+  },
+  "overrides": {
+    "@hono/node-server": "1.19.11",
+    "@mrleebo/prisma-ast": "0.14.0",
+    "ajv": "8.18.0",
+    "hono": "4.12.5",
+    "lodash": "4.17.23"
   }
 }
