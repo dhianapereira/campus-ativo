@@ -10,19 +10,27 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateAccountRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccountRequest"
+              }
             }
           }
         },
         "responses": {
-          "201": { "description": "Conta criada com sucesso" },
+          "201": {
+            "description": "Conta criada com sucesso"
+          },
           "400": {
             "description": "Dados inválidos ou domínio de email não permitido"
           },
-          "409": { "description": "Não foi possível completar o cadastro. Verifique suas informações." }
+          "409": {
+            "description": "Não foi possível completar o cadastro. Verifique suas informações."
+          }
         },
         "summary": "Criar conta",
-        "tags": ["Authentication"]
+        "tags": [
+          "Authentication"
+        ]
       }
     },
     "/sessions": {
@@ -34,7 +42,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/AuthenticateRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticateRequest"
+              }
             }
           }
         },
@@ -49,11 +59,17 @@
               }
             }
           },
-          "400": { "description": "Dados inválidos" },
-          "401": { "description": "Credenciais inválidas" }
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "401": {
+            "description": "Credenciais inválidas"
+          }
         },
         "summary": "Autenticar usuário",
-        "tags": ["Authentication"]
+        "tags": [
+          "Authentication"
+        ]
       }
     },
     "/sessions/logout": {
@@ -62,11 +78,17 @@
         "operationId": "LogoutController_handle",
         "parameters": [],
         "responses": {
-          "204": { "description": "Logout realizado com sucesso" },
-          "401": { "description": "Token inválido ou não fornecido" }
+          "204": {
+            "description": "Logout realizado com sucesso"
+          },
+          "401": {
+            "description": "Token inválido ou não fornecido"
+          }
         },
         "summary": "Logout do usuário",
-        "tags": ["Authentication"]
+        "tags": [
+          "Authentication"
+        ]
       }
     },
     "/profile": {
@@ -79,16 +101,28 @@
             "description": "Perfil do usuário retornado com sucesso",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/UserResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
               }
             }
           },
-          "401": { "description": "Token JWT inválido ou expirado" },
-          "404": { "description": "Usuário não encontrado" }
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
+          "404": {
+            "description": "Usuário não encontrado"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Obter perfil do usuário",
-        "tags": ["User Profile"]
+        "tags": [
+          "User Profile"
+        ]
       }
     },
     "/users": {
@@ -101,14 +135,20 @@
             "required": false,
             "in": "query",
             "description": "Termo de busca para filtrar usuários por nome ou email",
-            "schema": { "example": "João", "type": "string" }
+            "schema": {
+              "example": "João",
+              "type": "string"
+            }
           },
           {
             "name": "isActive",
             "required": false,
             "in": "query",
             "description": "Filtrar usuários por status (true para ativos, false para inativos)",
-            "schema": { "example": true, "type": "boolean" }
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
           }
         ],
         "responses": {
@@ -128,7 +168,10 @@
                             "type": "string",
                             "example": "123e4567-e89b-12d3-a456-426614174000"
                           },
-                          "name": { "type": "string", "example": "João Silva" },
+                          "name": {
+                            "type": "string",
+                            "example": "João Silva"
+                          },
                           "email": {
                             "type": "string",
                             "example": "joao.silva@ifal.edu.br"
@@ -149,7 +192,8 @@
                           },
                           "isActive": {
                             "type": "boolean",
-                            "example": true
+                            "example": true,
+                            "description": "Indica se o usuário está ativo no sistema"
                           }
                         }
                       }
@@ -159,14 +203,22 @@
               }
             }
           },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer DIRECTOR+)"
           }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Listar usuários",
-        "tags": ["User Management"]
+        "tags": [
+          "User Management"
+        ]
       }
     },
     "/users/{id}/role": {
@@ -195,11 +247,18 @@
                 "properties": {
                   "role": {
                     "type": "string",
-                    "enum": ["REPORTER", "MANAGER", "DIRECTOR", "ADMIN"],
+                    "enum": [
+                      "REPORTER",
+                      "MANAGER",
+                      "DIRECTOR",
+                      "ADMIN"
+                    ],
                     "example": "MANAGER"
                   }
                 },
-                "required": ["role"]
+                "required": [
+                  "role"
+                ]
               }
             }
           }
@@ -221,16 +280,28 @@
               }
             }
           },
-          "400": { "description": "Dados inválidos" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão para esta operação"
           },
-          "404": { "description": "Usuário não encontrado" }
+          "404": {
+            "description": "Usuário não encontrado"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Alterar role do usuário",
-        "tags": ["User Management"]
+        "tags": [
+          "User Management"
+        ]
       }
     },
     "/users/{id}/status": {
@@ -263,7 +334,9 @@
                     "description": "true para ativar, false para desativar"
                   }
                 },
-                "required": ["isActive"]
+                "required": [
+                  "isActive"
+                ]
               }
             }
           }
@@ -285,16 +358,28 @@
               }
             }
           },
-          "400": { "description": "Dados inválidos" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão para esta operação"
           },
-          "404": { "description": "Usuário não encontrado" }
+          "404": {
+            "description": "Usuário não encontrado"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Alterar status do usuário",
-        "tags": ["User Management"]
+        "tags": [
+          "User Management"
+        ]
       }
     },
     "/users/{id}/profile": {
@@ -332,7 +417,10 @@
                     "description": "Cargo do usuário"
                   }
                 },
-                "required": ["name", "position"]
+                "required": [
+                  "name",
+                  "position"
+                ]
               }
             }
           }
@@ -354,16 +442,28 @@
               }
             }
           },
-          "400": { "description": "Dados inválidos" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão para editar este perfil"
           },
-          "404": { "description": "Usuário não encontrado" }
+          "404": {
+            "description": "Usuário não encontrado"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Editar perfil do usuário",
-        "tags": ["User Profile"]
+        "tags": [
+          "User Profile"
+        ]
       }
     },
     "/users/{id}/password": {
@@ -403,7 +503,10 @@
                     "minLength": 6
                   }
                 },
-                "required": ["oldPassword", "newPassword"]
+                "required": [
+                  "oldPassword",
+                  "newPassword"
+                ]
               }
             }
           }
@@ -425,18 +528,28 @@
               }
             }
           },
-          "400": { "description": "Dados inválidos" },
+          "400": {
+            "description": "Dados inválidos"
+          },
           "401": {
             "description": "Senha antiga incorreta ou token JWT inválido"
           },
           "403": {
             "description": "Usuário não tem permissão para alterar esta senha"
           },
-          "404": { "description": "Usuário não encontrado" }
+          "404": {
+            "description": "Usuário não encontrado"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Alterar senha do usuário",
-        "tags": ["User Profile"]
+        "tags": [
+          "User Profile"
+        ]
       }
     },
     "/users/{id}": {
@@ -472,15 +585,25 @@
               }
             }
           },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão para deletar esta conta"
           },
-          "404": { "description": "Usuário não encontrado" }
+          "404": {
+            "description": "Usuário não encontrado"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Deletar conta do usuário",
-        "tags": ["User Profile"]
+        "tags": [
+          "User Profile"
+        ]
       }
     },
     "/problems": {
@@ -492,18 +615,32 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateProblemRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/CreateProblemRequest"
+              }
             }
           }
         },
         "responses": {
-          "201": { "description": "Problema criado com sucesso" },
-          "400": { "description": "Dados inválidos" },
-          "401": { "description": "Token JWT inválido ou expirado" }
+          "201": {
+            "description": "Problema criado com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Criar problema",
-        "tags": ["Problems"]
+        "tags": [
+          "Problems"
+        ]
       },
       "get": {
         "description": "Retorna uma lista paginada de problemas reportados no sistema com informações de localização",
@@ -514,21 +651,30 @@
             "required": false,
             "in": "query",
             "description": "Número da página (começa em 1)",
-            "schema": { "example": 1, "type": "number" }
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
           },
           {
             "name": "includeDeleted",
             "required": false,
             "in": "query",
             "description": "Incluir problemas deletados (na lixeira)",
-            "schema": { "example": false, "type": "boolean" }
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
           },
           {
             "name": "query",
             "required": false,
             "in": "query",
             "description": "Termo de busca para filtrar problemas por título ou descrição",
-            "schema": { "example": "ar condicionado", "type": "string" }
+            "schema": {
+              "example": "ar condicionado",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -550,10 +696,14 @@
               }
             }
           },
-          "400": { "description": "Parâmetros inválidos" }
+          "400": {
+            "description": "Parâmetros inválidos"
+          }
         },
         "summary": "Buscar problemas",
-        "tags": ["Problems"]
+        "tags": [
+          "Problems"
+        ]
       }
     },
     "/problems/{slug}": {
@@ -588,11 +738,17 @@
               }
             }
           },
-          "400": { "description": "Slug inválido" },
-          "404": { "description": "Problema não encontrado" }
+          "400": {
+            "description": "Slug inválido"
+          },
+          "404": {
+            "description": "Problema não encontrado"
+          }
         },
         "summary": "Buscar problema por slug",
-        "tags": ["Problems"]
+        "tags": [
+          "Problems"
+        ]
       }
     },
     "/categories": {
@@ -605,28 +761,40 @@
             "required": false,
             "in": "query",
             "description": "Número da página (começa em 1)",
-            "schema": { "example": 1, "type": "number" }
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
           },
           {
             "name": "includeDeleted",
             "required": false,
             "in": "query",
             "description": "Incluir categorias deletadas (na lixeira)",
-            "schema": { "example": false, "type": "boolean" }
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
           },
           {
             "name": "isActive",
             "required": false,
             "in": "query",
             "description": "Filtrar por status ativo/inativo",
-            "schema": { "example": true, "type": "boolean" }
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
           },
           {
             "name": "query",
             "required": false,
             "in": "query",
             "description": "Busca por nome ou descrição",
-            "schema": { "example": "Climatização", "type": "string" }
+            "schema": {
+              "example": "Climatização",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -648,10 +816,14 @@
               }
             }
           },
-          "400": { "description": "Parâmetros inválidos" }
+          "400": {
+            "description": "Parâmetros inválidos"
+          }
         },
         "summary": "Buscar categorias",
-        "tags": ["Categories"]
+        "tags": [
+          "Categories"
+        ]
       },
       "post": {
         "description": "Cria uma nova categoria de problema (requer role MANAGER+)",
@@ -661,21 +833,35 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateCategoryRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryRequest"
+              }
             }
           }
         },
         "responses": {
-          "201": { "description": "Categoria criada com sucesso" },
-          "400": { "description": "Dados inválidos" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "201": {
+            "description": "Categoria criada com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer MANAGER+)"
           }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Criar categoria",
-        "tags": ["Categories"]
+        "tags": [
+          "Categories"
+        ]
       }
     },
     "/categories/{id}": {
@@ -698,22 +884,38 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/EditCategoryRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/EditCategoryRequest"
+              }
             }
           }
         },
         "responses": {
-          "204": { "description": "Categoria editada com sucesso" },
-          "400": { "description": "Dados inválidos ou categoria na lixeira" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "204": {
+            "description": "Categoria editada com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos ou categoria na lixeira"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer MANAGER+)"
           },
-          "404": { "description": "Categoria não encontrada" }
+          "404": {
+            "description": "Categoria não encontrada"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Editar categoria",
-        "tags": ["Categories"]
+        "tags": [
+          "Categories"
+        ]
       },
       "delete": {
         "description": "Deleta permanentemente uma categoria do sistema (requer role MANAGER+)",
@@ -731,17 +933,31 @@
           }
         ],
         "responses": {
-          "204": { "description": "Categoria deletada com sucesso" },
-          "400": { "description": "Categoria não encontrada" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "204": {
+            "description": "Categoria deletada com sucesso"
+          },
+          "400": {
+            "description": "Categoria não encontrada"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer MANAGER+)"
           },
-          "404": { "description": "Categoria não encontrada" }
+          "404": {
+            "description": "Categoria não encontrada"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Deletar categoria",
-        "tags": ["Categories"]
+        "tags": [
+          "Categories"
+        ]
       }
     },
     "/categories/{id}/trash": {
@@ -761,17 +977,31 @@
           }
         ],
         "responses": {
-          "204": { "description": "Categoria movida para lixeira com sucesso" },
-          "400": { "description": "Categoria não encontrada" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "204": {
+            "description": "Categoria movida para lixeira com sucesso"
+          },
+          "400": {
+            "description": "Categoria não encontrada"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer MANAGER+)"
           },
-          "404": { "description": "Categoria não encontrada" }
+          "404": {
+            "description": "Categoria não encontrada"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Mover categoria para lixeira",
-        "tags": ["Categories"]
+        "tags": [
+          "Categories"
+        ]
       }
     },
     "/categories/{id}/restore": {
@@ -791,17 +1021,31 @@
           }
         ],
         "responses": {
-          "204": { "description": "Categoria restaurada com sucesso" },
-          "400": { "description": "Categoria não encontrada" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "204": {
+            "description": "Categoria restaurada com sucesso"
+          },
+          "400": {
+            "description": "Categoria não encontrada"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer MANAGER+)"
           },
-          "404": { "description": "Categoria não encontrada" }
+          "404": {
+            "description": "Categoria não encontrada"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Restaurar categoria da lixeira",
-        "tags": ["Categories"]
+        "tags": [
+          "Categories"
+        ]
       }
     },
     "/locations": {
@@ -813,21 +1057,35 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateLocationRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/CreateLocationRequest"
+              }
             }
           }
         },
         "responses": {
-          "201": { "description": "Localização criada com sucesso" },
-          "400": { "description": "Dados inválidos" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "201": {
+            "description": "Localização criada com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer MANAGER+)"
           }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Criar localização",
-        "tags": ["Locations"]
+        "tags": [
+          "Locations"
+        ]
       },
       "get": {
         "description": "Retorna uma lista paginada de localizações disponíveis no sistema",
@@ -838,28 +1096,40 @@
             "required": false,
             "in": "query",
             "description": "Número da página (começa em 1)",
-            "schema": { "example": 1, "type": "number" }
+            "schema": {
+              "example": 1,
+              "type": "number"
+            }
           },
           {
             "name": "includeDeleted",
             "required": false,
             "in": "query",
             "description": "Incluir localizações deletadas (na lixeira)",
-            "schema": { "example": false, "type": "boolean" }
+            "schema": {
+              "example": false,
+              "type": "boolean"
+            }
           },
           {
             "name": "isActive",
             "required": false,
             "in": "query",
             "description": "Filtrar por status ativo/inativo",
-            "schema": { "example": true, "type": "boolean" }
+            "schema": {
+              "example": true,
+              "type": "boolean"
+            }
           },
           {
             "name": "query",
             "required": false,
             "in": "query",
             "description": "Termo de busca para filtrar localizações por nome, código ou descrição",
-            "schema": { "example": "Bloco A", "type": "string" }
+            "schema": {
+              "example": "Bloco A",
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -881,10 +1151,14 @@
               }
             }
           },
-          "400": { "description": "Parâmetros inválidos" }
+          "400": {
+            "description": "Parâmetros inválidos"
+          }
         },
         "summary": "Buscar localizações",
-        "tags": ["Locations"]
+        "tags": [
+          "Locations"
+        ]
       }
     },
     "/locations/{id}": {
@@ -907,22 +1181,38 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/EditLocationRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/EditLocationRequest"
+              }
             }
           }
         },
         "responses": {
-          "204": { "description": "Localização editada com sucesso" },
-          "400": { "description": "Dados inválidos ou localização na lixeira" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "204": {
+            "description": "Localização editada com sucesso"
+          },
+          "400": {
+            "description": "Dados inválidos ou localização na lixeira"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer MANAGER+)"
           },
-          "404": { "description": "Localização não encontrada" }
+          "404": {
+            "description": "Localização não encontrada"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Editar localização",
-        "tags": ["Locations"]
+        "tags": [
+          "Locations"
+        ]
       },
       "delete": {
         "description": "Deleta permanentemente uma localização do sistema (requer role MANAGER+)",
@@ -940,17 +1230,31 @@
           }
         ],
         "responses": {
-          "204": { "description": "Localização deletada com sucesso" },
-          "400": { "description": "Localização não encontrada" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "204": {
+            "description": "Localização deletada com sucesso"
+          },
+          "400": {
+            "description": "Localização não encontrada"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer MANAGER+)"
           },
-          "404": { "description": "Localização não encontrada" }
+          "404": {
+            "description": "Localização não encontrada"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Deletar localização",
-        "tags": ["Locations"]
+        "tags": [
+          "Locations"
+        ]
       }
     },
     "/locations/{id}/trash": {
@@ -973,16 +1277,28 @@
           "204": {
             "description": "Localização movida para lixeira com sucesso"
           },
-          "400": { "description": "Localização não encontrada" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "400": {
+            "description": "Localização não encontrada"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer MANAGER+)"
           },
-          "404": { "description": "Localização não encontrada" }
+          "404": {
+            "description": "Localização não encontrada"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Mover localização para lixeira",
-        "tags": ["Locations"]
+        "tags": [
+          "Locations"
+        ]
       }
     },
     "/locations/{id}/restore": {
@@ -1002,17 +1318,31 @@
           }
         ],
         "responses": {
-          "204": { "description": "Localização restaurada com sucesso" },
-          "400": { "description": "Localização não encontrada" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "204": {
+            "description": "Localização restaurada com sucesso"
+          },
+          "400": {
+            "description": "Localização não encontrada"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (requer MANAGER+)"
           },
-          "404": { "description": "Localização não encontrada" }
+          "404": {
+            "description": "Localização não encontrada"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Restaurar localização da lixeira",
-        "tags": ["Locations"]
+        "tags": [
+          "Locations"
+        ]
       }
     },
     "/problems/{id}": {
@@ -1035,21 +1365,35 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/EditProblemRequest" }
+              "schema": {
+                "$ref": "#/components/schemas/EditProblemRequest"
+              }
             }
           }
         },
         "responses": {
-          "204": { "description": "Problema editado com sucesso" },
+          "204": {
+            "description": "Problema editado com sucesso"
+          },
           "400": {
             "description": "Dados inválidos ou usuário não tem permissão"
           },
-          "401": { "description": "Token JWT inválido ou expirado" },
-          "404": { "description": "Problema não encontrado" }
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
+          "404": {
+            "description": "Problema não encontrado"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Editar problema",
-        "tags": ["Problems"]
+        "tags": [
+          "Problems"
+        ]
       },
       "delete": {
         "description": "Deleta um problema do sistema. Apenas o criador do problema pode deletá-lo.",
@@ -1067,16 +1411,28 @@
           }
         ],
         "responses": {
-          "204": { "description": "Problema deletado com sucesso" },
+          "204": {
+            "description": "Problema deletado com sucesso"
+          },
           "400": {
             "description": "Usuário não tem permissão ou problema não encontrado"
           },
-          "401": { "description": "Token JWT inválido ou expirado" },
-          "404": { "description": "Problema não encontrado" }
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
+          "404": {
+            "description": "Problema não encontrado"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Deletar problema",
-        "tags": ["Problems"]
+        "tags": [
+          "Problems"
+        ]
       }
     },
     "/problems/{id}/trash": {
@@ -1096,18 +1452,28 @@
           }
         ],
         "responses": {
-          "204": { "description": "Problema movido para lixeira com sucesso" },
+          "204": {
+            "description": "Problema movido para lixeira com sucesso"
+          },
           "400": {
             "description": "Problema não encontrado ou não pode ser deletado"
           },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (apenas o autor pode mover para lixeira)"
           }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Mover problema para lixeira",
-        "tags": ["Problems"]
+        "tags": [
+          "Problems"
+        ]
       }
     },
     "/problems/{id}/restore": {
@@ -1127,16 +1493,28 @@
           }
         ],
         "responses": {
-          "204": { "description": "Problema restaurado com sucesso" },
-          "400": { "description": "Problema não encontrado" },
-          "401": { "description": "Token JWT inválido ou expirado" },
+          "204": {
+            "description": "Problema restaurado com sucesso"
+          },
+          "400": {
+            "description": "Problema não encontrado"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
           "403": {
             "description": "Usuário não tem permissão (apenas o autor pode restaurar)"
           }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Restaurar problema da lixeira",
-        "tags": ["Problems"]
+        "tags": [
+          "Problems"
+        ]
       }
     },
     "/attachments": {
@@ -1182,12 +1560,165 @@
               }
             }
           },
-          "400": { "description": "Arquivo inválido" },
-          "401": { "description": "Token JWT inválido ou expirado" }
+          "400": {
+            "description": "Arquivo inválido"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          }
         },
-        "security": [{ "JWT-auth": [] }],
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
         "summary": "Upload de imagem",
-        "tags": ["Attachments"]
+        "tags": [
+          "Attachments"
+        ]
+      }
+    },
+    "/integrations/google-sheet/sync": {
+      "post": {
+        "description": "Importa novos problemas da planilha do Google Forms. Evita duplicatas usando o índice da linha.",
+        "operationId": "SyncGoogleSheetController_handle",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "spreadsheetId": {
+                    "type": "string",
+                    "description": "ID da planilha (da URL: docs.google.com/spreadsheets/d/{ID}/edit)"
+                  },
+                  "sheetName": {
+                    "type": "string",
+                    "description": "Nome da aba (padrão: Formulário 1)"
+                  }
+                },
+                "required": [
+                  "spreadsheetId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Sincronização concluída",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "imported": {
+                      "type": "number"
+                    },
+                    "skipped": {
+                      "type": "number"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          },
+          "403": {
+            "description": "Usuário não tem permissão (requer MANAGER+)"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Sincronizar problemas do Google Sheets",
+        "tags": [
+          "Integrations"
+        ]
+      }
+    },
+    "/dashboard/metrics": {
+      "get": {
+        "description": "Retorna métricas para o dashboard: contagens por status, top 3 setores, top 3 categorias e manutenção preventiva vs corretiva por mês.",
+        "operationId": "GetDashboardMetricsController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Métricas retornadas com sucesso"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Métricas do dashboard",
+        "tags": [
+          "Dashboard"
+        ]
+      }
+    },
+    "/dashboard/report": {
+      "get": {
+        "description": "Retorna dados agregados e lista de problemas em um período para geração de relatório.",
+        "operationId": "GetDashboardReportController_handle",
+        "parameters": [
+          {
+            "name": "startDate",
+            "required": true,
+            "in": "query",
+            "description": "Data inicial do período (ISO 8601)",
+            "schema": {
+              "example": "2025-01-01T00:00:00.000Z",
+              "type": "string"
+            }
+          },
+          {
+            "name": "endDate",
+            "required": true,
+            "in": "query",
+            "description": "Data final do período (ISO 8601)",
+            "schema": {
+              "example": "2025-01-31T23:59:59.999Z",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dados do relatório"
+          },
+          "400": {
+            "description": "Datas inválidas"
+          },
+          "401": {
+            "description": "Token JWT inválido ou expirado"
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Dados para relatório em PDF",
+        "tags": [
+          "Dashboard"
+        ]
       }
     }
   },
@@ -1236,7 +1767,12 @@
             "minLength": 6
           }
         },
-        "required": ["name", "position", "email", "password"]
+        "required": [
+          "name",
+          "position",
+          "email",
+          "password"
+        ]
       },
       "AuthenticateRequest": {
         "type": "object",
@@ -1252,7 +1788,10 @@
             "example": "123456789"
           }
         },
-        "required": ["email", "password"]
+        "required": [
+          "email",
+          "password"
+        ]
       },
       "AuthenticateResponse": {
         "type": "object",
@@ -1263,7 +1802,9 @@
             "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
           }
         },
-        "required": ["access_token"]
+        "required": [
+          "access_token"
+        ]
       },
       "UserResponse": {
         "type": "object",
@@ -1291,11 +1832,22 @@
           "role": {
             "type": "string",
             "description": "Role do usuário",
-            "enum": ["REPORTER", "MANAGER", "DIRECTOR", "ADMIN"],
+            "enum": [
+              "REPORTER",
+              "MANAGER",
+              "DIRECTOR",
+              "ADMIN"
+            ],
             "example": "REPORTER"
           }
         },
-        "required": ["id", "name", "email", "position", "role"]
+        "required": [
+          "id",
+          "name",
+          "email",
+          "position",
+          "role"
+        ]
       },
       "CreateProblemRequest": {
         "type": "object",
@@ -1322,12 +1874,21 @@
           },
           "attachmentIds": {
             "description": "IDs dos anexos (retornados pelo upload)",
-            "example": ["123e4567-e89b-12d3-a456-426614174002"],
+            "example": [
+              "123e4567-e89b-12d3-a456-426614174002"
+            ],
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           }
         },
-        "required": ["title", "description", "categoryId", "locationId"]
+        "required": [
+          "title",
+          "description",
+          "categoryId",
+          "locationId"
+        ]
       },
       "AttachmentInfo": {
         "type": "object",
@@ -1348,7 +1909,11 @@
             "example": "https://i.ibb.co/xxxxx/foto-ar-condicionado.jpg"
           }
         },
-        "required": ["id", "title", "url"]
+        "required": [
+          "id",
+          "title",
+          "url"
+        ]
       },
       "ProblemResponse": {
         "type": "object",
@@ -1411,7 +1976,10 @@
           "maintenanceType": {
             "type": "string",
             "description": "Tipo de manutenção",
-            "enum": ["PREVENTIVE", "CORRECTIVE"],
+            "enum": [
+              "PREVENTIVE",
+              "CORRECTIVE"
+            ],
             "example": "CORRECTIVE",
             "nullable": true
           },
@@ -1436,7 +2004,9 @@
           "attachments": {
             "description": "Anexos do problema",
             "type": "array",
-            "items": { "$ref": "#/components/schemas/AttachmentInfo" }
+            "items": {
+              "$ref": "#/components/schemas/AttachmentInfo"
+            }
           }
         },
         "required": [
@@ -1464,7 +2034,10 @@
             "example": "Problemas relacionados a ar condicionado, ventilação e climatização"
           }
         },
-        "required": ["name", "description"]
+        "required": [
+          "name",
+          "description"
+        ]
       },
       "EditCategoryRequest": {
         "type": "object",
@@ -1505,7 +2078,11 @@
             "example": "BLA-201"
           }
         },
-        "required": ["name", "description", "code"]
+        "required": [
+          "name",
+          "description",
+          "code"
+        ]
       },
       "EditLocationRequest": {
         "type": "object",
@@ -1547,12 +2124,19 @@
           },
           "attachmentIds": {
             "description": "IDs dos anexos. Envie array vazio para remover todos os anexos.",
-            "example": ["123e4567-e89b-12d3-a456-426614174002"],
+            "example": [
+              "123e4567-e89b-12d3-a456-426614174002"
+            ],
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           }
         },
-        "required": ["title", "description"]
+        "required": [
+          "title",
+          "description"
+        ]
       }
     }
   }
