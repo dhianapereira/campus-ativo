@@ -8,7 +8,6 @@ export interface ProblemWithDetailsProps {
   slug: Slug
   excerpt: string
   locationId: UniqueEntityID
-  locationName: string
   createdAt: Date
   updatedAt?: Date | null
   deletedAt?: Date | null
@@ -21,7 +20,6 @@ export class ProblemWithDetails {
   public slug: Slug
   public excerpt: string
   public locationId: UniqueEntityID
-  public locationName: string
   public createdAt: Date
   public updatedAt?: Date | null
   public deletedAt?: Date | null
@@ -33,7 +31,6 @@ export class ProblemWithDetails {
     this.slug = props.slug
     this.excerpt = props.excerpt
     this.locationId = props.locationId
-    this.locationName = props.locationName
     this.createdAt = props.createdAt
     this.updatedAt = props.updatedAt
     this.deletedAt = props.deletedAt

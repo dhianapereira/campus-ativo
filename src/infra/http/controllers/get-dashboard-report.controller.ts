@@ -103,10 +103,10 @@ export class GetDashboardReportController {
         select: {
           title: true,
           description: true,
-          locationName: true,
           createdAt: true,
           status: true,
           maintenanceType: true,
+          location: { select: { name: true } },
           category: { select: { name: true } },
         },
         orderBy: { createdAt: 'asc' },
@@ -196,7 +196,7 @@ export class GetDashboardReportController {
       problems: problems.map((p) => ({
         title: p.title,
         description: p.description,
-        location: p.locationName ?? '-',
+        location: p.location?.name ?? '-',
         createdAt: p.createdAt.toISOString(),
         status: statusLabels[p.status] ?? p.status,
         category: p.category?.name ?? '-',

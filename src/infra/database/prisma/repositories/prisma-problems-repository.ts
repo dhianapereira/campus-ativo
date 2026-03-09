@@ -107,9 +107,6 @@ export class PrismaProblemsRepository implements ProblemsRepository {
           ],
         }),
       },
-      include: {
-        location: true,
-      },
       orderBy: {
         createdAt: 'desc',
       },

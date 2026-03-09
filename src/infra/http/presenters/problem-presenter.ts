@@ -53,7 +53,6 @@ export class ProblemPresenter {
       excerpt: problem.excerpt,
       location: {
         id: problem.locationId.toValue(),
-        name: problem.locationName,
       },
       createdAt: problem.createdAt,
       updatedAt: problem.updatedAt,

@@ -13,7 +13,6 @@ export class PrismaProblemMapper {
       {
         reporterId: raw.reporterId ? new UniqueEntityID(raw.reporterId) : null,
         locationId: raw.locationId ? new UniqueEntityID(raw.locationId) : null,
-        locationName: raw.locationName,
         categoryId: raw.categoryId ? new UniqueEntityID(raw.categoryId) : null,
         slug: Slug.create(raw.slug),
         title: raw.title,
@@ -35,7 +34,6 @@ export class PrismaProblemMapper {
       reporterId: problem.reporterId?.toValue() ?? null,
       categoryId: problem.categoryId?.toValue() ?? null,
       locationId: problem.locationId?.toValue() ?? null,
-      locationName: problem.locationName,
       title: problem.title,
       description: problem.description,
       slug: problem.slug.value,

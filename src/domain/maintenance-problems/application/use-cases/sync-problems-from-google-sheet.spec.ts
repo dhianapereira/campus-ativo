@@ -167,7 +167,7 @@ describe('Sync Problems From Google Sheet', () => {
     expect(inMemoryProblemsRepository.items).toHaveLength(0)
   })
 
-  it('deve criar problema com locationName quando localização não existe no sistema', async () => {
+  it('deve registrar erro quando localização não existe', async () => {
     const category = makeCategory({ name: 'Outros' })
     inMemoryCategoriesRepository.items.push(category)
 
@@ -187,11 +187,13 @@ describe('Sync Problems From Google Sheet', () => {
     const result = await sut.execute({ spreadsheetId, sheetName })
 
     expect(result.isRight()).toBe(true)
-    expect(result.value?.imported).toBe(1)
-    expect(inMemoryProblemsRepository.items[0].locationName).toBe(
-      'Área externa - estacionamento',
+    expect(result.value?.imported).toBe(0)
+    expect(result.value?.skipped).toBe(1)
+    expect(result.value?.errors).toHaveLength(1)
+    expect(result.value?.errors[0]).toContain(
+      'Localização "Área externa - estacionamento" não encontrada',
     )
-    expect(inMemoryProblemsRepository.items[0].locationId).toBeNull()
+    expect(inMemoryProblemsRepository.items).toHaveLength(0)
   })
 
   it('deve importar múltiplas linhas e ignorar duplicatas na mesma execução', async () => {
@@ -234,7 +236,9 @@ describe('Sync Problems From Google Sheet', () => {
 
   it('deve criar attachment quando a linha tem URL de imagem válida', async () => {
     const category = makeCategory({ name: 'Outros' })
+    const location = makeLocation({ name: 'Sala 1' })
     inMemoryCategoriesRepository.items.push(category)
+    inMemoryLocationsRepository.items.push(location)
 
     fakeGoogleSheetsFetcher.rows = [
       {

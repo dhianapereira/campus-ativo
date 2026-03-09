@@ -10,14 +10,12 @@ import {
 } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
 import { DashboardMetrics } from '@/domain/maintenance-problems/enterprise/entities/value-objects/dashboard-metrics'
-import { LocationsRepository } from '@/domain/maintenance-problems/application/repositories/locations-repository'
 
 export class InMemoryProblemsRepository implements ProblemsRepository {
   public items: Problem[] = []
 
   constructor(
     private problemAttachmentsRepository: ProblemAttachmentsRepository,
-    private locationsRepository?: LocationsRepository,
   ) {}
 
   async findById(id: string) {
@@ -100,25 +98,19 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
       .slice((page - 1) * 20, page * 20)
 
     // Map to ProblemWithDetails
-    const problemsWithDetails = await Promise.all(
-      problems.map(async (problem) => {
-        const location = await this.locationsRepository?.findById(
-          problem.locationId?.toValue() || '',
-        )
-
-        return new ProblemWithDetails({
+    const problemsWithDetails = problems.map(
+      (problem) =>
+        new ProblemWithDetails({
           problemId: problem.id,
           reporterId: problem.reporterId,
           title: problem.title,
           slug: problem.slug,
           excerpt: problem.excerpt,
           locationId: problem.locationId || new UniqueEntityID('unknown'),
-          locationName: location?.name ?? 'Local não informado',
           createdAt: problem.createdAt,
           updatedAt: problem.updatedAt,
           deletedAt: problem.deletedAt,
-        })
-      }),
+        }),
     )
 
     return problemsWithDetails

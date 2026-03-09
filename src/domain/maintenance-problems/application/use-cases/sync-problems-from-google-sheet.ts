@@ -103,10 +103,17 @@ export class SyncProblemsFromGoogleSheetUseCase {
           ? await this.locationsRepository.findByName(locationName)
           : null
 
+        if (!location) {
+          result.errors.push(
+            `Linha ${row.rowIndex}: Localização "${locationName || '(vazia)'}" não encontrada`,
+          )
+          result.skipped++
+          continue
+        }
+
         const problem = Problem.create({
           reporterId: null,
-          locationId: location ? location.id : null,
-          locationName: location?.name ?? locationName ?? 'Não informado',
+          locationId: location.id,
           categoryId: category.id,
           title,
           description,

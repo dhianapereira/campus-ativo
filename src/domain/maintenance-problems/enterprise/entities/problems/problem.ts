@@ -22,7 +22,6 @@ export interface ProblemProps {
   reporterId: UniqueEntityID | null
   categoryId: UniqueEntityID | null
   locationId: UniqueEntityID | null
-  locationName: string
   title: string
   slug: Slug
   description: string
@@ -46,15 +45,6 @@ export class Problem extends AggregateRoot<ProblemProps> {
 
   set locationId(locationId: UniqueEntityID | null) {
     this.props.locationId = locationId
-    this.touch()
-  }
-
-  get locationName() {
-    return this.props.locationName
-  }
-
-  set locationName(locationName: string) {
-    this.props.locationName = locationName
     this.touch()
   }
 

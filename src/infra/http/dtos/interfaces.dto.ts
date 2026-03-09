@@ -253,12 +253,6 @@ export class ProblemLocationInfo {
     example: '123e4567-e89b-12d3-a456-426614174001',
   })
   id!: string
-
-  @ApiProperty({
-    description: 'Nome da localização',
-    example: 'Bloco A - Sala 201',
-  })
-  name!: string
 }
 
 export enum ProblemStatusEnum {

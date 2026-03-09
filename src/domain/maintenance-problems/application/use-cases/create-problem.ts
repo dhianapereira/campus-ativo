@@ -58,7 +58,6 @@ export class CreateProblemUseCase {
     const problem = Problem.create({
       reporterId: new UniqueEntityID(reporterId),
       locationId: new UniqueEntityID(locationId),
-      locationName: location.name,
       categoryId: categoryId ? new UniqueEntityID(categoryId) : null,
       title,
       description,

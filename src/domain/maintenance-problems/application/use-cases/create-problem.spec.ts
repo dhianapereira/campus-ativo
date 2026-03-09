@@ -47,7 +47,9 @@ describe('Create Problem', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryProblemsRepository.items[0]).toEqual(result.value?.problem)
-    expect(inMemoryProblemsRepository.items[0].locationName).toBe(location.name)
+    expect(inMemoryProblemsRepository.items[0].locationId?.toValue()).toBe(
+      location.id.toValue(),
+    )
     expect(
       inMemoryProblemsRepository.items[0].attachments.currentItems,
     ).toHaveLength(2)
