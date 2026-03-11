@@ -35,6 +35,8 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     const problem = await this.prisma.problem.findUnique({
       where: {
         slug,
+        deletedAt: null,
+        purgedAt: null,
       },
     })
 

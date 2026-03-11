@@ -72,4 +72,35 @@ describe('Get problem by slug (E2E)', () => {
       problem: expect.objectContaining({ title: 'Problem 01' }),
     })
   })
+
+  test('[GET] /problems/:slug should return 404 for trashed problem', async () => {
+    const user = await userFactory.makePrismaUser()
+
+    const accessToken = jwt.sign({ sub: user.id.toValue() })
+
+    const category = await categoryFactory.makePrismaCategory({
+      name: 'Category 02',
+    })
+
+    const location = await locationFactory.makePrismaLocation({
+      name: 'Location 02',
+    })
+
+    await problemFactory.makePrismaProblem({
+      title: 'Problem 02',
+      description: 'Problem content',
+      reporterId: user.id,
+      slug: Slug.create('problem-02'),
+      locationId: location.id,
+      categoryId: category.id,
+      deletedAt: new Date(),
+    })
+
+    const response = await request(app.getHttpServer())
+      .get('/problems/problem-02')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send()
+
+    expect(response.statusCode).toBe(404)
+  })
 })

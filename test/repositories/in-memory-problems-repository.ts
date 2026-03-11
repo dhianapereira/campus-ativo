@@ -29,7 +29,9 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
   }
 
   async findBySlug(slug: string) {
-    const problem = this.items.find((item) => item.slug.value === slug)
+    const problem = this.items.find(
+      (item) => item.slug.value === slug && !item.isDeleted && !item.isPurged,
+    )
 
     if (!problem) {
       return null

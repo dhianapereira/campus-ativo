@@ -1,4 +1,9 @@
-import { BadRequestException, Controller, Get, Param } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  NotFoundException,
+  Param,
+} from '@nestjs/common'
 import {
   ApiTags,
   ApiOperation,
@@ -10,6 +15,7 @@ import { GetProblemBySlugUseCase } from '@/domain/maintenance-problems/applicati
 import { AttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/attachments-repository'
 import { ProblemPresenter } from '../presenters/problem-presenter'
 import { ProblemResponse } from '../dtos/interfaces.dto'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
 @Controller('/problems/:slug')
 @ApiTags('Problems')
@@ -48,7 +54,13 @@ export class GetProblemBySlugController {
     })
 
     if (result.isLeft()) {
-      throw new BadRequestException()
+      const error = result.value
+
+      if (error instanceof ResourceNotFoundError) {
+        throw new NotFoundException(error.message)
+      }
+
+      throw error
     }
 
     const problem = result.value.problem

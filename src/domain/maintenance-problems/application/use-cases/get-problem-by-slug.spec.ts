@@ -50,6 +50,26 @@ describe('Get Problem By Slug', () => {
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
+  it('should return error when problem with slug is in trash', async () => {
+    const problem = makeProblem({
+      reporterId: new UniqueEntityID(),
+      title: 'Deleted problem',
+      slug: Slug.create('deleted-problem-12345678'),
+      description: 'Deleted description',
+    })
+
+    problem.moveToTrash()
+
+    await inMemoryProblemsRepository.create(problem)
+
+    const result = await sut.execute({
+      slug: 'deleted-problem-12345678',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
   it('should be able to get problem with unique slug containing UUID', async () => {
     const slug1 = Slug.create('problema-teste-a1b2c3d4')
     const slug2 = Slug.create('problema-teste-e5f6g7h8')
