@@ -1,8 +1,7 @@
 import { ProblemHistoryRepository } from '@/domain/maintenance-problems/application/repositories/problem-history-repository'
 import { ProblemHistory } from '@/domain/maintenance-problems/enterprise/entities/problems/problem-history'
 
-export class InMemoryProblemHistoryRepository
-implements ProblemHistoryRepository {
+export class InMemoryProblemHistoryRepository implements ProblemHistoryRepository {
   public items: ProblemHistory[] = []
 
   async create(problemHistory: ProblemHistory): Promise<void> {

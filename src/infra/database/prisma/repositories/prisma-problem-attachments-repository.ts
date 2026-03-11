@@ -5,8 +5,7 @@ import { PrismaService } from '../prisma.service'
 import { PrismaProblemAttachmentMapper } from '../mappers/prisma-problem-attachment-mapper'
 
 @Injectable()
-export class PrismaProblemAttachmentsRepository
-implements ProblemAttachmentsRepository {
+export class PrismaProblemAttachmentsRepository implements ProblemAttachmentsRepository {
   constructor(private prisma: PrismaService) {}
 
   async findManyByProblemId(problemId: string): Promise<ProblemAttachment[]> {

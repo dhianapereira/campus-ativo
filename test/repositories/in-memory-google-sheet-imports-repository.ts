@@ -4,8 +4,7 @@ import {
 } from '@/domain/maintenance-problems/application/repositories/google-sheet-imports-repository'
 import { randomUUID } from 'crypto'
 
-export class InMemoryGoogleSheetImportsRepository
-implements GoogleSheetImportsRepository {
+export class InMemoryGoogleSheetImportsRepository implements GoogleSheetImportsRepository {
   public items: GoogleSheetImportRecord[] = []
 
   async findByRow(

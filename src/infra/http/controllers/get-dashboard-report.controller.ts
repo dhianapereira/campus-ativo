@@ -5,7 +5,13 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 
@@ -165,7 +171,10 @@ export class GetDashboardReportController {
     }
 
     return {
-      period: { startDate: startDate.toISOString(), endDate: endDate.toISOString() },
+      period: {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+      },
       totalProblems: total,
       byStatus: byStatus.map((s) => ({
         status: s.status,
@@ -175,7 +184,7 @@ export class GetDashboardReportController {
       byCategory: byCategory.map((c) => ({
         categoryId: c.categoryId,
         name: c.categoryId
-          ? categoryMap.get(c.categoryId) ?? 'Não informado'
+          ? (categoryMap.get(c.categoryId) ?? 'Não informado')
           : 'Não informado',
         count: c._count.categoryId,
       })),
@@ -183,7 +192,7 @@ export class GetDashboardReportController {
         locationId: l.locationId,
         name:
           l.locationId != null
-            ? locationMap.get(l.locationId) ?? 'Não informado'
+            ? (locationMap.get(l.locationId) ?? 'Não informado')
             : 'Não informado',
         count: l._count.locationId,
       })),
@@ -191,7 +200,7 @@ export class GetDashboardReportController {
         type: m.maintenanceType,
         label:
           m.maintenanceType != null
-            ? maintenanceTypeLabels[m.maintenanceType] ?? m.maintenanceType
+            ? (maintenanceTypeLabels[m.maintenanceType] ?? m.maintenanceType)
             : 'Não informado',
         count: m._count.maintenanceType,
       })),

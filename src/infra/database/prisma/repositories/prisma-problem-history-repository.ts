@@ -5,8 +5,7 @@ import { PrismaService } from '../prisma.service'
 import { PrismaProblemHistoryMapper } from '../mappers/prisma-problem-history-mapper'
 
 @Injectable()
-export class PrismaProblemHistoryRepository
-implements ProblemHistoryRepository {
+export class PrismaProblemHistoryRepository implements ProblemHistoryRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(problemHistory: ProblemHistory): Promise<void> {

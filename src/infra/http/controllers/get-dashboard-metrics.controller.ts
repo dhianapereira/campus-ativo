@@ -1,5 +1,10 @@
 import { BadRequestException, Controller, Get, UseGuards } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger'
 import { GetDashboardMetricsUseCase } from '@/domain/maintenance-problems/application/use-cases/get-dashboard-metrics'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
@@ -97,21 +102,39 @@ export class GetDashboardMetricsController {
 
     const top3Locations = topLocationsSorted.slice(0, 3).map((r) => ({
       name: r.locationId
-        ? locationMap.get(r.locationId) ?? 'Sem local'
+        ? (locationMap.get(r.locationId) ?? 'Sem local')
         : 'Sem local',
       count: r._count.locationId,
     }))
 
     const top3Categories = topCategoriesSorted.slice(0, 3).map((r) => ({
       name: r.categoryId
-        ? categoryMap.get(r.categoryId) ?? 'Sem categoria'
+        ? (categoryMap.get(r.categoryId) ?? 'Sem categoria')
         : 'Sem categoria',
       count: r._count.categoryId,
     }))
 
     const now = new Date()
-    const months: { month: string; label: string; preventive: number; corrective: number }[] = []
-    const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
+    const months: {
+      month: string
+      label: string
+      preventive: number
+      corrective: number
+    }[] = []
+    const monthNames = [
+      'Jan',
+      'Fev',
+      'Mar',
+      'Abr',
+      'Mai',
+      'Jun',
+      'Jul',
+      'Ago',
+      'Set',
+      'Out',
+      'Nov',
+      'Dez',
+    ]
 
     for (let i = 5; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1)

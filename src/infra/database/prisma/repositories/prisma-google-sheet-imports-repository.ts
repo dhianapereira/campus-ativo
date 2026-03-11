@@ -7,8 +7,7 @@ import { PrismaService } from '../prisma.service'
 import { randomUUID } from 'crypto'
 
 @Injectable()
-export class PrismaGoogleSheetImportsRepository
-implements GoogleSheetImportsRepository {
+export class PrismaGoogleSheetImportsRepository implements GoogleSheetImportsRepository {
   constructor(private prisma: PrismaService) {}
 
   async findByRow(

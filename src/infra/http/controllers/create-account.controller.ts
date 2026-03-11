@@ -47,7 +47,8 @@ export class CreateAccountController {
   })
   @ApiResponse({
     status: 409,
-    description: 'Não foi possível completar o cadastro. Verifique suas informações.',
+    description:
+      'Não foi possível completar o cadastro. Verifique suas informações.',
   })
   @ApiResponse({
     status: 400,
