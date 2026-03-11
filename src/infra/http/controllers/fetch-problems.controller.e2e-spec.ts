@@ -5,6 +5,7 @@ import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import request from 'supertest'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { CategoryFactory } from 'test/factories/make-category'
 import { LocationFactory } from 'test/factories/make-location'
 import { ProblemFactory } from 'test/factories/make-problem'
@@ -83,6 +84,65 @@ describe('Fetch problems (E2E)', () => {
       problems: expect.arrayContaining([
         expect.objectContaining({ title: 'Problem 01' }),
         expect.objectContaining({ title: 'Problem 02' }),
+      ]),
+    })
+  })
+
+  test('[GET] /problems should return 403 when reporter requests trashed items', async () => {
+    const user = await userFactory.makePrismaUser({
+      role: UserRole.REPORTER,
+    })
+
+    const accessToken = jwt.sign({
+      sub: user.id.toValue(),
+      role: UserRole.REPORTER,
+    })
+
+    const response = await request(app.getHttpServer())
+      .get('/problems?includeDeleted=true')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send()
+
+    expect(response.statusCode).toBe(403)
+  })
+
+  test('[GET] /problems should allow manager to request trashed items', async () => {
+    const user = await userFactory.makePrismaUser({
+      role: UserRole.MANAGER,
+    })
+
+    const accessToken = jwt.sign({
+      sub: user.id.toValue(),
+      role: UserRole.MANAGER,
+    })
+
+    const category = await categoryFactory.makePrismaCategory({
+      name: 'Category 03',
+    })
+
+    const location = await locationFactory.makePrismaLocation({
+      name: 'Location 03',
+    })
+
+    await problemFactory.makePrismaProblem({
+      title: 'Problem 03',
+      description: 'Problem content',
+      reporterId: user.id,
+      slug: Slug.create('problem-03'),
+      locationId: location.id,
+      categoryId: category.id,
+      deletedAt: new Date(),
+    })
+
+    const response = await request(app.getHttpServer())
+      .get('/problems?includeDeleted=true')
+      .set('Authorization', `Bearer ${accessToken}`)
+      .send()
+
+    expect(response.statusCode).toBe(200)
+    expect(response.body).toEqual({
+      problems: expect.arrayContaining([
+        expect.objectContaining({ title: 'Problem 03' }),
       ]),
     })
   })

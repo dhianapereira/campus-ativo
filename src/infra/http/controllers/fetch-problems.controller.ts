@@ -1,10 +1,20 @@
-import { BadRequestException, Controller, Get, Query } from '@nestjs/common'
+import {
+  BadRequestException,
+  Controller,
+  ForbiddenException,
+  Get,
+  Query,
+} from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { FetchProblemsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-problems'
 import { ProblemPresenter } from '../presenters/problem-presenter'
 import { ProblemWithDetailsResponse } from '../dtos/interfaces.dto'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import { UserPayload } from '@/infra/auth/jwt.strategy'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
+import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 
 const pageQueryParamSchema = z
   .string()
@@ -83,11 +93,23 @@ export class FetchProblemsController {
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
   async handle(
+    @CurrentUser() user: UserPayload,
     @Query('page', pageValidationPipe) page: PageQueryParamSchema,
     @Query('query', queryValidationPipe) query: QueryQueryParamSchema,
     @Query('includeDeleted', includeDeletedValidationPipe)
     includeDeleted: IncludeDeletedQueryParamSchema,
   ) {
+    const currentUserRole = (user.role as UserRole) || UserRole.REPORTER
+
+    if (
+      includeDeleted &&
+      !RoleHierarchy.hasPermission(currentUserRole, UserRole.MANAGER)
+    ) {
+      throw new ForbiddenException(
+        'Only managers and above can view problems in trash',
+      )
+    }
+
     const result = await this.fetchProblems.execute({
       page,
       query,
