@@ -146,7 +146,9 @@ export class SyncProblemsFromGoogleSheetUseCase {
         result.imported++
       } catch (error) {
         const message =
-          error instanceof Error ? error.message : 'Erro desconhecido'
+          error instanceof Error
+            ? error.message
+            : 'Erro desconhecido'
         result.errors.push(`Linha ${row.rowIndex}: ${message}`)
         result.skipped++
       }

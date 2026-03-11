@@ -88,7 +88,9 @@ export class InMemoryUsersRepository implements UsersRepository {
     users = users.sort((a, b) => {
       // First, sort by isActive (active users first)
       if (a.isActive !== b.isActive) {
-        return a.isActive ? -1 : 1
+        return a.isActive
+          ? -1
+          : 1
       }
       // Then, sort by name alphabetically
       return a.name.localeCompare(b.name)
