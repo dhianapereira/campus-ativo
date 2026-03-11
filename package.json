@@ -17,7 +17,6 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
-    "test:e2e": "vitest run --config ./vitest.config.e2e.ts",
     "openapi": "./scripts/generate-openapi.sh",
     "prisma:seed": "tsx prisma/seed.ts"
   },
