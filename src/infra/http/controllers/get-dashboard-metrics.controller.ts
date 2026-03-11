@@ -96,12 +96,16 @@ export class GetDashboardMetricsController {
     )
 
     const top3Locations = topLocationsSorted.slice(0, 3).map((r) => ({
-      name: r.locationId ? locationMap.get(r.locationId) ?? 'Sem local' : 'Sem local',
+      name: r.locationId
+        ? locationMap.get(r.locationId) ?? 'Sem local'
+        : 'Sem local',
       count: r._count.locationId,
     }))
 
     const top3Categories = topCategoriesSorted.slice(0, 3).map((r) => ({
-      name: r.categoryId ? categoryMap.get(r.categoryId) ?? 'Sem categoria' : 'Sem categoria',
+      name: r.categoryId
+        ? categoryMap.get(r.categoryId) ?? 'Sem categoria'
+        : 'Sem categoria',
       count: r._count.categoryId,
     }))
 

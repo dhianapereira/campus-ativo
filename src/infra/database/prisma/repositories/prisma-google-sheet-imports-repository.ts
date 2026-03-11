@@ -8,8 +8,7 @@ import { randomUUID } from 'crypto'
 
 @Injectable()
 export class PrismaGoogleSheetImportsRepository
-  implements GoogleSheetImportsRepository
-{
+implements GoogleSheetImportsRepository {
   constructor(private prisma: PrismaService) {}
 
   async findByRow(

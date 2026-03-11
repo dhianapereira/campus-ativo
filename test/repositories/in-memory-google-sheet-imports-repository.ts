@@ -5,8 +5,7 @@ import {
 import { randomUUID } from 'crypto'
 
 export class InMemoryGoogleSheetImportsRepository
-  implements GoogleSheetImportsRepository
-{
+implements GoogleSheetImportsRepository {
   public items: GoogleSheetImportRecord[] = []
 
   async findByRow(

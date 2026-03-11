@@ -6,8 +6,7 @@ import { PrismaProblemHistoryMapper } from '../mappers/prisma-problem-history-ma
 
 @Injectable()
 export class PrismaProblemHistoryRepository
-  implements ProblemHistoryRepository
-{
+implements ProblemHistoryRepository {
   constructor(private prisma: PrismaService) {}
 
   async create(problemHistory: ProblemHistory): Promise<void> {

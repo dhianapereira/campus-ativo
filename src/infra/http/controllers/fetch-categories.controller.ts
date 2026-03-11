@@ -4,7 +4,6 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { FetchCategoriesUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-categories'
 import { CategoryPresenter } from '../presenters/category-presenter'
-import { CategoryResponse } from '../dtos/interfaces.dto'
 
 const pageQueryParamSchema = z
   .string()

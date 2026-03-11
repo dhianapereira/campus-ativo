@@ -174,7 +174,9 @@ export class GetDashboardReportController {
       })),
       byCategory: byCategory.map((c) => ({
         categoryId: c.categoryId,
-        name: c.categoryId ? categoryMap.get(c.categoryId) ?? 'Não informado' : 'Não informado',
+        name: c.categoryId
+          ? categoryMap.get(c.categoryId) ?? 'Não informado'
+          : 'Não informado',
         count: c._count.categoryId,
       })),
       byLocation: byLocation.map((l) => ({

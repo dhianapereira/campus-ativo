@@ -2,8 +2,7 @@ import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/appl
 import { ProblemAttachment } from '@/domain/maintenance-problems/enterprise/entities/problems/problem-attachment'
 
 export class InMemoryProblemAttachmentsRepository
-  implements ProblemAttachmentsRepository
-{
+implements ProblemAttachmentsRepository {
   public items: ProblemAttachment[] = []
 
   async findManyByProblemId(problemId: string) {

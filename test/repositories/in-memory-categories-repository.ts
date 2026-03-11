@@ -91,7 +91,7 @@ export class InMemoryCategoriesRepository implements CategoriesRepository {
     this.items.splice(itemIndex, 1)
   }
 
-  async hasAssociatedProblems(categoryId: string): Promise<boolean> {
+  async hasAssociatedProblems(_categoryId: string): Promise<boolean> {
     // In memory implementation would need access to problems
     // For testing purposes, we'll return false
     return false

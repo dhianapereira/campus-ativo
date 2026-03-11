@@ -4,7 +4,6 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { FetchLocationsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-locations'
 import { LocationPresenter } from '../presenters/location-presenter'
-import { LocationResponse } from '../dtos/interfaces.dto'
 
 const pageQueryParamSchema = z
   .string()

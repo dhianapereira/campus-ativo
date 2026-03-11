@@ -1,6 +1,5 @@
 import { AppModule } from '@/infra/app.module'
 import { DatabaseModule } from '@/infra/database/database.module'
-import { PrismaService } from '@/infra/database/prisma/prisma.service'
 import { INestApplication } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
@@ -10,7 +9,6 @@ import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 describe('Fetch users (E2E)', () => {
   let app: INestApplication
-  let prisma: PrismaService
   let userFactory: UserFactory
   let jwt: JwtService
 
@@ -22,7 +20,6 @@ describe('Fetch users (E2E)', () => {
 
     app = moduleRef.createNestApplication()
 
-    prisma = moduleRef.get(PrismaService)
     userFactory = moduleRef.get(UserFactory)
     jwt = moduleRef.get(JwtService)
 

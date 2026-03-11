@@ -265,7 +265,12 @@ describe('Sync Problems From Google Sheet', () => {
     expect(inMemoryAttachmentsRepository.items[0].link).toBe(
       'https://drive.google.com/file/d/abc123/view',
     )
-    expect(inMemoryAttachmentsRepository.problemAttachmentMap.get(inMemoryProblemsRepository.items[0].id.toValue())).toContain(
+    const problemAttachmentIds =
+      inMemoryAttachmentsRepository.problemAttachmentMap.get(
+        inMemoryProblemsRepository.items[0].id.toValue(),
+      )
+
+    expect(problemAttachmentIds).toContain(
       inMemoryAttachmentsRepository.items[0].id.toValue(),
     )
   })

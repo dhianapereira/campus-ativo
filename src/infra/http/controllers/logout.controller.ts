@@ -7,8 +7,6 @@ import {
 } from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
-import { CurrentUser } from '@/infra/auth/current-user-decorator'
-import { UserPayload } from '@/infra/auth/jwt.strategy'
 
 @Controller('/sessions')
 @ApiTags('Authentication')
@@ -29,7 +27,7 @@ export class LogoutController {
     status: 401,
     description: 'Token inválido ou não fornecido',
   })
-  async handle(@CurrentUser() user: UserPayload) {
+  async handle() {
     // Currently, we rely on client-side token removal
     // In a production environment, you might want to implement:
     // 1. Token blacklist with Redis
