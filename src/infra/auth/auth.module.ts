@@ -5,7 +5,6 @@ import { JwtStrategy } from './jwt.strategy'
 import { APP_GUARD } from '@nestjs/core'
 import { JwtAuthGuard } from './jwt-auth.guard'
 import { RolesGuard } from './roles.guard'
-import { PermissionsGuard } from './permissions.guard'
 import { EnvModule } from '../env/env.module'
 import { EnvService } from '../env/env.service'
 import { DatabaseModule } from '../database/database.module'
@@ -33,13 +32,12 @@ import { DatabaseModule } from '../database/database.module'
   providers: [
     JwtStrategy,
     RolesGuard,
-    PermissionsGuard,
     EnvService,
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
     },
   ],
-  exports: [RolesGuard, PermissionsGuard],
+  exports: [RolesGuard],
 })
 export class AuthModule {}

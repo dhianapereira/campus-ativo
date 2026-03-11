@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   UseGuards,
-  UsePipes,
 } from '@nestjs/common'
 import {
   ApiTags,
@@ -18,7 +17,6 @@ import {
   ApiBody,
 } from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
-import { UuidValidationPipe } from '@/infra/http/pipes/uuid-validation-pipe'
 import { z } from 'zod'
 import { ChangeUserRoleUseCase } from '@/domain/accounts/application/use-cases/change-user-role'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
