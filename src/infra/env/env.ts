@@ -1,10 +1,18 @@
 import { z } from 'zod'
 
+const optionalPortSchema = z.preprocess((value) => {
+  if (value === '' || value === undefined || value === null) {
+    return undefined
+  }
+
+  return value
+}, z.coerce.number().int().positive().optional().default(3333))
+
 export const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   JWT_PRIVATE_KEY: z.string(),
   JWT_PUBLIC_KEY: z.string(),
-  PORT: z.coerce.number().optional().default(3333),
+  PORT: optionalPortSchema,
   IMGBB_API_KEY: z.string(),
   GOOGLE_SHEETS_CLIENT_EMAIL: z.string().optional(),
   GOOGLE_SHEETS_PRIVATE_KEY: z.string().optional(),

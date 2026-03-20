@@ -32,6 +32,7 @@ async function bootstrap() {
   const port = env.get('PORT')
 
   await app.listen(port)
+  console.log(`HTTP server running on port ${port}`)
 }
 
 bootstrap()
