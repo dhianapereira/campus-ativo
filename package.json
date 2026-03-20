@@ -18,7 +18,7 @@
     "test:watch": "vitest",
     "test:cov": "vitest run --coverage",
     "openapi": "./scripts/generate-openapi.sh",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@nestjs/common": "11.1.6",
