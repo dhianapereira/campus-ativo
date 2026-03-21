@@ -11,15 +11,9 @@ export class PrismaProblemMapper {
   static toDomain(raw: PrismaProblem): Problem {
     return Problem.create(
       {
-        reporterId: raw.reporterId
-          ? new UniqueEntityID(raw.reporterId)
-          : null,
-        locationId: raw.locationId
-          ? new UniqueEntityID(raw.locationId)
-          : null,
-        categoryId: raw.categoryId
-          ? new UniqueEntityID(raw.categoryId)
-          : null,
+        reporterId: raw.reporterId ? new UniqueEntityID(raw.reporterId) : null,
+        locationId: raw.locationId ? new UniqueEntityID(raw.locationId) : null,
+        categoryId: raw.categoryId ? new UniqueEntityID(raw.categoryId) : null,
         slug: Slug.create(raw.slug),
         title: raw.title,
         description: raw.description,

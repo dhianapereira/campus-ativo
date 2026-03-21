@@ -51,9 +51,8 @@ export class ProblemPresenter {
       title: problem.title,
       slug: problem.slug.value,
       excerpt: problem.excerpt,
-      location: {
-        id: problem.locationId.toValue(),
-      },
+      locationName: problem.locationName,
+      status: problem.status,
       createdAt: problem.createdAt,
       updatedAt: problem.updatedAt,
       deletedAt: problem.deletedAt,

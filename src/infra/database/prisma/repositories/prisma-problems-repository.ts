@@ -112,6 +112,9 @@ export class PrismaProblemsRepository implements ProblemsRepository {
       orderBy: {
         createdAt: 'desc',
       },
+      include: {
+        location: true,
+      },
       take: 20,
       skip: (page - 1) * 20,
     })

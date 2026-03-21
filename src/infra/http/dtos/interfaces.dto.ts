@@ -247,14 +247,6 @@ export class UserResponse {
   role!: UserRoleEnum
 }
 
-export class ProblemLocationInfo {
-  @ApiProperty({
-    description: 'ID da localização',
-    example: '123e4567-e89b-12d3-a456-426614174001',
-  })
-  id!: string
-}
-
 export enum ProblemStatusEnum {
   TO_ANALYSIS = 'TO_ANALYSIS',
   IN_ANALYSIS = 'IN_ANALYSIS',
@@ -423,10 +415,18 @@ export class ProblemWithDetailsResponse {
   excerpt!: string
 
   @ApiProperty({
-    description: 'Informações da localização do problema',
-    type: ProblemLocationInfo,
+    description:
+      "Nome da localização (ou 'Localização excluída' se foi deletada)",
+    example: 'Bloco A - Sala 201',
   })
-  location!: ProblemLocationInfo
+  locationName!: string
+
+  @ApiProperty({
+    description: 'Status do problema',
+    enum: ProblemStatusEnum,
+    example: ProblemStatusEnum.TO_ANALYSIS,
+  })
+  status!: ProblemStatusEnum
 
   @ApiProperty({
     description: 'Data de criação',

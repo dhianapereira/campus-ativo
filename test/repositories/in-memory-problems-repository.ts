@@ -108,7 +108,10 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
           title: problem.title,
           slug: problem.slug,
           excerpt: problem.excerpt,
-          locationId: problem.locationId || new UniqueEntityID('unknown'),
+          locationName: problem.locationId
+            ? 'Localização de teste'
+            : 'Localização excluída',
+          status: problem.status,
           createdAt: problem.createdAt,
           updatedAt: problem.updatedAt,
           deletedAt: problem.deletedAt,
