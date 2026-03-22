@@ -53,6 +53,28 @@ describe('Edit Category', () => {
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
+  it('should be able to clear category description', async () => {
+    const category = makeCategory(
+      {
+        name: 'Categoria Original',
+        description: 'Descricao original',
+      },
+      new UniqueEntityID('category-1'),
+    )
+
+    await inMemoryCategoriesRepository.create(category)
+
+    const result = await sut.execute({
+      categoryId: 'category-1',
+      userRole: UserRole.MANAGER,
+      name: 'Categoria Original',
+      description: '',
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryCategoriesRepository.items[0].description).toBe('')
+  })
+
   it('should not be able to edit a category in trash', async () => {
     const category = makeCategory(
       {
