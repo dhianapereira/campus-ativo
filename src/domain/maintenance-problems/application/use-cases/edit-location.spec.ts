@@ -117,6 +117,30 @@ describe('Edit Location', () => {
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
+  it('should be able to clear location description', async () => {
+    const location = makeLocation(
+      {
+        name: 'Original Name',
+        code: 'X01',
+        description: 'Original Description',
+      },
+      new UniqueEntityID('location-1'),
+    )
+
+    await inMemoryLocationsRepository.create(location)
+
+    const result = await sut.execute({
+      locationId: 'location-1',
+      name: 'Original Name',
+      code: 'X01',
+      description: '',
+      userRole: UserRole.MANAGER,
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryLocationsRepository.items[0].description).toBe('')
+  })
+
   it('should not be able to edit a location in trash', async () => {
     const location = makeLocation(
       {

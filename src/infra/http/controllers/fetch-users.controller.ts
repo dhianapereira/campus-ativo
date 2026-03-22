@@ -102,7 +102,9 @@ export class FetchUsersController {
     const result = await this.fetchUsers.execute({
       currentUserRole,
       query,
-      isActive: isActive !== undefined ? isActive === 'true' : undefined,
+      isActive: isActive !== undefined
+        ? isActive === 'true'
+        : undefined,
     })
 
     if (result.isLeft()) {
