@@ -153,7 +153,7 @@ O seed cria um usuário interno do sistema com email `sistema@ifal-arapiraca.edu
 ### 6. Iniciar a aplicação
 
 ```bash
-npm run start:dev
+npm run dev
 ```
 
 Por padrão, a API sobe em `http://localhost:3333`.
@@ -174,14 +174,12 @@ npm run openapi
 ## Scripts úteis
 
 ```bash
-npm run start:dev      # desenvolvimento com watch
-npm run build          # build de produção
-npm run start:prod     # executa o build gerado
+npm run dev            # desenvolvimento com watch e debug
 npm run lint           # lint com ESLint
 npm run format         # formata src/, test/ e prisma/
+npm run format:check   # valida formatação sem alterar arquivos
 npm run test           # testes com Vitest
 npm run test:watch     # testes em watch mode
-npm run test:cov       # cobertura de testes
 npm run prisma:seed    # seed inicial
 npm run openapi        # gera openapi.json
 ```
@@ -236,4 +234,4 @@ O projeto usa Prisma com PostgreSQL e o schema está em `prisma/schema.prisma`. 
 
 - não existe script `npm run db:migrate`; use os comandos do Prisma diretamente
 - a aplicação valida o ambiente no boot e falha se variáveis obrigatórias estiverem ausentes
-- o `Dockerfile` atual inicia a aplicação com `npm run start:dev`
+- o script de desenvolvimento disponível no projeto é `npm run dev`
