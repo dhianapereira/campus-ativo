@@ -1,6 +1,7 @@
 import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
 import { Attachment } from '@/domain/maintenance-problems/enterprise/entities/attachment'
+import { ProblemHistory } from '@/domain/maintenance-problems/enterprise/entities/problems/problem-history'
 
 export class ProblemPresenter {
   static toHTTP(problem: Problem) {
@@ -42,6 +43,18 @@ export class ProblemPresenter {
         url: attachment.link,
       })),
     }
+  }
+
+  static toHTTPHistory(history: ProblemHistory[]) {
+    return history.map((entry) => ({
+      id: entry.id.toValue(),
+      action: entry.action,
+      userName: entry.userName,
+      oldValue: entry.oldValue ?? null,
+      newValue: entry.newValue ?? null,
+      note: entry.note ?? null,
+      createdAt: entry.createdAt,
+    }))
   }
 
   static toHTTPWithDetails(problem: ProblemWithDetails) {

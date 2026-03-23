@@ -23,7 +23,7 @@ echo "🚀 Gerando documentação OpenAPI..."
 
 # Compila o projeto
 echo "📦 Compilando o projeto..."
-(cd "${PROJECT_ROOT}" && npm run build)
+(cd "${PROJECT_ROOT}" && nest build)
 
 # Inicia o servidor temporariamente em background
 echo "🔧 Iniciando servidor temporário..."

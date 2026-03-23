@@ -8,6 +8,7 @@ import {
 } from '@nestjs/swagger'
 import { GetProblemBySlugUseCase } from '@/domain/maintenance-problems/application/use-cases/get-problem-by-slug'
 import { AttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/attachments-repository'
+import { ProblemHistoryRepository } from '@/domain/maintenance-problems/application/repositories/problem-history-repository'
 import { ProblemPresenter } from '../presenters/problem-presenter'
 import { ProblemResponse } from '../dtos/interfaces.dto'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
@@ -19,6 +20,7 @@ export class GetProblemBySlugController {
   constructor(
     private getProblemBySlug: GetProblemBySlugUseCase,
     private attachmentsRepository: AttachmentsRepository,
+    private problemHistoryRepository: ProblemHistoryRepository,
   ) {}
 
   @Get()
@@ -62,9 +64,15 @@ export class GetProblemBySlugController {
     const attachments = await this.attachmentsRepository.findManyByProblemId(
       problem.id.toValue(),
     )
+    const history = await this.problemHistoryRepository.findManyByProblemId(
+      problem.id.toValue(),
+    )
 
     return {
-      problem: ProblemPresenter.toHTTPWithAttachments(problem, attachments),
+      problem: {
+        ...ProblemPresenter.toHTTPWithAttachments(problem, attachments),
+        history: ProblemPresenter.toHTTPHistory(history),
+      },
     }
   }
 }

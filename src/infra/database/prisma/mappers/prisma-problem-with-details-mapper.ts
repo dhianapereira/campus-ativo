@@ -15,9 +15,7 @@ export class PrismaProblemWithDetailsMapper {
 
     return new ProblemWithDetails({
       problemId: new UniqueEntityID(raw.id),
-      reporterId: raw.reporterId
-        ? new UniqueEntityID(raw.reporterId)
-        : null,
+      reporterId: raw.reporterId ? new UniqueEntityID(raw.reporterId) : null,
       title: raw.title,
       slug: Slug.create(raw.slug),
       excerpt,

@@ -67,6 +67,8 @@ import { GoogleSheetsModule } from '../google-sheets/google-sheets.module'
 import { GetDashboardMetricsController } from './controllers/get-dashboard-metrics.controller'
 import { GetDashboardMetricsUseCase } from '@/domain/maintenance-problems/application/use-cases/get-dashboard-metrics'
 import { GetDashboardReportController } from './controllers/get-dashboard-report.controller'
+import { ManageProblemController } from './controllers/manage-problem.controller'
+import { ManageProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/manage-problem'
 
 @Module({
   imports: [
@@ -105,6 +107,7 @@ import { GetDashboardReportController } from './controllers/get-dashboard-report
     DeleteProblemController,
     TrashProblemController,
     RestoreProblemController,
+    ManageProblemController,
     UploadAttachmentController,
     SyncGoogleSheetController,
     GetDashboardMetricsController,
@@ -139,6 +142,7 @@ import { GetDashboardReportController } from './controllers/get-dashboard-report
     DeleteProblemUseCase,
     MoveProblemToTrashUseCase,
     RestoreProblemFromTrashUseCase,
+    ManageProblemUseCase,
     UploadAttachmentUseCase,
     SyncProblemsFromGoogleSheetUseCase,
     GetDashboardMetricsUseCase,

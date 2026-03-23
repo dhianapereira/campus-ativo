@@ -261,6 +261,45 @@ export enum MaintenanceTypeEnum {
   CORRECTIVE = 'CORRECTIVE',
 }
 
+export enum HistoryActionEnum {
+  STATUS_CHANGED = 'STATUS_CHANGED',
+  CATEGORY_CHANGED = 'CATEGORY_CHANGED',
+  MAINTENANCE_TYPE_CHANGED = 'MAINTENANCE_TYPE_CHANGED',
+  NOTE_ADDED = 'NOTE_ADDED',
+}
+
+export class ManageProblemRequest {
+  @ApiProperty({
+    description: 'Novo status do problema',
+    enum: ProblemStatusEnum,
+    required: false,
+    example: ProblemStatusEnum.IN_ANALYSIS,
+  })
+  status?: ProblemStatusEnum
+
+  @ApiProperty({
+    description: 'ID da categoria do problema',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  categoryId?: string
+
+  @ApiProperty({
+    description: 'Tipo de manutenção',
+    enum: MaintenanceTypeEnum,
+    required: false,
+    example: MaintenanceTypeEnum.CORRECTIVE,
+  })
+  maintenanceType?: MaintenanceTypeEnum
+
+  @ApiProperty({
+    description: 'Observação adicionada ao histórico do problema',
+    example: 'Encaminhado para avaliação da equipe de manutenção.',
+    required: false,
+  })
+  note?: string
+}
+
 export class AttachmentInfo {
   @ApiProperty({
     description: 'ID do anexo',
@@ -279,6 +318,57 @@ export class AttachmentInfo {
     example: 'https://i.ibb.co/xxxxx/foto-ar-condicionado.jpg',
   })
   url!: string
+}
+
+export class ProblemHistoryEntryResponse {
+  @ApiProperty({
+    description: 'ID do registro de histórico',
+    example: '123e4567-e89b-12d3-a456-426614174010',
+  })
+  id!: string
+
+  @ApiProperty({
+    description: 'Ação realizada no histórico do problema',
+    enum: HistoryActionEnum,
+    example: HistoryActionEnum.NOTE_ADDED,
+  })
+  action!: HistoryActionEnum
+
+  @ApiProperty({
+    description: 'Nome do usuário que realizou a ação',
+    example: 'João Silva',
+  })
+  userName!: string
+
+  @ApiProperty({
+    description: 'Valor antigo da alteração',
+    required: false,
+    nullable: true,
+    example: 'TO_ANALYSIS',
+  })
+  oldValue?: string | null
+
+  @ApiProperty({
+    description: 'Novo valor da alteração',
+    required: false,
+    nullable: true,
+    example: 'IN_ANALYSIS',
+  })
+  newValue?: string | null
+
+  @ApiProperty({
+    description: 'Observação adicionada ao histórico',
+    required: false,
+    nullable: true,
+    example: 'Encaminhado para avaliação da equipe.',
+  })
+  note?: string | null
+
+  @ApiProperty({
+    description: 'Data de criação do registro de histórico',
+    example: '2025-01-15T10:30:00Z',
+  })
+  createdAt!: Date
 }
 
 export class ProblemResponse {
@@ -379,6 +469,13 @@ export class ProblemResponse {
     required: false,
   })
   attachments?: AttachmentInfo[]
+
+  @ApiProperty({
+    description: 'Histórico de ações do problema',
+    type: [ProblemHistoryEntryResponse],
+    required: false,
+  })
+  history?: ProblemHistoryEntryResponse[]
 }
 
 export class ProblemWithDetailsResponse {
