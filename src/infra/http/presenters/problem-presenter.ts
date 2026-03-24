@@ -50,9 +50,8 @@ export class ProblemPresenter {
       id: entry.id.toValue(),
       action: entry.action,
       userName: entry.userName,
-      oldValue: entry.oldValue ?? null,
-      newValue: entry.newValue ?? null,
       note: entry.note ?? null,
+      changes: entry.changes ?? null,
       createdAt: entry.createdAt,
     }))
   }

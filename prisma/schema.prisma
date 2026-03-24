@@ -79,6 +79,7 @@ enum HistoryAction {
   CATEGORY_CHANGED
   MAINTENANCE_TYPE_CHANGED
   NOTE_ADDED
+  UPDATED
 }
 
 model ProblemHistory {
@@ -87,9 +88,8 @@ model ProblemHistory {
   action    HistoryAction
   userId    String        @map("user_id")
   userName  String        @map("user_name")
-  oldValue  String?       @map("old_value")
-  newValue  String?       @map("new_value")
   note      String?
+  changes   Json?
   createdAt DateTime      @default(now()) @map("created_at")
 
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)

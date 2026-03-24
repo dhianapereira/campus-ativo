@@ -15,6 +15,8 @@ import { ProblemHistoryRepository } from '../repositories/problem-history-reposi
 import {
   ProblemHistory,
   HistoryAction,
+  HistoryChangeField,
+  ProblemHistoryChange,
 } from '../../enterprise/entities/problems/problem-history'
 import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
 
@@ -69,21 +71,28 @@ export class ManageProblemUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Track changes and create history records
+    const historyChanges: ProblemHistoryChange[] = []
+    const problemHistory =
+      note !== undefined
+        ? await this.problemHistoryRepository.findManyByProblemId(problemId)
+        : []
+    const currentNote =
+      note !== undefined
+        ? this.getLatestNote(problemHistory)
+        : undefined
+    const normalizedNote = note?.trim()
+    const nextNote = note === undefined
+      ? undefined
+      : normalizedNote || null
+
     if (status !== undefined && status !== problem.status) {
       const oldStatus = problem.status
       problem.changeStatus(status)
-
-      const history = ProblemHistory.create({
-        problemId: problem.id,
-        action: HistoryAction.STATUS_CHANGED,
-        userId: executor.id,
-        userName: executor.name,
+      historyChanges.push({
+        field: HistoryChangeField.STATUS,
         oldValue: oldStatus,
         newValue: status,
       })
-
-      await this.problemHistoryRepository.create(history)
     }
 
     if (categoryId !== undefined) {
@@ -91,17 +100,11 @@ export class ManageProblemUseCase {
       if (!problem.categoryId || problem.categoryId.toValue() !== categoryId) {
         const oldCategoryId = problem.categoryId?.toValue() ?? null
         problem.changeCategory(newCategoryId)
-
-        const history = ProblemHistory.create({
-          problemId: problem.id,
-          action: HistoryAction.CATEGORY_CHANGED,
-          userId: executor.id,
-          userName: executor.name,
+        historyChanges.push({
+          field: HistoryChangeField.CATEGORY,
           oldValue: oldCategoryId,
           newValue: categoryId,
         })
-
-        await this.problemHistoryRepository.create(history)
       }
     }
 
@@ -109,27 +112,30 @@ export class ManageProblemUseCase {
       if (problem.maintenanceType !== maintenanceType) {
         const oldType = problem.maintenanceType
         problem.changeMaintenanceType(maintenanceType)
-
-        const history = ProblemHistory.create({
-          problemId: problem.id,
-          action: HistoryAction.MAINTENANCE_TYPE_CHANGED,
-          userId: executor.id,
-          userName: executor.name,
+        historyChanges.push({
+          field: HistoryChangeField.MAINTENANCE_TYPE,
           oldValue: oldType,
           newValue: maintenanceType,
         })
-
-        await this.problemHistoryRepository.create(history)
       }
     }
 
-    if (note !== undefined && note.trim().length > 0) {
+    if (note !== undefined && nextNote !== currentNote) {
+      historyChanges.push({
+        field: HistoryChangeField.NOTE,
+        oldValue: currentNote ?? null,
+        newValue: nextNote,
+      })
+    }
+
+    if (historyChanges.length > 0) {
       const history = ProblemHistory.create({
         problemId: problem.id,
-        action: HistoryAction.NOTE_ADDED,
+        action: this.getHistoryAction(historyChanges),
         userId: executor.id,
         userName: executor.name,
-        note,
+        note: nextNote ?? null,
+        changes: historyChanges,
       })
 
       await this.problemHistoryRepository.create(history)
@@ -140,5 +146,49 @@ export class ManageProblemUseCase {
     return right({
       problem,
     })
+  }
+
+  private getHistoryAction(changes: ProblemHistoryChange[]) {
+    if (changes.length > 1) {
+      return HistoryAction.UPDATED
+    }
+
+    switch (changes[0].field) {
+      case HistoryChangeField.STATUS:
+        return HistoryAction.STATUS_CHANGED
+      case HistoryChangeField.CATEGORY:
+        return HistoryAction.CATEGORY_CHANGED
+      case HistoryChangeField.MAINTENANCE_TYPE:
+        return HistoryAction.MAINTENANCE_TYPE_CHANGED
+      case HistoryChangeField.NOTE:
+        return changes[0].newValue
+          ? HistoryAction.NOTE_ADDED
+          : HistoryAction.UPDATED
+    }
+  }
+
+  private getLatestNote(
+    history: {
+      note?: string | null
+      changes?: ProblemHistoryChange[] | null
+    }[],
+  ) {
+    for (const entry of history) {
+      const noteChange = entry.changes?.find(
+        (change) => change.field === HistoryChangeField.NOTE,
+      )
+
+      if (noteChange) {
+        return typeof noteChange.newValue === 'string'
+          ? noteChange.newValue.trim()
+          : null
+      }
+
+      if (typeof entry.note === 'string') {
+        return entry.note.trim()
+      }
+    }
+
+    return null
   }
 }

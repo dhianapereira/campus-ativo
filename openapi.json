@@ -1964,6 +1964,37 @@
           "url"
         ]
       },
+      "ProblemHistoryChangeResponse": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "description": "Campo alterado no registro de histórico",
+            "enum": [
+              "status",
+              "category",
+              "maintenanceType",
+              "note"
+            ],
+            "example": "status"
+          },
+          "oldValue": {
+            "type": "object",
+            "description": "Valor antigo da alteração",
+            "nullable": true,
+            "example": "TO_ANALYSIS"
+          },
+          "newValue": {
+            "type": "object",
+            "description": "Novo valor da alteração",
+            "nullable": true,
+            "example": "IN_ANALYSIS"
+          }
+        },
+        "required": [
+          "field"
+        ]
+      },
       "ProblemHistoryEntryResponse": {
         "type": "object",
         "properties": {
@@ -1979,7 +2010,8 @@
               "STATUS_CHANGED",
               "CATEGORY_CHANGED",
               "MAINTENANCE_TYPE_CHANGED",
-              "NOTE_ADDED"
+              "NOTE_ADDED",
+              "UPDATED"
             ],
             "example": "NOTE_ADDED"
           },
@@ -1988,23 +2020,19 @@
             "description": "Nome do usuário que realizou a ação",
             "example": "João Silva"
           },
-          "oldValue": {
-            "type": "object",
-            "description": "Valor antigo da alteração",
-            "nullable": true,
-            "example": "TO_ANALYSIS"
-          },
-          "newValue": {
-            "type": "object",
-            "description": "Novo valor da alteração",
-            "nullable": true,
-            "example": "IN_ANALYSIS"
-          },
           "note": {
             "type": "object",
             "description": "Observação adicionada ao histórico",
             "nullable": true,
             "example": "Encaminhado para avaliação da equipe."
+          },
+          "changes": {
+            "description": "Lista de mudanças agrupadas no registro de histórico",
+            "nullable": true,
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProblemHistoryChangeResponse"
+            }
           },
           "createdAt": {
             "format": "date-time",

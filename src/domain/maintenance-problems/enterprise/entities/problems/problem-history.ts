@@ -6,6 +6,20 @@ export enum HistoryAction {
   CATEGORY_CHANGED = 'CATEGORY_CHANGED',
   MAINTENANCE_TYPE_CHANGED = 'MAINTENANCE_TYPE_CHANGED',
   NOTE_ADDED = 'NOTE_ADDED',
+  UPDATED = 'UPDATED',
+}
+
+export enum HistoryChangeField {
+  STATUS = 'status',
+  CATEGORY = 'category',
+  MAINTENANCE_TYPE = 'maintenanceType',
+  NOTE = 'note',
+}
+
+export interface ProblemHistoryChange {
+  field: HistoryChangeField
+  oldValue?: string | null
+  newValue?: string | null
 }
 
 export interface ProblemHistoryProps {
@@ -13,9 +27,8 @@ export interface ProblemHistoryProps {
   action: HistoryAction
   userId: UniqueEntityID
   userName: string
-  oldValue?: string | null
-  newValue?: string | null
   note?: string | null
+  changes?: ProblemHistoryChange[] | null
   createdAt: Date
 }
 
@@ -36,16 +49,12 @@ export class ProblemHistory extends Entity<ProblemHistoryProps> {
     return this.props.userName
   }
 
-  get oldValue() {
-    return this.props.oldValue
-  }
-
-  get newValue() {
-    return this.props.newValue
-  }
-
   get note() {
     return this.props.note
+  }
+
+  get changes() {
+    return this.props.changes
   }
 
   get createdAt() {

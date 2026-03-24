@@ -13,6 +13,8 @@ import { InMemoryProblemHistoryRepository } from 'test/repositories/in-memory-pr
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { makeUser } from 'test/factories/make-user'
 import { HistoryAction } from '../../enterprise/entities/problems/problem-history'
+import { HistoryChangeField } from '../../enterprise/entities/problems/problem-history'
+import { ProblemHistory } from '../../enterprise/entities/problems/problem-history'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
@@ -70,12 +72,13 @@ describe('Manage Problem', () => {
     expect(inMemoryProblemHistoryRepository.items[0].action).toBe(
       HistoryAction.STATUS_CHANGED,
     )
-    expect(inMemoryProblemHistoryRepository.items[0].oldValue).toBe(
-      ProblemStatus.TO_ANALYSIS,
-    )
-    expect(inMemoryProblemHistoryRepository.items[0].newValue).toBe(
-      ProblemStatus.IN_ANALYSIS,
-    )
+    expect(inMemoryProblemHistoryRepository.items[0].changes).toEqual([
+      {
+        field: HistoryChangeField.STATUS,
+        oldValue: ProblemStatus.TO_ANALYSIS,
+        newValue: ProblemStatus.IN_ANALYSIS,
+      },
+    ])
   })
 
   it('should allow DIRECTOR to change problem category', async () => {
@@ -112,6 +115,13 @@ describe('Manage Problem', () => {
     expect(inMemoryProblemHistoryRepository.items[0].action).toBe(
       HistoryAction.CATEGORY_CHANGED,
     )
+    expect(inMemoryProblemHistoryRepository.items[0].changes).toEqual([
+      {
+        field: HistoryChangeField.CATEGORY,
+        oldValue: 'category-1',
+        newValue: 'category-2',
+      },
+    ])
   })
 
   it('should allow ADMIN to change maintenance type', async () => {
@@ -148,6 +158,13 @@ describe('Manage Problem', () => {
     expect(inMemoryProblemHistoryRepository.items[0].action).toBe(
       HistoryAction.MAINTENANCE_TYPE_CHANGED,
     )
+    expect(inMemoryProblemHistoryRepository.items[0].changes).toEqual([
+      {
+        field: HistoryChangeField.MAINTENANCE_TYPE,
+        oldValue: null,
+        newValue: MaintenanceType.CORRECTIVE,
+      },
+    ])
   })
 
   it('should allow MANAGER to add a note', async () => {
@@ -183,6 +200,13 @@ describe('Manage Problem', () => {
     expect(inMemoryProblemHistoryRepository.items[0].note).toBe(
       'This problem needs urgent attention',
     )
+    expect(inMemoryProblemHistoryRepository.items[0].changes).toEqual([
+      {
+        field: HistoryChangeField.NOTE,
+        oldValue: null,
+        newValue: 'This problem needs urgent attention',
+      },
+    ])
   })
 
   it('should not allow REPORTER to manage problem', async () => {
@@ -254,7 +278,35 @@ describe('Manage Problem', () => {
     expect(inMemoryProblemsRepository.items[0].maintenanceType).toBe(
       MaintenanceType.PREVENTIVE,
     )
-    expect(inMemoryProblemHistoryRepository.items).toHaveLength(4)
+    expect(inMemoryProblemHistoryRepository.items).toHaveLength(1)
+    expect(inMemoryProblemHistoryRepository.items[0].action).toBe(
+      HistoryAction.UPDATED,
+    )
+    expect(inMemoryProblemHistoryRepository.items[0].note).toBe(
+      'Updated all fields',
+    )
+    expect(inMemoryProblemHistoryRepository.items[0].changes).toEqual([
+      {
+        field: HistoryChangeField.STATUS,
+        oldValue: ProblemStatus.TO_ANALYSIS,
+        newValue: ProblemStatus.ACCEPTED,
+      },
+      {
+        field: HistoryChangeField.CATEGORY,
+        oldValue: 'category-1',
+        newValue: 'category-2',
+      },
+      {
+        field: HistoryChangeField.MAINTENANCE_TYPE,
+        oldValue: null,
+        newValue: MaintenanceType.PREVENTIVE,
+      },
+      {
+        field: HistoryChangeField.NOTE,
+        oldValue: null,
+        newValue: 'Updated all fields',
+      },
+    ])
   })
 
   it('should not create history if value did not change', async () => {
@@ -312,5 +364,65 @@ describe('Manage Problem', () => {
 
     expect(result.isRight()).toBe(true)
     expect(inMemoryProblemHistoryRepository.items).toHaveLength(0)
+  })
+
+  it('should allow clearing the latest note', async () => {
+    const manager = makeUser(
+      {
+        role: UserRole.MANAGER,
+        name: 'Manager User',
+      },
+      new UniqueEntityID('manager-1'),
+    )
+    await inMemoryUsersRepository.create(manager)
+
+    const problem = makeProblem(
+      {
+        reporterId: new UniqueEntityID('reporter-1'),
+      },
+      new UniqueEntityID('problem-1'),
+    )
+    await inMemoryProblemsRepository.create(problem)
+
+    await inMemoryProblemHistoryRepository.create(
+      ProblemHistory.create(
+        {
+          problemId: problem.id,
+          action: HistoryAction.NOTE_ADDED,
+          userId: manager.id,
+          userName: manager.name,
+          note: 'Previous note',
+          changes: [
+            {
+              field: HistoryChangeField.NOTE,
+              oldValue: null,
+              newValue: 'Previous note',
+            },
+          ],
+        },
+        new UniqueEntityID('history-1'),
+      ),
+    )
+
+    const result = await sut.execute({
+      problemId: problem.id.toValue(),
+      executorId: manager.id.toValue(),
+      executorRole: UserRole.MANAGER,
+      note: '   ',
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryProblemHistoryRepository.items).toHaveLength(2)
+    expect(inMemoryProblemHistoryRepository.items[1].action).toBe(
+      HistoryAction.UPDATED,
+    )
+    expect(inMemoryProblemHistoryRepository.items[1].note).toBeNull()
+    expect(inMemoryProblemHistoryRepository.items[1].changes).toEqual([
+      {
+        field: HistoryChangeField.NOTE,
+        oldValue: 'Previous note',
+        newValue: null,
+      },
+    ])
   })
 })

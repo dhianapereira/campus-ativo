@@ -266,6 +266,39 @@ export enum HistoryActionEnum {
   CATEGORY_CHANGED = 'CATEGORY_CHANGED',
   MAINTENANCE_TYPE_CHANGED = 'MAINTENANCE_TYPE_CHANGED',
   NOTE_ADDED = 'NOTE_ADDED',
+  UPDATED = 'UPDATED',
+}
+
+export enum HistoryChangeFieldEnum {
+  STATUS = 'status',
+  CATEGORY = 'category',
+  MAINTENANCE_TYPE = 'maintenanceType',
+  NOTE = 'note',
+}
+
+export class ProblemHistoryChangeResponse {
+  @ApiProperty({
+    description: 'Campo alterado no registro de histórico',
+    enum: HistoryChangeFieldEnum,
+    example: HistoryChangeFieldEnum.STATUS,
+  })
+  field!: HistoryChangeFieldEnum
+
+  @ApiProperty({
+    description: 'Valor antigo da alteração',
+    required: false,
+    nullable: true,
+    example: 'TO_ANALYSIS',
+  })
+  oldValue?: string | null
+
+  @ApiProperty({
+    description: 'Novo valor da alteração',
+    required: false,
+    nullable: true,
+    example: 'IN_ANALYSIS',
+  })
+  newValue?: string | null
 }
 
 export class ManageProblemRequest {
@@ -341,28 +374,20 @@ export class ProblemHistoryEntryResponse {
   userName!: string
 
   @ApiProperty({
-    description: 'Valor antigo da alteração',
-    required: false,
-    nullable: true,
-    example: 'TO_ANALYSIS',
-  })
-  oldValue?: string | null
-
-  @ApiProperty({
-    description: 'Novo valor da alteração',
-    required: false,
-    nullable: true,
-    example: 'IN_ANALYSIS',
-  })
-  newValue?: string | null
-
-  @ApiProperty({
     description: 'Observação adicionada ao histórico',
     required: false,
     nullable: true,
     example: 'Encaminhado para avaliação da equipe.',
   })
   note?: string | null
+
+  @ApiProperty({
+    description: 'Lista de mudanças agrupadas no registro de histórico',
+    required: false,
+    nullable: true,
+    type: [ProblemHistoryChangeResponse],
+  })
+  changes?: ProblemHistoryChangeResponse[] | null
 
   @ApiProperty({
     description: 'Data de criação do registro de histórico',
