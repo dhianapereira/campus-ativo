@@ -384,6 +384,12 @@ export class ProblemHistoryEntryResponse {
   action!: HistoryActionEnum
 
   @ApiProperty({
+    description: 'ID do usuário que realizou a ação',
+    example: '123e4567-e89b-12d3-a456-426614174001',
+  })
+  userId!: string
+
+  @ApiProperty({
     description: 'Nome do usuário que realizou a ação',
     example: 'João Silva',
   })

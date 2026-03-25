@@ -117,7 +117,6 @@ export class ManageProblemUseCase {
         problemId: problem.id,
         action: this.getHistoryAction(historyChanges),
         userId: executor.id,
-        userName: executor.name,
         note: nextNote ?? null,
         changes: historyChanges,
       })

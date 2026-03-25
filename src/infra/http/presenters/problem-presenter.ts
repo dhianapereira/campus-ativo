@@ -45,11 +45,15 @@ export class ProblemPresenter {
     }
   }
 
-  static toHTTPHistory(history: ProblemHistory[]) {
+  static toHTTPHistory(
+    history: ProblemHistory[],
+    resolveUserName: (userId: string) => string,
+  ) {
     return history.map((entry) => ({
       id: entry.id.toValue(),
       action: entry.action,
-      userName: entry.userName,
+      userId: entry.userId.toValue(),
+      userName: resolveUserName(entry.userId.toValue()),
       note: entry.note ?? null,
       changes: entry.changes ?? null,
       createdAt: entry.createdAt,

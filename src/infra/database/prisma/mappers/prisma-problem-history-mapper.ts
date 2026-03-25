@@ -21,7 +21,6 @@ export class PrismaProblemHistoryMapper {
         problemId: new UniqueEntityID(raw.problemId),
         action: raw.action as HistoryAction,
         userId: new UniqueEntityID(raw.userId),
-        userName: raw.userName,
         note: raw.note,
         changes:
           (rawWithChanges.changes as ProblemHistoryChange[] | null) ?? null,
@@ -39,7 +38,6 @@ export class PrismaProblemHistoryMapper {
       problemId: problemHistory.problemId.toValue(),
       action: problemHistory.action as PrismaHistoryAction,
       userId: problemHistory.userId.toValue(),
-      userName: problemHistory.userName,
       note: problemHistory.note ?? null,
       changes: problemHistory.changes
         ? (problemHistory.changes as unknown as Prisma.InputJsonValue)

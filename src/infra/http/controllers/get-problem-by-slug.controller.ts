@@ -79,6 +79,12 @@ export class GetProblemBySlugController {
     const history = await this.problemHistoryRepository.findManyByProblemId(
       problem.id.toValue(),
     )
+    const historyUsers = await this.usersRepository.findManyByIds([
+      ...new Set(history.map((entry) => entry.userId.toValue())),
+    ])
+    const historyUserNames = new Map(
+      historyUsers.map((user) => [user.id.toValue(), user.name]),
+    )
     const reporter = await this.usersRepository.findById(
       problem.reporterId.toValue(),
     )
@@ -128,7 +134,10 @@ export class GetProblemBySlugController {
             email: reporter.email,
           },
         ),
-        history: ProblemPresenter.toHTTPHistory(history),
+        history: ProblemPresenter.toHTTPHistory(
+          history,
+          (userId) => historyUserNames.get(userId) ?? 'Usuário não encontrado',
+        ),
       },
     }
   }

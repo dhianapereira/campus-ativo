@@ -24,7 +24,6 @@ export interface ProblemHistoryProps {
   problemId: UniqueEntityID
   action: HistoryAction
   userId: UniqueEntityID
-  userName: string
   note?: string | null
   changes?: ProblemHistoryChange[] | null
   createdAt: Date
@@ -41,10 +40,6 @@ export class ProblemHistory extends Entity<ProblemHistoryProps> {
 
   get userId() {
     return this.props.userId
-  }
-
-  get userName() {
-    return this.props.userName
   }
 
   get note() {

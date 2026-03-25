@@ -31,6 +31,7 @@ model User {
   updatedAt DateTime? @updatedAt @map("updated_at")
 
   problems Problem[]
+  history  ProblemHistory[]
 
   @@map("users")
 }
@@ -86,12 +87,12 @@ model ProblemHistory {
   problemId String        @map("problem_id")
   action    HistoryAction
   userId    String        @map("user_id")
-  userName  String        @map("user_name")
   note      String?
   changes   Json?
   createdAt DateTime      @default(now()) @map("created_at")
 
   problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
 
   @@map("problem_history")
 }

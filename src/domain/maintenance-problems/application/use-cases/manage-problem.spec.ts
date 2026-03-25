@@ -337,7 +337,6 @@ describe('Manage Problem', () => {
           problemId: problem.id,
           action: HistoryAction.NOTE_ADDED,
           userId: manager.id,
-          userName: manager.name,
           note: 'Previous note',
           changes: [
             {
