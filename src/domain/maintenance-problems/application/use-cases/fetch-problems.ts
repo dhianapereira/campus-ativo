@@ -7,6 +7,7 @@ interface FetchProblemsUseCaseRequest {
   page: number
   query?: string
   includeDeleted?: boolean
+  reporterId?: string
 }
 
 type FetchProblemsUseCaseResponse = Either<
@@ -24,11 +25,13 @@ export class FetchProblemsUseCase {
     page,
     query,
     includeDeleted = false,
+    reporterId,
   }: FetchProblemsUseCaseRequest): Promise<FetchProblemsUseCaseResponse> {
     const problems = await this.problemsRepository.findManyWithDetails({
       page,
       query,
       includeDeleted,
+      reporterId,
     })
 
     return right({

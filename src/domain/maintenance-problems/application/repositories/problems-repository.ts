@@ -6,6 +6,7 @@ import { DashboardMetrics } from '../../enterprise/entities/value-objects/dashbo
 export interface FetchProblemsParams extends PaginationParams {
   query?: string
   includeDeleted?: boolean
+  reporterId?: string
 }
 
 export abstract class ProblemsRepository {

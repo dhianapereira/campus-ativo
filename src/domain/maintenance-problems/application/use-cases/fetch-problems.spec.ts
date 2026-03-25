@@ -2,6 +2,7 @@ import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems
 import { makeProblem } from 'test/factories/make-problem'
 import { FetchProblemsUseCase } from './fetch-problems'
 import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
@@ -116,5 +117,45 @@ describe('Fetch Recent Problems', () => {
     })
 
     expect(result.value?.problems).toHaveLength(3)
+  })
+
+  it('should fetch only the current reporter deleted problems when reporterId is provided', async () => {
+    const reporterId = '8a9f2b68-1f5d-4f46-a6dd-531a6f9b1111'
+    const otherReporterId = 'd2f32f2b-1f04-4552-8a85-2f7fdc2b2222'
+
+    const ownDeletedProblem = makeProblem({
+      title: 'Own deleted problem',
+      reporterId: new UniqueEntityID(reporterId),
+    })
+    ownDeletedProblem.moveToTrash()
+
+    const otherDeletedProblem = makeProblem({
+      title: 'Other deleted problem',
+      reporterId: new UniqueEntityID(otherReporterId),
+    })
+    otherDeletedProblem.moveToTrash()
+
+    const ownActiveProblem = makeProblem({
+      title: 'Own active problem',
+      reporterId: new UniqueEntityID(reporterId),
+    })
+
+    await inMemoryProblemsRepository.create(ownDeletedProblem)
+    await inMemoryProblemsRepository.create(otherDeletedProblem)
+    await inMemoryProblemsRepository.create(ownActiveProblem)
+
+    const result = await sut.execute({
+      page: 1,
+      includeDeleted: true,
+      reporterId,
+    })
+
+    expect(result.value?.problems).toHaveLength(2)
+    expect(result.value?.problems).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ title: 'Own deleted problem' }),
+        expect.objectContaining({ title: 'Own active problem' }),
+      ]),
+    )
   })
 })

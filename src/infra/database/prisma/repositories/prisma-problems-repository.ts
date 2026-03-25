@@ -51,10 +51,12 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     page,
     query,
     includeDeleted = false,
+    reporterId,
   }: FetchProblemsParams): Promise<Problem[]> {
     const problems = await this.prisma.problem.findMany({
       where: {
         purgedAt: null,
+        ...(reporterId && { reporterId }),
         ...(!includeDeleted && { deletedAt: null }),
         ...(query && {
           OR: [
@@ -87,10 +89,12 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     page,
     query,
     includeDeleted = false,
+    reporterId,
   }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
     const problems = await this.prisma.problem.findMany({
       where: {
         purgedAt: null,
+        ...(reporterId && { reporterId }),
         ...(!includeDeleted && { deletedAt: null }),
         ...(query && {
           OR: [

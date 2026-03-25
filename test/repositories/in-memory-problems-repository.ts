@@ -40,9 +40,20 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     return problem
   }
 
-  async findMany({ page, query, includeDeleted = false }: FetchProblemsParams) {
+  async findMany({
+    page,
+    query,
+    includeDeleted = false,
+    reporterId,
+  }: FetchProblemsParams) {
     // Purged problems are never listed.
     let problems = this.items.filter((problem) => !problem.isPurged)
+
+    if (reporterId) {
+      problems = problems.filter(
+        (problem) => problem.reporterId?.toValue() === reporterId,
+      )
+    }
 
     // Filter out trashed problems unless includeDeleted is true
     if (!includeDeleted) {
@@ -73,9 +84,16 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     page,
     query,
     includeDeleted = false,
+    reporterId,
   }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
     // Purged problems are never listed.
     let problems = this.items.filter((problem) => !problem.isPurged)
+
+    if (reporterId) {
+      problems = problems.filter(
+        (problem) => problem.reporterId?.toValue() === reporterId,
+      )
+    }
 
     // Filter out trashed problems unless includeDeleted is true
     if (!includeDeleted) {

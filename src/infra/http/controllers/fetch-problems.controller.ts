@@ -99,20 +99,25 @@ export class FetchProblemsController {
     includeDeleted: IncludeDeletedQueryParamSchema,
   ) {
     const currentUserRole = (user.role as UserRole) || UserRole.REPORTER
+    const canViewAllDeletedProblems = RoleHierarchy.hasPermission(
+      currentUserRole,
+      UserRole.MANAGER,
+    )
 
-    if (
-      includeDeleted &&
-      !RoleHierarchy.hasPermission(currentUserRole, UserRole.MANAGER)
-    ) {
-      throw new ForbiddenException(
-        'Only managers and above can view problems in trash',
-      )
+    const reporterIdFilter =
+      includeDeleted && !canViewAllDeletedProblems
+        ? user.sub
+        : undefined
+
+    if (includeDeleted && currentUserRole === UserRole.REPORTER && !user.sub) {
+      throw new ForbiddenException('Unable to identify current user')
     }
 
     const result = await this.fetchProblems.execute({
       page,
       query,
       includeDeleted,
+      reporterId: reporterIdFilter,
     })
 
     if (result.isLeft()) {
