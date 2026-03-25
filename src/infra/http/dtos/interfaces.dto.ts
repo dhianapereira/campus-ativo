@@ -73,9 +73,8 @@ export class CreateProblemRequest {
   @ApiProperty({
     description: 'ID da categoria do problema',
     example: '123e4567-e89b-12d3-a456-426614174000',
-    required: false,
   })
-  categoryId?: string
+  categoryId!: string
 
   @ApiProperty({
     description: 'ID da localização onde ocorreu o problema',
@@ -263,7 +262,6 @@ export enum MaintenanceTypeEnum {
 
 export enum HistoryActionEnum {
   STATUS_CHANGED = 'STATUS_CHANGED',
-  CATEGORY_CHANGED = 'CATEGORY_CHANGED',
   MAINTENANCE_TYPE_CHANGED = 'MAINTENANCE_TYPE_CHANGED',
   NOTE_ADDED = 'NOTE_ADDED',
   UPDATED = 'UPDATED',
@@ -271,7 +269,6 @@ export enum HistoryActionEnum {
 
 export enum HistoryChangeFieldEnum {
   STATUS = 'status',
-  CATEGORY = 'category',
   MAINTENANCE_TYPE = 'maintenanceType',
   NOTE = 'note',
 }
@@ -309,13 +306,6 @@ export class ManageProblemRequest {
     example: ProblemStatusEnum.IN_ANALYSIS,
   })
   status?: ProblemStatusEnum
-
-  @ApiProperty({
-    description: 'ID da categoria do problema',
-    example: '123e4567-e89b-12d3-a456-426614174000',
-    required: false,
-  })
-  categoryId?: string
 
   @ApiProperty({
     description: 'Tipo de manutenção',
@@ -436,6 +426,28 @@ export class ProblemReporterResponse {
   email!: string
 }
 
+export class ProblemCategorySummaryResponse {
+  @ApiProperty({
+    description: 'ID da categoria',
+    example: '123e4567-e89b-12d3-a456-426614174002',
+  })
+  id!: string
+
+  @ApiProperty({
+    description: 'Nome da categoria',
+    example: 'Climatizacao',
+  })
+  name!: string
+
+  @ApiProperty({
+    description: 'Descrição da categoria',
+    example: 'Problemas relacionados a ar condicionado e ventilação',
+    required: false,
+    nullable: true,
+  })
+  description?: string | null
+}
+
 export class ProblemResponse {
   @ApiProperty({
     description: 'ID do problema',
@@ -450,12 +462,10 @@ export class ProblemResponse {
   reporter!: ProblemReporterResponse
 
   @ApiProperty({
-    description: 'ID da categoria do problema',
-    example: '123e4567-e89b-12d3-a456-426614174002',
-    required: false,
-    nullable: true,
+    description: 'Resumo da categoria do problema',
+    type: ProblemCategorySummaryResponse,
   })
-  categoryId?: string | null
+  category!: ProblemCategorySummaryResponse
 
   @ApiProperty({
     description: 'Resumo da localização do problema',

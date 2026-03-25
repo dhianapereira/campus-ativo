@@ -81,20 +81,4 @@ describe('Create Problem', () => {
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
-
-  it('should be able to create a problem without category', async () => {
-    const location = makeLocation({}, new UniqueEntityID('location-id'))
-    inMemoryLocationsRepository.items.push(location)
-
-    const result = await sut.execute({
-      reporterId: '1',
-      title: 'Novo problema sem categoria',
-      description: 'Descrição do problema',
-      attachmentsIds: [],
-      locationId: 'location-id',
-    })
-
-    expect(result.isRight()).toBe(true)
-    expect(inMemoryProblemsRepository.items[0].categoryId).toBeNull()
-  })
 })

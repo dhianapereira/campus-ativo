@@ -10,7 +10,6 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Injectable } from '@nestjs/common'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { RoleHierarchy } from '@/core/utils/role-hierarchy'
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { ProblemHistoryRepository } from '../repositories/problem-history-repository'
 import {
   ProblemHistory,
@@ -25,7 +24,6 @@ interface ManageProblemUseCaseRequest {
   executorId: string
   executorRole: UserRole
   status?: ProblemStatus
-  categoryId?: string
   maintenanceType?: MaintenanceType | null
   note?: string
 }
@@ -50,7 +48,6 @@ export class ManageProblemUseCase {
     executorId,
     executorRole,
     status,
-    categoryId,
     maintenanceType,
     note,
   }: ManageProblemUseCaseRequest): Promise<ManageProblemUseCaseResponse> {
@@ -93,19 +90,6 @@ export class ManageProblemUseCase {
         oldValue: oldStatus,
         newValue: status,
       })
-    }
-
-    if (categoryId !== undefined) {
-      const newCategoryId = new UniqueEntityID(categoryId)
-      if (!problem.categoryId || problem.categoryId.toValue() !== categoryId) {
-        const oldCategoryId = problem.categoryId?.toValue() ?? null
-        problem.changeCategory(newCategoryId)
-        historyChanges.push({
-          field: HistoryChangeField.CATEGORY,
-          oldValue: oldCategoryId,
-          newValue: categoryId,
-        })
-      }
     }
 
     if (maintenanceType !== undefined) {
@@ -156,8 +140,6 @@ export class ManageProblemUseCase {
     switch (changes[0].field) {
       case HistoryChangeField.STATUS:
         return HistoryAction.STATUS_CHANGED
-      case HistoryChangeField.CATEGORY:
-        return HistoryAction.CATEGORY_CHANGED
       case HistoryChangeField.MAINTENANCE_TYPE:
         return HistoryAction.MAINTENANCE_TYPE_CHANGED
       case HistoryChangeField.NOTE:

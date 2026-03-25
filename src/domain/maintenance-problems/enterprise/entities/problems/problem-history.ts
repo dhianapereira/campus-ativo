@@ -3,7 +3,6 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 export enum HistoryAction {
   STATUS_CHANGED = 'STATUS_CHANGED',
-  CATEGORY_CHANGED = 'CATEGORY_CHANGED',
   MAINTENANCE_TYPE_CHANGED = 'MAINTENANCE_TYPE_CHANGED',
   NOTE_ADDED = 'NOTE_ADDED',
   UPDATED = 'UPDATED',
@@ -11,7 +10,6 @@ export enum HistoryAction {
 
 export enum HistoryChangeField {
   STATUS = 'status',
-  CATEGORY = 'category',
   MAINTENANCE_TYPE = 'maintenanceType',
   NOTE = 'note',
 }

@@ -18,7 +18,7 @@ const createProblemBodySchema = z.object({
   title: z.string(),
   description: z.string(),
   locationId: z.string(),
-  categoryId: z.string().optional(),
+  categoryId: z.string(),
   attachmentIds: z.array(z.string()).optional().default([]),
 })
 

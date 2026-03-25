@@ -81,49 +81,6 @@ describe('Manage Problem', () => {
     ])
   })
 
-  it('should allow DIRECTOR to change problem category', async () => {
-    const director = makeUser(
-      {
-        role: UserRole.DIRECTOR,
-        name: 'Jane Director',
-      },
-      new UniqueEntityID('director-1'),
-    )
-    await inMemoryUsersRepository.create(director)
-
-    const problem = makeProblem(
-      {
-        reporterId: new UniqueEntityID('reporter-1'),
-        categoryId: new UniqueEntityID('category-1'),
-      },
-      new UniqueEntityID('problem-1'),
-    )
-    await inMemoryProblemsRepository.create(problem)
-
-    const result = await sut.execute({
-      problemId: problem.id.toValue(),
-      executorId: director.id.toValue(),
-      executorRole: UserRole.DIRECTOR,
-      categoryId: 'category-2',
-    })
-
-    expect(result.isRight()).toBe(true)
-    expect(inMemoryProblemsRepository.items[0].categoryId?.toValue()).toBe(
-      'category-2',
-    )
-    expect(inMemoryProblemHistoryRepository.items).toHaveLength(1)
-    expect(inMemoryProblemHistoryRepository.items[0].action).toBe(
-      HistoryAction.CATEGORY_CHANGED,
-    )
-    expect(inMemoryProblemHistoryRepository.items[0].changes).toEqual([
-      {
-        field: HistoryChangeField.CATEGORY,
-        oldValue: 'category-1',
-        newValue: 'category-2',
-      },
-    ])
-  })
-
   it('should allow ADMIN to change maintenance type', async () => {
     const admin = makeUser(
       {
@@ -251,7 +208,6 @@ describe('Manage Problem', () => {
       {
         reporterId: new UniqueEntityID('reporter-1'),
         status: ProblemStatus.TO_ANALYSIS,
-        categoryId: new UniqueEntityID('category-1'),
         maintenanceType: null,
       },
       new UniqueEntityID('problem-1'),
@@ -263,7 +219,6 @@ describe('Manage Problem', () => {
       executorId: manager.id.toValue(),
       executorRole: UserRole.MANAGER,
       status: ProblemStatus.ACCEPTED,
-      categoryId: 'category-2',
       maintenanceType: MaintenanceType.PREVENTIVE,
       note: 'Updated all fields',
     })
@@ -271,9 +226,6 @@ describe('Manage Problem', () => {
     expect(result.isRight()).toBe(true)
     expect(inMemoryProblemsRepository.items[0].status).toBe(
       ProblemStatus.ACCEPTED,
-    )
-    expect(inMemoryProblemsRepository.items[0].categoryId?.toValue()).toBe(
-      'category-2',
     )
     expect(inMemoryProblemsRepository.items[0].maintenanceType).toBe(
       MaintenanceType.PREVENTIVE,
@@ -290,11 +242,6 @@ describe('Manage Problem', () => {
         field: HistoryChangeField.STATUS,
         oldValue: ProblemStatus.TO_ANALYSIS,
         newValue: ProblemStatus.ACCEPTED,
-      },
-      {
-        field: HistoryChangeField.CATEGORY,
-        oldValue: 'category-1',
-        newValue: 'category-2',
       },
       {
         field: HistoryChangeField.MAINTENANCE_TYPE,

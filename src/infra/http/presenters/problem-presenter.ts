@@ -7,6 +7,11 @@ export class ProblemPresenter {
   static toHTTPWithAttachments(
     problem: Problem,
     attachments: Attachment[],
+    category: {
+      id: string
+      name: string
+      description: string | null
+    },
     location: {
       id: string
       name: string
@@ -21,7 +26,7 @@ export class ProblemPresenter {
     return {
       id: problem.id.toValue(),
       reporter,
-      categoryId: problem.categoryId?.toValue() ?? null,
+      category,
       location,
       title: problem.title,
       slug: problem.slug.value,

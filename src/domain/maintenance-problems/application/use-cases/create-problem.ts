@@ -12,7 +12,7 @@ import { Injectable } from '@nestjs/common'
 interface CreateProblemUseCaseRequest {
   reporterId: string
   locationId: string
-  categoryId?: string
+  categoryId: string
   title: string
   description: string
   attachmentsIds: string[]
@@ -47,20 +47,16 @@ export class CreateProblemUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    if (categoryId) {
-      const category = await this.categoriesRepository.findById(categoryId)
+    const category = await this.categoriesRepository.findById(categoryId)
 
-      if (!category) {
-        return left(new ResourceNotFoundError())
-      }
+    if (!category) {
+      return left(new ResourceNotFoundError())
     }
 
     const problem = Problem.create({
       reporterId: new UniqueEntityID(reporterId),
       locationId: new UniqueEntityID(locationId),
-      categoryId: categoryId
-        ? new UniqueEntityID(categoryId)
-        : null,
+      categoryId: new UniqueEntityID(categoryId),
       title,
       description,
     })

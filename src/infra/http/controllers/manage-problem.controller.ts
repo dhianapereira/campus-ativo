@@ -32,7 +32,6 @@ import { ManageProblemRequest } from '../dtos/interfaces.dto'
 
 const manageProblemBodySchema = z.object({
   status: z.nativeEnum(ProblemStatus).optional(),
-  categoryId: z.string().optional(),
   maintenanceType: z.nativeEnum(MaintenanceType).optional(),
   note: z.string().optional(),
 })
@@ -50,7 +49,7 @@ export class ManageProblemController {
   @ApiOperation({
     summary: 'Gerenciar problema',
     description:
-      'Atualiza status, categoria, tipo de manutenção e adiciona observações ao histórico do problema.',
+      'Atualiza status, tipo de manutenção e adiciona observações ao histórico do problema.',
   })
   @ApiParam({
     name: 'id',
@@ -82,7 +81,6 @@ export class ManageProblemController {
       executorId: user.sub,
       executorRole,
       status: body.status,
-      categoryId: body.categoryId,
       maintenanceType: body.maintenanceType,
       note: body.note,
     })

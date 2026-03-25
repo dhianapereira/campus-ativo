@@ -17,6 +17,7 @@ import { AttachmentsRepository } from '@/domain/maintenance-problems/application
 import { ProblemHistoryRepository } from '@/domain/maintenance-problems/application/repositories/problem-history-repository'
 import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
 import { LocationsRepository } from '@/domain/maintenance-problems/application/repositories/locations-repository'
+import { CategoriesRepository } from '@/domain/maintenance-problems/application/repositories/categories-repository'
 import { ProblemPresenter } from '../presenters/problem-presenter'
 import { ProblemResponse } from '../dtos/interfaces.dto'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
@@ -31,6 +32,7 @@ export class GetProblemBySlugController {
     private problemHistoryRepository: ProblemHistoryRepository,
     private usersRepository: UsersRepository,
     private locationsRepository: LocationsRepository,
+    private categoriesRepository: CategoriesRepository,
   ) {}
 
   @Get()
@@ -83,6 +85,9 @@ export class GetProblemBySlugController {
     const location = await this.locationsRepository.findById(
       problem.locationId.toValue(),
     )
+    const category = await this.categoriesRepository.findById(
+      problem.categoryId.toValue(),
+    )
 
     if (!location) {
       throw new InternalServerErrorException(
@@ -96,11 +101,22 @@ export class GetProblemBySlugController {
       )
     }
 
+    if (!category) {
+      throw new InternalServerErrorException(
+        'Categoria associada ao problema não encontrada',
+      )
+    }
+
     return {
       problem: {
         ...ProblemPresenter.toHTTPWithAttachments(
           problem,
           attachments,
+          {
+            id: category.id.toValue(),
+            name: category.name,
+            description: category.description ?? null,
+          },
           {
             id: location.id.toValue(),
             name: location.name,
