@@ -49,7 +49,7 @@ export class EditProblemUseCase {
     }
 
     // Only the reporter can edit the problem
-    if (reporterId !== problem.reporterId?.toValue()) {
+    if (reporterId !== problem.reporterId.toValue()) {
       return left(new NotAllowedError())
     }
 

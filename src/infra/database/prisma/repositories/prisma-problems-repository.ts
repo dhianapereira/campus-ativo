@@ -118,6 +118,11 @@ export class PrismaProblemsRepository implements ProblemsRepository {
       },
       include: {
         location: true,
+        reporter: {
+          select: {
+            email: true,
+          },
+        },
       },
       take: 20,
       skip: (page - 1) * 20,

@@ -42,16 +42,13 @@ export class GetDashboardMetricsController {
       await Promise.all([
         this.prisma.problem.groupBy({
           by: ['locationId'],
-          where: {
-            ...baseWhere,
-            locationId: { not: null },
-          },
-          _count: { locationId: true },
+          where: baseWhere,
+          _count: { _all: true },
         }),
         this.prisma.problem.groupBy({
           by: ['categoryId'],
           where: baseWhere,
-          _count: { categoryId: true },
+          _count: { _all: true },
         }),
         this.prisma.problem.findMany({
           where: baseWhere,
@@ -63,16 +60,13 @@ export class GetDashboardMetricsController {
       ])
 
     const topLocationsSorted = [...topLocationsRaw].sort(
-      (a, b) => b._count.locationId - a._count.locationId,
+      (a, b) => b._count._all - a._count._all,
     )
     const topCategoriesSorted = [...topCategoriesRaw].sort(
-      (a, b) => b._count.categoryId - a._count.categoryId,
+      (a, b) => b._count._all - a._count._all,
     )
 
-    const locationIds = topLocationsSorted
-      .slice(0, 3)
-      .map((r) => r.locationId)
-      .filter((id): id is string => id != null)
+    const locationIds = topLocationsSorted.slice(0, 3).map((r) => r.locationId)
     const categoryIds = topCategoriesSorted
       .slice(0, 3)
       .map((r) => r.categoryId)
@@ -101,17 +95,15 @@ export class GetDashboardMetricsController {
     )
 
     const top3Locations = topLocationsSorted.slice(0, 3).map((r) => ({
-      name: r.locationId
-        ? (locationMap.get(r.locationId) ?? 'Sem local')
-        : 'Sem local',
-      count: r._count.locationId,
+      name: locationMap.get(r.locationId) ?? 'Localização não encontrada',
+      count: r._count._all,
     }))
 
     const top3Categories = topCategoriesSorted.slice(0, 3).map((r) => ({
       name: r.categoryId
         ? (categoryMap.get(r.categoryId) ?? 'Sem categoria')
         : 'Sem categoria',
-      count: r._count.categoryId,
+      count: r._count._all,
     }))
 
     const now = new Date()

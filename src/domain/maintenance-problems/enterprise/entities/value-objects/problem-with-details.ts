@@ -4,7 +4,8 @@ import { Slug } from './slug'
 
 export interface ProblemWithDetailsProps {
   problemId: UniqueEntityID
-  reporterId: UniqueEntityID | null
+  reporterId: UniqueEntityID
+  reporterEmail: string
   title: string
   slug: Slug
   excerpt: string
@@ -17,7 +18,8 @@ export interface ProblemWithDetailsProps {
 
 export class ProblemWithDetails {
   public problemId: UniqueEntityID
-  public reporterId: UniqueEntityID | null
+  public reporterId: UniqueEntityID
+  public reporterEmail: string
   public title: string
   public slug: Slug
   public excerpt: string
@@ -30,6 +32,7 @@ export class ProblemWithDetails {
   constructor(props: ProblemWithDetailsProps) {
     this.problemId = props.problemId
     this.reporterId = props.reporterId
+    this.reporterEmail = props.reporterEmail
     this.title = props.title
     this.slug = props.slug
     this.excerpt = props.excerpt

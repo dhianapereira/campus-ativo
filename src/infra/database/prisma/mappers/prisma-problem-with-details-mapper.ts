@@ -5,23 +5,25 @@ import { Slug } from '@/domain/maintenance-problems/enterprise/entities/value-ob
 import {
   Problem as PrismaProblem,
   Location as PrismaLocation,
+  User as PrismaUser,
 } from '@prisma/client'
 
 export class PrismaProblemWithDetailsMapper {
   static toDomain(
-    raw: PrismaProblem & { location: PrismaLocation | null },
+    raw: PrismaProblem & {
+      location: PrismaLocation
+      reporter: Pick<PrismaUser, 'email'>
+    },
   ): ProblemWithDetails {
     const excerpt = raw.description.substring(0, 120).trimEnd().concat('...')
-
     return new ProblemWithDetails({
       problemId: new UniqueEntityID(raw.id),
-      reporterId: raw.reporterId
-        ? new UniqueEntityID(raw.reporterId)
-        : null,
+      reporterId: new UniqueEntityID(raw.reporterId),
+      reporterEmail: raw.reporter.email,
       title: raw.title,
       slug: Slug.create(raw.slug),
       excerpt,
-      locationName: raw.location?.name ?? 'Localização excluída',
+      locationName: raw.location.name,
       status: raw.status as ProblemStatus,
       createdAt: raw.createdAt,
       updatedAt: raw.updatedAt,

@@ -51,7 +51,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
 
     if (reporterId) {
       problems = problems.filter(
-        (problem) => problem.reporterId?.toValue() === reporterId,
+        (problem) => problem.reporterId.toValue() === reporterId,
       )
     }
 
@@ -91,7 +91,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
 
     if (reporterId) {
       problems = problems.filter(
-        (problem) => problem.reporterId?.toValue() === reporterId,
+        (problem) => problem.reporterId.toValue() === reporterId,
       )
     }
 
@@ -123,12 +123,11 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
         new ProblemWithDetails({
           problemId: problem.id,
           reporterId: problem.reporterId,
+          reporterEmail: `${problem.reporterId.toValue()}@test.local`,
           title: problem.title,
           slug: problem.slug,
           excerpt: problem.excerpt,
-          locationName: problem.locationId
-            ? 'Localização de teste'
-            : 'Localização excluída',
+          locationName: 'Localização de teste',
           status: problem.status,
           createdAt: problem.createdAt,
           updatedAt: problem.updatedAt,
@@ -221,21 +220,11 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
   ): Promise<void> {
     // Find all problems belonging to the user
     const userProblems = this.items.filter(
-      (problem) => problem.reporterId?.toValue() === fromUserId,
+      (problem) => problem.reporterId.toValue() === fromUserId,
     )
 
-    // Update each problem to belong to the new user
     userProblems.forEach((problem) => {
-      // Create a new UniqueEntityID for the new reporter
-      const newReporterId = new UniqueEntityID(toUserId)
-
-      // Update the problem directly by forcing the new reporterId
-      // In a real implementation, this would be handled by the entity
-      Object.defineProperty(problem, 'reporterId', {
-        value: newReporterId,
-        writable: false,
-        configurable: true,
-      })
+      problem.changeReporter(new UniqueEntityID(toUserId))
     })
   }
 }

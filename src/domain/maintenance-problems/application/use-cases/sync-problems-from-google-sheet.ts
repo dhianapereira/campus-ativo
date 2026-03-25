@@ -8,6 +8,7 @@ import { AttachmentsRepository } from '../repositories/attachments-repository'
 import { GoogleSheetsFetcher } from '../services/google-sheets-fetcher'
 import { right, Either } from '@/core/either'
 import { Injectable } from '@nestjs/common'
+import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
 
 /**
  * Índices das colunas na planilha (0-based).
@@ -46,6 +47,7 @@ export class SyncProblemsFromGoogleSheetUseCase {
     private categoriesRepository: CategoriesRepository,
     private locationsRepository: LocationsRepository,
     private attachmentsRepository: AttachmentsRepository,
+    private usersRepository: UsersRepository,
   ) {}
 
   async execute({
@@ -62,6 +64,19 @@ export class SyncProblemsFromGoogleSheetUseCase {
       spreadsheetId,
       sheetName,
     )
+    const systemUser = await this.usersRepository.findByEmail(
+      'sistema@ifal-arapiraca.edu.br',
+    )
+
+    if (!systemUser) {
+      return right({
+        imported: 0,
+        skipped: rows.length,
+        errors: [
+          'Usuário do sistema "sistema@ifal-arapiraca.edu.br" não encontrado',
+        ],
+      })
+    }
 
     for (const row of rows) {
       try {
@@ -112,7 +127,7 @@ export class SyncProblemsFromGoogleSheetUseCase {
         }
 
         const problem = Problem.create({
-          reporterId: null,
+          reporterId: systemUser.id,
           locationId: location.id,
           categoryId: category.id,
           title,

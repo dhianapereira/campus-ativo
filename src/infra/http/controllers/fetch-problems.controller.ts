@@ -5,7 +5,13 @@ import {
   Get,
   Query,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger'
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+  ApiExtraModels,
+} from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { FetchProblemsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-problems'
@@ -14,6 +20,7 @@ import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { RoleHierarchy } from '@/core/utils/role-hierarchy'
+import { ProblemWithDetailsResponse } from '../dtos/interfaces.dto'
 
 const pageQueryParamSchema = z
   .string()
@@ -46,6 +53,7 @@ type IncludeDeletedQueryParamSchema = z.infer<
 
 @Controller('/problems')
 @ApiTags('Problems')
+@ApiExtraModels(ProblemWithDetailsResponse)
 export class FetchProblemsController {
   constructor(private fetchProblems: FetchProblemsUseCase) {}
 

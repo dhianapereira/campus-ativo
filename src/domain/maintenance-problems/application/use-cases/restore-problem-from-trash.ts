@@ -32,7 +32,7 @@ export class RestoreProblemFromTrashUseCase {
     }
 
     // Only the reporter can restore the problem from trash
-    if (reporterId !== problem.reporterId?.toValue()) {
+    if (reporterId !== problem.reporterId.toValue()) {
       return left(new NotAllowedError())
     }
 

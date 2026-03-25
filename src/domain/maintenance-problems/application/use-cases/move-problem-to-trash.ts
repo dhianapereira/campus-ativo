@@ -36,7 +36,7 @@ export class MoveProblemToTrashUseCase {
     }
 
     // Only the reporter can move the problem to trash
-    if (reporterId !== problem.reporterId?.toValue()) {
+    if (reporterId !== problem.reporterId.toValue()) {
       return left(new NotAllowedError())
     }
 

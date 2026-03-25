@@ -10,7 +10,6 @@ import { UserRole } from '../../enterprise/entities/user'
 
 // Mock para o ProblemAttachmentsRepository
 const mockProblemAttachmentsRepository: ProblemAttachmentsRepository = {
-  create: vi.fn(),
   findManyByProblemId: vi.fn().mockResolvedValue([]),
   deleteManyByProblemId: vi.fn(),
 }

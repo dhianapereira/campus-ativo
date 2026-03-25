@@ -56,16 +56,16 @@ model Problem {
   description     String
   status          Status           @default(TO_ANALYSIS)
   maintenanceType MaintenanceType? @map("maintenance_type")
-  reporterId      String?          @map("reporter_id")
-  locationId      String?          @map("location_id")
+  reporterId      String           @map("reporter_id")
+  locationId      String           @map("location_id")
   categoryId      String?          @map("category_id")
   createdAt       DateTime         @default(now()) @map("created_at")
   updatedAt       DateTime?        @updatedAt @map("updated_at")
   deletedAt       DateTime?        @map("deleted_at")
   purgedAt        DateTime?        @map("purged_at")
 
-  reporter    User?               @relation(fields: [reporterId], references: [id], onDelete: SetNull)
-  location    Location?           @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  reporter    User                @relation(fields: [reporterId], references: [id], onDelete: Restrict)
+  location    Location            @relation(fields: [locationId], references: [id], onDelete: Restrict)
   category    Category?           @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   attachments Attachment[]
   history     ProblemHistory[]

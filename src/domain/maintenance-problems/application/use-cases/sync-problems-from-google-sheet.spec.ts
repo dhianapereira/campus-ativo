@@ -8,6 +8,8 @@ import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attac
 import { FakeGoogleSheetsFetcher } from 'test/google-sheets/fake-google-sheets-fetcher'
 import { makeCategory } from 'test/factories/make-category'
 import { makeLocation } from 'test/factories/make-location'
+import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
+import { makeUser } from 'test/factories/make-user'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
@@ -15,6 +17,7 @@ let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryLocationsRepository: InMemoryLocationsRepository
 let inMemoryGoogleSheetImportsRepository: InMemoryGoogleSheetImportsRepository
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
+let inMemoryUsersRepository: InMemoryUsersRepository
 let fakeGoogleSheetsFetcher: FakeGoogleSheetsFetcher
 let sut: SyncProblemsFromGoogleSheetUseCase
 
@@ -33,6 +36,7 @@ describe('Sync Problems From Google Sheet', () => {
     inMemoryGoogleSheetImportsRepository =
       new InMemoryGoogleSheetImportsRepository()
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
+    inMemoryUsersRepository = new InMemoryUsersRepository()
     fakeGoogleSheetsFetcher = new FakeGoogleSheetsFetcher()
 
     sut = new SyncProblemsFromGoogleSheetUseCase(
@@ -42,12 +46,15 @@ describe('Sync Problems From Google Sheet', () => {
       inMemoryCategoriesRepository,
       inMemoryLocationsRepository,
       inMemoryAttachmentsRepository,
+      inMemoryUsersRepository,
     )
   })
 
   it('deve importar problemas novos da planilha', async () => {
+    const systemUser = makeUser({ email: 'sistema@ifal-arapiraca.edu.br' })
     const category = makeCategory({ name: 'Climatização' })
     const location = makeLocation({ name: 'Sala 101' })
+    inMemoryUsersRepository.items.push(systemUser)
     inMemoryCategoriesRepository.items.push(category)
     inMemoryLocationsRepository.items.push(location)
 
@@ -76,12 +83,17 @@ describe('Sync Problems From Google Sheet', () => {
     expect(inMemoryProblemsRepository.items[0].description).toBe(
       'O ar da sala 101 não está funcionando',
     )
-    expect(inMemoryProblemsRepository.items[0].reporterId).toBeNull()
+    expect(inMemoryProblemsRepository.items[0].reporterId.toValue()).toBe(
+      systemUser.id.toValue(),
+    )
     expect(inMemoryGoogleSheetImportsRepository.items).toHaveLength(1)
     expect(inMemoryGoogleSheetImportsRepository.items[0].rowIndex).toBe(2)
   })
 
   it('não deve importar linhas já importadas (evitar duplicatas)', async () => {
+    inMemoryUsersRepository.items.push(
+      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+    )
     const category = makeCategory({ name: 'Elétrica' })
     const location = makeLocation({ name: 'Bloco A' })
     inMemoryCategoriesRepository.items.push(category)
@@ -110,6 +122,9 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve pular linhas com título ou descrição vazios', async () => {
+    inMemoryUsersRepository.items.push(
+      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+    )
     const category = makeCategory({ name: 'Hidráulica' })
     inMemoryCategoriesRepository.items.push(category)
 
@@ -139,6 +154,9 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve registrar erro quando categoria não existe', async () => {
+    inMemoryUsersRepository.items.push(
+      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+    )
     const location = makeLocation({ name: 'Sala 201' })
     inMemoryLocationsRepository.items.push(location)
 
@@ -168,6 +186,9 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve registrar erro quando localização não existe', async () => {
+    inMemoryUsersRepository.items.push(
+      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+    )
     const category = makeCategory({ name: 'Outros' })
     inMemoryCategoriesRepository.items.push(category)
 
@@ -197,6 +218,9 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve importar múltiplas linhas e ignorar duplicatas na mesma execução', async () => {
+    inMemoryUsersRepository.items.push(
+      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+    )
     const category = makeCategory({ name: 'Climatização' })
     const location = makeLocation({ name: 'Sala 101' })
     inMemoryCategoriesRepository.items.push(category)
@@ -235,6 +259,9 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve criar attachment quando a linha tem URL de imagem válida', async () => {
+    inMemoryUsersRepository.items.push(
+      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+    )
     const category = makeCategory({ name: 'Outros' })
     const location = makeLocation({ name: 'Sala 1' })
     inMemoryCategoriesRepository.items.push(category)

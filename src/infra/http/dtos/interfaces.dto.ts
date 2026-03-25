@@ -422,6 +422,20 @@ export class ProblemHistoryEntryResponse {
   createdAt!: Date
 }
 
+export class ProblemReporterResponse {
+  @ApiProperty({
+    description: 'ID do autor do problema',
+    example: '123e4567-e89b-12d3-a456-426614174001',
+  })
+  id!: string
+
+  @ApiProperty({
+    description: 'Email do autor do problema',
+    example: 'joao.silva@ifal.edu.br',
+  })
+  email!: string
+}
+
 export class ProblemResponse {
   @ApiProperty({
     description: 'ID do problema',
@@ -430,20 +444,10 @@ export class ProblemResponse {
   id!: string
 
   @ApiProperty({
-    description: 'ID do autor do problema',
-    example: '123e4567-e89b-12d3-a456-426614174001',
-    required: false,
-    nullable: true,
+    description: 'Dados do autor do problema',
+    type: ProblemReporterResponse,
   })
-  reporterId?: string | null
-
-  @ApiProperty({
-    description: 'Email do autor do problema',
-    example: 'joao.silva@ifal.edu.br',
-    required: false,
-    nullable: true,
-  })
-  reporterEmail?: string | null
+  reporter!: ProblemReporterResponse
 
   @ApiProperty({
     description: 'ID da categoria do problema',
@@ -543,12 +547,10 @@ export class ProblemWithDetailsResponse {
   id!: string
 
   @ApiProperty({
-    description: 'ID do autor do problema',
-    example: '123e4567-e89b-12d3-a456-426614174001',
-    required: false,
-    nullable: true,
+    description: 'Dados do autor do problema',
+    type: ProblemReporterResponse,
   })
-  reporterId?: string | null
+  reporter!: ProblemReporterResponse
 
   @ApiProperty({
     description: 'Título do problema',
@@ -569,8 +571,7 @@ export class ProblemWithDetailsResponse {
   excerpt!: string
 
   @ApiProperty({
-    description:
-      "Nome da localização (ou 'Localização excluída' se foi deletada)",
+    description: 'Nome da localização do problema',
     example: 'Bloco A - Sala 201',
   })
   locationName!: string

@@ -77,16 +77,22 @@ export class GetProblemBySlugController {
     const history = await this.problemHistoryRepository.findManyByProblemId(
       problem.id.toValue(),
     )
-    const reporter = problem.reporterId
-      ? await this.usersRepository.findById(problem.reporterId.toValue())
-      : null
-    const location = problem.locationId
-      ? await this.locationsRepository.findById(problem.locationId.toValue())
-      : null
+    const reporter = await this.usersRepository.findById(
+      problem.reporterId.toValue(),
+    )
+    const location = await this.locationsRepository.findById(
+      problem.locationId.toValue(),
+    )
 
     if (!location) {
       throw new InternalServerErrorException(
         'Localização associada ao problema não encontrada',
+      )
+    }
+
+    if (!reporter) {
+      throw new InternalServerErrorException(
+        'Autor associado ao problema não encontrado',
       )
     }
 
@@ -95,12 +101,15 @@ export class GetProblemBySlugController {
         ...ProblemPresenter.toHTTPWithAttachments(
           problem,
           attachments,
-          reporter?.email,
           {
             id: location.id.toValue(),
             name: location.name,
             code: location.code ?? '',
             description: location.description ?? '',
+          },
+          {
+            id: reporter.id.toValue(),
+            email: reporter.email,
           },
         ),
         history: ProblemPresenter.toHTTPHistory(history),

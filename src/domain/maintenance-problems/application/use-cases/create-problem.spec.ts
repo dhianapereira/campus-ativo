@@ -46,8 +46,12 @@ describe('Create Problem', () => {
     })
 
     expect(result.isRight()).toBe(true)
-    expect(inMemoryProblemsRepository.items[0]).toEqual(result.value?.problem)
-    expect(inMemoryProblemsRepository.items[0].locationId?.toValue()).toBe(
+    if (result.isLeft()) {
+      throw new Error('Expected problem creation to succeed')
+    }
+
+    expect(inMemoryProblemsRepository.items[0]).toEqual(result.value.problem)
+    expect(inMemoryProblemsRepository.items[0].locationId.toValue()).toBe(
       location.id.toValue(),
     )
     expect(

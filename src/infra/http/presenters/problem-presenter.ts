@@ -4,41 +4,25 @@ import { Attachment } from '@/domain/maintenance-problems/enterprise/entities/at
 import { ProblemHistory } from '@/domain/maintenance-problems/enterprise/entities/problems/problem-history'
 
 export class ProblemPresenter {
-  static toHTTP(problem: Problem) {
-    return {
-      id: problem.id.toValue(),
-      reporterId: problem.reporterId?.toValue() ?? null,
-      categoryId: problem.categoryId?.toValue() ?? null,
-      locationId: problem.locationId?.toValue() ?? null,
-      title: problem.title,
-      slug: problem.slug.value,
-      description: problem.description,
-      excerpt: problem.excerpt,
-      status: problem.status,
-      maintenanceType: problem.maintenanceType,
-      createdAt: problem.createdAt,
-      updatedAt: problem.updatedAt,
-      deletedAt: problem.deletedAt,
-    }
-  }
-
   static toHTTPWithAttachments(
     problem: Problem,
     attachments: Attachment[],
-    reporterEmail?: string | null,
-    location?: {
+    location: {
       id: string
       name: string
       code: string
       description: string
     },
+    reporter: {
+      id: string
+      email: string
+    },
   ) {
     return {
       id: problem.id.toValue(),
-      reporterId: problem.reporterId?.toValue() ?? null,
-      reporterEmail: reporterEmail ?? null,
+      reporter,
       categoryId: problem.categoryId?.toValue() ?? null,
-      location: location!,
+      location,
       title: problem.title,
       slug: problem.slug.value,
       description: problem.description,
@@ -70,7 +54,7 @@ export class ProblemPresenter {
   static toHTTPWithDetails(problem: ProblemWithDetails) {
     return {
       id: problem.problemId.toValue(),
-      reporterId: problem.reporterId?.toValue() ?? null,
+      reporterId: problem.reporterId.toValue(),
       title: problem.title,
       slug: problem.slug.value,
       excerpt: problem.excerpt,
