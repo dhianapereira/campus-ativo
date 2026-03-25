@@ -353,6 +353,32 @@ export class AttachmentInfo {
   url!: string
 }
 
+export class ProblemLocationSummaryResponse {
+  @ApiProperty({
+    description: 'ID da localização',
+    example: '123e4567-e89b-12d3-a456-426614174003',
+  })
+  id!: string
+
+  @ApiProperty({
+    description: 'Nome da localização',
+    example: 'Bloco A - Sala 201',
+  })
+  name!: string
+
+  @ApiProperty({
+    description: 'Código identificador da localização',
+    example: 'BLA-201',
+  })
+  code!: string
+
+  @ApiProperty({
+    description: 'Descrição da localização',
+    example: 'Sala de aula localizada no primeiro andar do Bloco A',
+  })
+  description!: string
+}
+
 export class ProblemHistoryEntryResponse {
   @ApiProperty({
     description: 'ID do registro de histórico',
@@ -412,6 +438,14 @@ export class ProblemResponse {
   reporterId?: string | null
 
   @ApiProperty({
+    description: 'Email do autor do problema',
+    example: 'joao.silva@ifal.edu.br',
+    required: false,
+    nullable: true,
+  })
+  reporterEmail?: string | null
+
+  @ApiProperty({
     description: 'ID da categoria do problema',
     example: '123e4567-e89b-12d3-a456-426614174002',
     required: false,
@@ -420,12 +454,10 @@ export class ProblemResponse {
   categoryId?: string | null
 
   @ApiProperty({
-    description: 'ID da localização do problema',
-    example: '123e4567-e89b-12d3-a456-426614174003',
-    required: false,
-    nullable: true,
+    description: 'Resumo da localização do problema',
+    type: ProblemLocationSummaryResponse,
   })
-  locationId?: string | null
+  location!: ProblemLocationSummaryResponse
 
   @ApiProperty({
     description: 'Título do problema',

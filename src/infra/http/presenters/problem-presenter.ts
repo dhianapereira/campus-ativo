@@ -22,12 +22,23 @@ export class ProblemPresenter {
     }
   }
 
-  static toHTTPWithAttachments(problem: Problem, attachments: Attachment[]) {
+  static toHTTPWithAttachments(
+    problem: Problem,
+    attachments: Attachment[],
+    reporterEmail?: string | null,
+    location?: {
+      id: string
+      name: string
+      code: string
+      description: string
+    },
+  ) {
     return {
       id: problem.id.toValue(),
       reporterId: problem.reporterId?.toValue() ?? null,
+      reporterEmail: reporterEmail ?? null,
       categoryId: problem.categoryId?.toValue() ?? null,
-      locationId: problem.locationId?.toValue() ?? null,
+      location: location!,
       title: problem.title,
       slug: problem.slug.value,
       description: problem.description,

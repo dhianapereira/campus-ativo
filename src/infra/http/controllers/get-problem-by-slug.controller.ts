@@ -1,4 +1,10 @@
-import { Controller, Get, NotFoundException, Param } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  InternalServerErrorException,
+  NotFoundException,
+  Param,
+} from '@nestjs/common'
 import {
   ApiTags,
   ApiOperation,
@@ -9,6 +15,8 @@ import {
 import { GetProblemBySlugUseCase } from '@/domain/maintenance-problems/application/use-cases/get-problem-by-slug'
 import { AttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/attachments-repository'
 import { ProblemHistoryRepository } from '@/domain/maintenance-problems/application/repositories/problem-history-repository'
+import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
+import { LocationsRepository } from '@/domain/maintenance-problems/application/repositories/locations-repository'
 import { ProblemPresenter } from '../presenters/problem-presenter'
 import { ProblemResponse } from '../dtos/interfaces.dto'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
@@ -21,6 +29,8 @@ export class GetProblemBySlugController {
     private getProblemBySlug: GetProblemBySlugUseCase,
     private attachmentsRepository: AttachmentsRepository,
     private problemHistoryRepository: ProblemHistoryRepository,
+    private usersRepository: UsersRepository,
+    private locationsRepository: LocationsRepository,
   ) {}
 
   @Get()
@@ -67,10 +77,32 @@ export class GetProblemBySlugController {
     const history = await this.problemHistoryRepository.findManyByProblemId(
       problem.id.toValue(),
     )
+    const reporter = problem.reporterId
+      ? await this.usersRepository.findById(problem.reporterId.toValue())
+      : null
+    const location = problem.locationId
+      ? await this.locationsRepository.findById(problem.locationId.toValue())
+      : null
+
+    if (!location) {
+      throw new InternalServerErrorException(
+        'Localização associada ao problema não encontrada',
+      )
+    }
 
     return {
       problem: {
-        ...ProblemPresenter.toHTTPWithAttachments(problem, attachments),
+        ...ProblemPresenter.toHTTPWithAttachments(
+          problem,
+          attachments,
+          reporter?.email,
+          {
+            id: location.id.toValue(),
+            name: location.name,
+            code: location.code ?? '',
+            description: location.description ?? '',
+          },
+        ),
         history: ProblemPresenter.toHTTPHistory(history),
       },
     }
