@@ -12,12 +12,16 @@ import { ProblemAttachmentList } from '../../enterprise/entities/problems/proble
 import { ProblemAttachment } from '../../enterprise/entities/problems/problem-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Injectable } from '@nestjs/common'
+import { CategoriesRepository } from '../repositories/categories-repository'
+import { LocationsRepository } from '../repositories/locations-repository'
 
 interface EditProblemUseCaseRequest {
   reporterId: string
   problemId: string
   title: string
   description: string
+  categoryId: string
+  locationId: string
   attachmentsIds: string[]
 }
 
@@ -33,6 +37,8 @@ export class EditProblemUseCase {
   constructor(
     private problemsRepository: ProblemsRepository,
     private problemAttachmentsRepository: ProblemAttachmentsRepository,
+    private locationsRepository: LocationsRepository,
+    private categoriesRepository: CategoriesRepository,
   ) {}
 
   async execute({
@@ -40,6 +46,8 @@ export class EditProblemUseCase {
     problemId,
     title,
     description,
+    categoryId,
+    locationId,
     attachmentsIds,
   }: EditProblemUseCaseRequest): Promise<EditProblemUseCaseResponse> {
     const problem = await this.problemsRepository.findById(problemId)
@@ -58,6 +66,29 @@ export class EditProblemUseCase {
       return left(new ProblemNotEditableError())
     }
 
+    const currentLocationId = problem.locationId.toValue()
+    const currentCategoryId = problem.categoryId.toValue()
+
+    const location = await this.locationsRepository.findById(locationId)
+
+    if (
+      !location ||
+      ((location.isInTrash || location.isPurged) &&
+        locationId !== currentLocationId)
+    ) {
+      return left(new ResourceNotFoundError())
+    }
+
+    const category = await this.categoriesRepository.findById(categoryId)
+
+    if (
+      !category ||
+      ((category.isInTrash || category.isPurged) &&
+        categoryId !== currentCategoryId)
+    ) {
+      return left(new ResourceNotFoundError())
+    }
+
     const currentProblemAttachments =
       await this.problemAttachmentsRepository.findManyByProblemId(problemId)
     const problemAttachmentList = new ProblemAttachmentList(
@@ -73,6 +104,8 @@ export class EditProblemUseCase {
 
     problem.title = title
     problem.description = description
+    problem.categoryId = new UniqueEntityID(categoryId)
+    problem.locationId = new UniqueEntityID(locationId)
     problem.attachments = problemAttachmentList
 
     await this.problemsRepository.save(problem)

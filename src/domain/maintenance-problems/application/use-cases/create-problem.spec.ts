@@ -81,4 +81,46 @@ describe('Create Problem', () => {
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
+
+  it('should not create a problem when category is in trash', async () => {
+    const location = makeLocation({}, new UniqueEntityID('location-id'))
+    const category = makeCategory({}, new UniqueEntityID('category-id'))
+    category.moveToTrash()
+
+    inMemoryLocationsRepository.items.push(location)
+    inMemoryCategoriesRepository.items.push(category)
+
+    const result = await sut.execute({
+      reporterId: '1',
+      title: 'Novo problema',
+      description: 'Descrição do problema',
+      attachmentsIds: [],
+      locationId: 'location-id',
+      categoryId: 'category-id',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should not create a problem when location is in trash', async () => {
+    const location = makeLocation({}, new UniqueEntityID('location-id'))
+    const category = makeCategory({}, new UniqueEntityID('category-id'))
+    location.moveToTrash()
+
+    inMemoryLocationsRepository.items.push(location)
+    inMemoryCategoriesRepository.items.push(category)
+
+    const result = await sut.execute({
+      reporterId: '1',
+      title: 'Novo problema',
+      description: 'Descrição do problema',
+      attachmentsIds: [],
+      locationId: 'location-id',
+      categoryId: 'category-id',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
 })

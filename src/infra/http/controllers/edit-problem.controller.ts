@@ -24,6 +24,8 @@ import { EditProblemRequest } from '../dtos/interfaces.dto'
 const editProblemBodySchema = z.object({
   title: z.string(),
   description: z.string(),
+  categoryId: z.string(),
+  locationId: z.string(),
   attachmentIds: z.array(z.string()).optional().default([]),
 })
 
@@ -65,12 +67,14 @@ export class EditProblemController {
     @CurrentUser() user: UserPayload,
     @Param('id') problemId: string,
   ) {
-    const { title, description, attachmentIds } = body
+    const { title, description, categoryId, locationId, attachmentIds } = body
     const userId = user.sub
 
     const result = await this.editProblem.execute({
       title,
       description,
+      categoryId,
+      locationId,
       reporterId: userId,
       attachmentsIds: attachmentIds,
       problemId,
