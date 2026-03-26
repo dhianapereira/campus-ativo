@@ -210,6 +210,8 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     let averageResolutionTime: number | undefined
 
     if (finishedProblems.length > 0) {
+      // The domain does not store a dedicated "finished at" timestamp, so the
+      // dashboard uses the last update time of FINISHED problems as a proxy.
       const totalDays = finishedProblems.reduce((sum, problem) => {
         const createdAt = problem.createdAt.getTime()
         const finishedAt = problem.updatedAt!.getTime()

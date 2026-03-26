@@ -80,6 +80,8 @@ export class SyncProblemsFromGoogleSheetUseCase {
 
     for (const row of rows) {
       try {
+        // A spreadsheet row is imported at most once for a given sheet. This
+        // keeps sync idempotent even if the same sheet is processed repeatedly.
         const alreadyImported =
           await this.googleSheetImportsRepository.findByRow(
             spreadsheetId,
@@ -154,14 +156,17 @@ export class SyncProblemsFromGoogleSheetUseCase {
               problemId: problem.id.toValue(),
             })
           } catch {
-            // The import record already exists, so keep the problem and skip the attachment.
+            // Attachment creation is best-effort. Once the problem/import pair
+            // is persisted, a later attachment failure must not roll back it.
           }
         }
 
         result.imported++
       } catch (error) {
         const message =
-          error instanceof Error ? error.message : 'Erro desconhecido'
+          error instanceof Error
+            ? error.message
+            : 'Erro desconhecido'
         result.errors.push(`Linha ${row.rowIndex}: ${message}`)
         result.skipped++
       }

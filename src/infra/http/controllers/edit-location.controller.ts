@@ -100,9 +100,13 @@ export class EditLocationController {
     const result = await this.editLocation.execute({
       locationId,
       name: name ?? existingLocation.name,
-      code: code !== undefined ? code : existingLocation.code,
+      code: code !== undefined
+        ? code
+        : existingLocation.code,
       description:
-        description !== undefined ? description : existingLocation.description,
+        description !== undefined
+          ? description
+          : existingLocation.description,
       isActive: isActive ?? existingLocation.isActive,
       userRole: user.role as UserRole,
     })

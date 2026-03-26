@@ -72,10 +72,16 @@ export class ManageProblemUseCase {
       note !== undefined
         ? await this.problemHistoryRepository.findManyByProblemId(problemId)
         : []
+    // Notes are versioned through history entries, so we reconstruct the
+    // current note before deciding whether the incoming note is a real change.
     const currentNote =
-      note !== undefined ? this.getLatestNote(problemHistory) : undefined
+      note !== undefined
+        ? this.getLatestNote(problemHistory)
+        : undefined
     const normalizedNote = note?.trim()
-    const nextNote = note === undefined ? undefined : normalizedNote || null
+    const nextNote = note === undefined
+      ? undefined
+      : normalizedNote || null
 
     if (status !== undefined && status !== problem.status) {
       const oldStatus = problem.status
@@ -127,6 +133,8 @@ export class ManageProblemUseCase {
   }
 
   private getHistoryAction(changes: ProblemHistoryChange[]) {
+    // A single-field update keeps a specific action; combined changes collapse
+    // into UPDATED so consumers can treat the history entry as one mutation.
     if (changes.length > 1) {
       return HistoryAction.UPDATED
     }
@@ -149,6 +157,8 @@ export class ManageProblemUseCase {
       changes?: ProblemHistoryChange[] | null
     }[],
   ) {
+    // Newer entries are returned first, so the first matching note represents
+    // the latest user-visible note state.
     for (const entry of history) {
       const noteChange = entry.changes?.find(
         (change) => change.field === HistoryChangeField.NOTE,

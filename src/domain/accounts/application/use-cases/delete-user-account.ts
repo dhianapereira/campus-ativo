@@ -48,7 +48,8 @@ export class DeleteUserAccountUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Reassign reported problems so historical records keep a valid reporter.
+    // Reported problems are reassigned instead of deleted so existing records
+    // and imports keep a valid reporter reference after account removal.
     await this.problemsRepository.migrateUserProblems(
       userId,
       systemUser.id.toValue(),
