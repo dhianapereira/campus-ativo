@@ -69,7 +69,7 @@ export class DeleteCategoryController {
       }
 
       throw new BadRequestException(
-        'A categoria precisa estar na lixeira para ser excluida permanentemente',
+        'A categoria precisa estar na lixeira para ser excluída permanentemente',
       )
     }
   }

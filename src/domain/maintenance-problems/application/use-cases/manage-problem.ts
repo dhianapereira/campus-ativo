@@ -74,13 +74,9 @@ export class ManageProblemUseCase {
         ? await this.problemHistoryRepository.findManyByProblemId(problemId)
         : []
     const currentNote =
-      note !== undefined
-        ? this.getLatestNote(problemHistory)
-        : undefined
+      note !== undefined ? this.getLatestNote(problemHistory) : undefined
     const normalizedNote = note?.trim()
-    const nextNote = note === undefined
-      ? undefined
-      : normalizedNote || null
+    const nextNote = note === undefined ? undefined : normalizedNote || null
 
     if (status !== undefined && status !== problem.status) {
       const oldStatus = problem.status

@@ -69,7 +69,7 @@ export class DeleteLocationController {
       }
 
       throw new BadRequestException(
-        'A localizacao precisa estar na lixeira para ser excluida permanentemente',
+        'A localização precisa estar na lixeira para ser excluída permanentemente',
       )
     }
   }

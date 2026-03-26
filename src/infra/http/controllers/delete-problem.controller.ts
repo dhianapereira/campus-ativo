@@ -62,7 +62,7 @@ export class DeleteProblemController {
       }
 
       throw new BadRequestException(
-        'O problema precisa estar na lixeira para ser excluido permanentemente',
+        'O problema precisa estar na lixeira para ser excluído permanentemente',
       )
     }
   }

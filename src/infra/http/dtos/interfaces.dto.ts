@@ -453,7 +453,7 @@ export class ProblemCategorySummaryResponse {
 
   @ApiProperty({
     description: 'Nome da categoria',
-    example: 'Climatizacao',
+    example: 'Climatização',
   })
   name!: string
 
