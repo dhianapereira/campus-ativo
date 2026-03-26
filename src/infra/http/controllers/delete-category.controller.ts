@@ -68,7 +68,9 @@ export class DeleteCategoryController {
         throw new BadRequestException('Category not found')
       }
 
-      throw new BadRequestException()
+      throw new BadRequestException(
+        'A categoria precisa estar na lixeira para ser excluida permanentemente',
+      )
     }
   }
 }

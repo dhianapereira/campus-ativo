@@ -43,13 +43,23 @@ export class CreateProblemUseCase {
   }: CreateProblemUseCaseRequest): Promise<CreateProblemUseCaseResponse> {
     const location = await this.locationsRepository.findById(locationId)
 
-    if (!location || location.isInTrash || location.isPurged) {
+    if (
+      !location ||
+      !location.isActive ||
+      location.isInTrash ||
+      location.isPurged
+    ) {
       return left(new ResourceNotFoundError())
     }
 
     const category = await this.categoriesRepository.findById(categoryId)
 
-    if (!category || category.isInTrash || category.isPurged) {
+    if (
+      !category ||
+      !category.isActive ||
+      category.isInTrash ||
+      category.isPurged
+    ) {
       return left(new ResourceNotFoundError())
     }
 

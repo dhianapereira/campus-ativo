@@ -32,7 +32,12 @@ export class DeleteProblemUseCase {
       return left(new NotAllowedError())
     }
 
-    await this.problemsRepository.delete(problem)
+    if (!problem.isDeleted || problem.isPurged) {
+      return left(new NotAllowedError())
+    }
+
+    problem.permanentDelete()
+    await this.problemsRepository.save(problem)
 
     return right({})
   }

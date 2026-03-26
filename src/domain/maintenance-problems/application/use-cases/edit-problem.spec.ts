@@ -334,6 +334,79 @@ describe('Edit Problem', () => {
     expect(result.isRight()).toBe(true)
   })
 
+  it('should not be able to edit a problem with an inactive category', async () => {
+    const category = makeCategory({}, new UniqueEntityID('category-1'))
+    const inactiveCategory = makeCategory(
+      { isActive: false },
+      new UniqueEntityID('category-2'),
+    )
+    const location = makeLocation({}, new UniqueEntityID('location-1'))
+
+    await inMemoryCategoriesRepository.create(category)
+    await inMemoryCategoriesRepository.create(inactiveCategory)
+    await inMemoryLocationsRepository.create(location)
+
+    const newProblem = makeProblem(
+      {
+        reporterId: new UniqueEntityID('reporter-1'),
+        categoryId: category.id,
+        locationId: location.id,
+        status: ProblemStatus.TO_ANALYSIS,
+      },
+      new UniqueEntityID('problem-1'),
+    )
+
+    await inMemoryProblemsRepository.create(newProblem)
+
+    const result = await sut.execute({
+      problemId: newProblem.id.toValue(),
+      reporterId: 'reporter-1',
+      title: 'Problema teste',
+      description: 'Descrição teste',
+      categoryId: inactiveCategory.id.toValue(),
+      locationId: location.id.toValue(),
+      attachmentsIds: [],
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should be able to keep the current inactive category', async () => {
+    const inactiveCategory = makeCategory(
+      { isActive: false },
+      new UniqueEntityID('category-1'),
+    )
+    const location = makeLocation({}, new UniqueEntityID('location-1'))
+
+    await inMemoryCategoriesRepository.create(inactiveCategory)
+    await inMemoryLocationsRepository.create(location)
+
+    const newProblem = makeProblem(
+      {
+        reporterId: new UniqueEntityID('reporter-1'),
+        categoryId: inactiveCategory.id,
+        locationId: location.id,
+        status: ProblemStatus.TO_ANALYSIS,
+      },
+      new UniqueEntityID('problem-1'),
+    )
+
+    await inMemoryProblemsRepository.create(newProblem)
+
+    const result = await sut.execute({
+      problemId: newProblem.id.toValue(),
+      reporterId: 'reporter-1',
+      title: 'Problema teste atualizado',
+      description: 'Descrição teste atualizada',
+      categoryId: inactiveCategory.id.toValue(),
+      locationId: location.id.toValue(),
+      attachmentsIds: [],
+    })
+
+    expect(result.isRight()).toBe(true)
+  })
+
   it('should not be able to edit a problem with an invalid location', async () => {
     const category = makeCategory({}, new UniqueEntityID('category-1'))
     const location = makeLocation({}, new UniqueEntityID('location-1'))
@@ -430,6 +503,79 @@ describe('Edit Problem', () => {
       description: 'Descrição teste atualizada',
       categoryId: category.id.toValue(),
       locationId: deletedLocation.id.toValue(),
+      attachmentsIds: [],
+    })
+
+    expect(result.isRight()).toBe(true)
+  })
+
+  it('should not be able to edit a problem with an inactive location', async () => {
+    const category = makeCategory({}, new UniqueEntityID('category-1'))
+    const location = makeLocation({}, new UniqueEntityID('location-1'))
+    const inactiveLocation = makeLocation(
+      { isActive: false },
+      new UniqueEntityID('location-2'),
+    )
+
+    await inMemoryCategoriesRepository.create(category)
+    await inMemoryLocationsRepository.create(location)
+    await inMemoryLocationsRepository.create(inactiveLocation)
+
+    const newProblem = makeProblem(
+      {
+        reporterId: new UniqueEntityID('reporter-1'),
+        categoryId: category.id,
+        locationId: location.id,
+        status: ProblemStatus.TO_ANALYSIS,
+      },
+      new UniqueEntityID('problem-1'),
+    )
+
+    await inMemoryProblemsRepository.create(newProblem)
+
+    const result = await sut.execute({
+      problemId: newProblem.id.toValue(),
+      reporterId: 'reporter-1',
+      title: 'Problema teste',
+      description: 'Descrição teste',
+      categoryId: category.id.toValue(),
+      locationId: inactiveLocation.id.toValue(),
+      attachmentsIds: [],
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should be able to keep the current inactive location', async () => {
+    const category = makeCategory({}, new UniqueEntityID('category-1'))
+    const inactiveLocation = makeLocation(
+      { isActive: false },
+      new UniqueEntityID('location-1'),
+    )
+
+    await inMemoryCategoriesRepository.create(category)
+    await inMemoryLocationsRepository.create(inactiveLocation)
+
+    const newProblem = makeProblem(
+      {
+        reporterId: new UniqueEntityID('reporter-1'),
+        categoryId: category.id,
+        locationId: inactiveLocation.id,
+        status: ProblemStatus.TO_ANALYSIS,
+      },
+      new UniqueEntityID('problem-1'),
+    )
+
+    await inMemoryProblemsRepository.create(newProblem)
+
+    const result = await sut.execute({
+      problemId: newProblem.id.toValue(),
+      reporterId: 'reporter-1',
+      title: 'Problema teste atualizado',
+      description: 'Descrição teste atualizada',
+      categoryId: category.id.toValue(),
+      locationId: inactiveLocation.id.toValue(),
       attachmentsIds: [],
     })
 

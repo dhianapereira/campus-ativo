@@ -15,6 +15,7 @@ import {
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { DeleteProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/delete-problem'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
 @Controller('/problems/:id')
 @ApiTags('Problems')
@@ -56,7 +57,13 @@ export class DeleteProblemController {
     })
 
     if (result.isLeft()) {
-      throw new BadRequestException()
+      if (result.value instanceof ResourceNotFoundError) {
+        throw new BadRequestException('Problem not found')
+      }
+
+      throw new BadRequestException(
+        'O problema precisa estar na lixeira para ser excluido permanentemente',
+      )
     }
   }
 }

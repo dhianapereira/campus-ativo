@@ -4,7 +4,7 @@ import { makeProblem } from 'test/factories/make-problem'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
-import { makeProblemAttachment } from 'test/factories/make-problem-attachments'
+import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
@@ -20,7 +20,7 @@ describe('Delete Problem', () => {
     sut = new DeleteProblemUseCase(inMemoryProblemsRepository)
   })
 
-  it('should be able to delete a problem', async () => {
+  it('should be able to permanently delete a problem that is in trash', async () => {
     const newProblem = makeProblem(
       {
         reporterId: new UniqueEntityID('reporter-1'),
@@ -29,25 +29,15 @@ describe('Delete Problem', () => {
     )
 
     await inMemoryProblemsRepository.create(newProblem)
-
-    inMemoryProblemAttachmentsRepository.items.push(
-      makeProblemAttachment({
-        problemId: newProblem.id,
-        attachmentId: new UniqueEntityID('1'),
-      }),
-      makeProblemAttachment({
-        problemId: newProblem.id,
-        attachmentId: new UniqueEntityID('2'),
-      }),
-    )
+    newProblem.moveToTrash()
 
     await sut.execute({
       problemId: 'problem-1',
       reporterId: 'reporter-1',
     })
 
-    expect(inMemoryProblemsRepository.items).toHaveLength(0)
-    expect(inMemoryProblemAttachmentsRepository.items).toHaveLength(0)
+    expect(inMemoryProblemsRepository.items).toHaveLength(1)
+    expect(inMemoryProblemsRepository.items[0].purgedAt).toBeInstanceOf(Date)
   })
 
   it('should not be able to delete a problem from another user', async () => {
@@ -67,5 +57,34 @@ describe('Delete Problem', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(NotAllowedError)
+  })
+
+  it('should not be able to permanently delete a problem that is not in trash', async () => {
+    const newProblem = makeProblem(
+      {
+        reporterId: new UniqueEntityID('reporter-1'),
+      },
+      new UniqueEntityID('problem-1'),
+    )
+
+    await inMemoryProblemsRepository.create(newProblem)
+
+    const result = await sut.execute({
+      problemId: 'problem-1',
+      reporterId: 'reporter-1',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+  })
+
+  it('should not be able to permanently delete a non-existing problem', async () => {
+    const result = await sut.execute({
+      problemId: 'problem-1',
+      reporterId: 'reporter-1',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 })

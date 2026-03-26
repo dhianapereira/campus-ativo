@@ -73,6 +73,7 @@ export class EditProblemUseCase {
 
     if (
       !location ||
+      (!location.isActive && locationId !== currentLocationId) ||
       ((location.isInTrash || location.isPurged) &&
         locationId !== currentLocationId)
     ) {
@@ -83,6 +84,7 @@ export class EditProblemUseCase {
 
     if (
       !category ||
+      (!category.isActive && categoryId !== currentCategoryId) ||
       ((category.isInTrash || category.isPurged) &&
         categoryId !== currentCategoryId)
     ) {

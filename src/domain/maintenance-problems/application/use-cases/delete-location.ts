@@ -40,14 +40,6 @@ export class DeleteLocationUseCase {
       return left(new NotAllowedError())
     }
 
-    // Check if location has associated problems
-    const hasProblems =
-      await this.locationsRepository.hasAssociatedProblems(locationId)
-
-    if (hasProblems) {
-      return left(new NotAllowedError())
-    }
-
     // Mark as permanently deleted instead of hard deleting
     location.permanentDelete()
     await this.locationsRepository.save(location)

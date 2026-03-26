@@ -68,7 +68,9 @@ export class DeleteLocationController {
         throw new BadRequestException('Location not found')
       }
 
-      throw new BadRequestException()
+      throw new BadRequestException(
+        'A localizacao precisa estar na lixeira para ser excluida permanentemente',
+      )
     }
   }
 }
