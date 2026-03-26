@@ -18,8 +18,6 @@ import { FetchProblemsUseCase } from '@/domain/maintenance-problems/application/
 import { ProblemPresenter } from '../presenters/problem-presenter'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
-import { UserRole } from '@/domain/accounts/enterprise/entities/user'
-import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 import { ProblemWithDetailsResponse } from '../dtos/interfaces.dto'
 
 const pageQueryParamSchema = z
@@ -106,18 +104,12 @@ export class FetchProblemsController {
     @Query('includeDeleted', includeDeletedValidationPipe)
     includeDeleted: IncludeDeletedQueryParamSchema,
   ) {
-    const currentUserRole = (user.role as UserRole) || UserRole.REPORTER
-    const canViewAllDeletedProblems = RoleHierarchy.hasPermission(
-      currentUserRole,
-      UserRole.MANAGER,
-    )
-
     const reporterIdFilter =
-      includeDeleted && !canViewAllDeletedProblems
+      includeDeleted && user.sub
         ? user.sub
         : undefined
 
-    if (includeDeleted && currentUserRole === UserRole.REPORTER && !user.sub) {
+    if (includeDeleted && !user.sub) {
       throw new ForbiddenException('Unable to identify current user')
     }
 
