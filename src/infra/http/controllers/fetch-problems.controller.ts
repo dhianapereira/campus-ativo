@@ -104,10 +104,9 @@ export class FetchProblemsController {
     @Query('includeDeleted', includeDeletedValidationPipe)
     includeDeleted: IncludeDeletedQueryParamSchema,
   ) {
-    const reporterIdFilter =
-      includeDeleted && user.sub
-        ? user.sub
-        : undefined
+    const reporterIdFilter = includeDeleted && user.sub
+      ? user.sub
+      : undefined
 
     if (includeDeleted && !user.sub) {
       throw new ForbiddenException('Unable to identify current user')

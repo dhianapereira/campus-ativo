@@ -30,13 +30,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate(payload: UserPayload) {
     const validatedPayload = userPayloadSchema.parse(payload)
 
-    // Verify if user is still active
+    // Verify if user is still active and always use the latest role from DB.
     const user = await this.usersRepository.findById(validatedPayload.sub)
 
     if (!user || !user.isActive) {
       throw new UnauthorizedException('User is not active')
     }
 
-    return validatedPayload
+    return {
+      sub: validatedPayload.sub,
+      role: user.role,
+    }
   }
 }
