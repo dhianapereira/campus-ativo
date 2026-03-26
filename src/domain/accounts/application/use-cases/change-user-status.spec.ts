@@ -89,6 +89,31 @@ describe('Change User Status', () => {
     expect(result.value?.user.isActive).toBe(false)
   })
 
+  it('should allow admin to deactivate a director', async () => {
+    const admin = makeUser({
+      role: UserRole.ADMIN,
+      isActive: true,
+    })
+
+    const director = makeUser({
+      role: UserRole.DIRECTOR,
+      isActive: true,
+    })
+
+    inMemoryUsersRepository.items.push(admin)
+    inMemoryUsersRepository.items.push(director)
+
+    const result = await sut.execute({
+      userId: director.id.toValue(),
+      isActive: false,
+      executorId: admin.id.toValue(),
+      executorRole: UserRole.ADMIN,
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.user.isActive).toBe(false)
+  })
+
   it('should not allow manager to change user status', async () => {
     const manager = makeUser({
       role: UserRole.MANAGER,
@@ -135,6 +160,58 @@ describe('Change User Status', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(NotAllowedError)
+  })
+
+  it('should not allow director to deactivate an admin', async () => {
+    const director = makeUser({
+      role: UserRole.DIRECTOR,
+      isActive: true,
+    })
+
+    const admin = makeUser({
+      role: UserRole.ADMIN,
+      isActive: true,
+    })
+
+    inMemoryUsersRepository.items.push(director)
+    inMemoryUsersRepository.items.push(admin)
+
+    const result = await sut.execute({
+      userId: admin.id.toValue(),
+      isActive: false,
+      executorId: director.id.toValue(),
+      executorRole: UserRole.DIRECTOR,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(inMemoryUsersRepository.items[1].isActive).toBe(true)
+  })
+
+  it('should not allow director to deactivate another director', async () => {
+    const director = makeUser({
+      role: UserRole.DIRECTOR,
+      isActive: true,
+    })
+
+    const anotherDirector = makeUser({
+      role: UserRole.DIRECTOR,
+      isActive: true,
+    })
+
+    inMemoryUsersRepository.items.push(director)
+    inMemoryUsersRepository.items.push(anotherDirector)
+
+    const result = await sut.execute({
+      userId: anotherDirector.id.toValue(),
+      isActive: false,
+      executorId: director.id.toValue(),
+      executorRole: UserRole.DIRECTOR,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(inMemoryUsersRepository.items[1].isActive).toBe(true)
   })
 
   it('should not be able to change status for non-existing user', async () => {

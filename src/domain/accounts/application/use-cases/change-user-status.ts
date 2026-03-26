@@ -42,6 +42,10 @@ export class ChangeUserStatusUseCase {
       return left(new ResourceNotFoundError())
     }
 
+    if (!RoleHierarchy.canManageRole(executorRole, user.role)) {
+      return left(new NotAllowedError())
+    }
+
     // ADMIN cannot deactivate their own account
     if (executorId === userId && !isActive) {
       return left(new CannotModifyOwnAccountError())
