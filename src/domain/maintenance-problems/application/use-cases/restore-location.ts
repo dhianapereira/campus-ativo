@@ -27,7 +27,6 @@ export class RestoreLocationUseCase {
     locationId,
     userRole,
   }: RestoreLocationUseCaseRequest): Promise<RestoreLocationUseCaseResponse> {
-    // Only Manager+ can restore locations
     if (!RoleHierarchy.hasPermission(userRole, UserRole.MANAGER)) {
       return left(new NotAllowedError())
     }

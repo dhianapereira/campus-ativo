@@ -36,7 +36,6 @@ export class EditLocationUseCase {
     isActive,
     userRole,
   }: EditLocationUseCaseRequest): Promise<EditLocationUseCaseResponse> {
-    // Only Manager+ can edit locations
     if (!RoleHierarchy.hasPermission(userRole, UserRole.MANAGER)) {
       return left(new NotAllowedError())
     }

@@ -27,7 +27,6 @@ export class TrashCategoryUseCase {
     categoryId,
     userRole,
   }: TrashCategoryUseCaseRequest): Promise<TrashCategoryUseCaseResponse> {
-    // Only Manager+ can move categories to trash
     if (!RoleHierarchy.hasPermission(userRole, UserRole.MANAGER)) {
       return left(new NotAllowedError())
     }

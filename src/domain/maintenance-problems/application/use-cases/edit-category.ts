@@ -34,7 +34,6 @@ export class EditCategoryUseCase {
     description,
     isActive,
   }: EditCategoryUseCaseRequest): Promise<EditCategoryUseCaseResponse> {
-    // Only Manager+ can edit categories
     if (!RoleHierarchy.hasPermission(userRole, UserRole.MANAGER)) {
       return left(new NotAllowedError())
     }

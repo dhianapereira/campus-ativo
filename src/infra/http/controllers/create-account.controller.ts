@@ -70,7 +70,7 @@ export class CreateAccountController {
 
       switch (error.constructor) {
         case UserAlreadyExistsError:
-          // Não revelar que o e-mail já existe (segurança/privacidade)
+          // Keep the response generic so signup cannot be used for email enumeration.
           throw new ConflictException(
             'Não foi possível completar o cadastro. Verifique suas informações.',
           )

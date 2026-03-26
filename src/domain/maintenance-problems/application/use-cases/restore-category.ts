@@ -27,7 +27,6 @@ export class RestoreCategoryUseCase {
     categoryId,
     userRole,
   }: RestoreCategoryUseCaseRequest): Promise<RestoreCategoryUseCaseResponse> {
-    // Only Manager+ can restore categories
     if (!RoleHierarchy.hasPermission(userRole, UserRole.MANAGER)) {
       return left(new NotAllowedError())
     }

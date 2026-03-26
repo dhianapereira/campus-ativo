@@ -47,12 +47,10 @@ export class ChangeUserPasswordUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Only the user can change their own password
     if (executorId !== userId) {
       return left(new NotAllowedError())
     }
 
-    // Validate old password
     const isOldPasswordValid = await this.hashComparer.compare(
       oldPassword,
       user.password,
@@ -62,12 +60,10 @@ export class ChangeUserPasswordUseCase {
       return left(new WrongCredentialsError())
     }
 
-    // Validate new password strength
     if (!PasswordValidator.isValid(newPassword)) {
       return left(new InvalidPasswordError())
     }
 
-    // Hash new password
     const hashedPassword = await this.hashGenerator.hash(newPassword)
 
     user.changePassword(hashedPassword)

@@ -24,7 +24,6 @@ export class DeleteLocationUseCase {
     locationId,
     userRole,
   }: DeleteLocationUseCaseRequest): Promise<DeleteLocationUseCaseResponse> {
-    // Only Manager+ can delete locations permanently
     if (!RoleHierarchy.hasPermission(userRole, UserRole.MANAGER)) {
       return left(new NotAllowedError())
     }
@@ -35,12 +34,10 @@ export class DeleteLocationUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Permanent delete is only allowed for locations already in trash.
     if (!location.isInTrash || location.isPurged) {
       return left(new NotAllowedError())
     }
 
-    // Mark as permanently deleted instead of hard deleting
     location.permanentDelete()
     await this.locationsRepository.save(location)
 

@@ -35,12 +35,10 @@ export class MoveProblemToTrashUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Only the reporter can move the problem to trash
     if (reporterId !== problem.reporterId.toValue()) {
       return left(new NotAllowedError())
     }
 
-    // Problem can only be moved to trash when status is TO_ANALYSIS
     if (problem.status !== ProblemStatus.TO_ANALYSIS) {
       return left(new ProblemNotDeletableError())
     }

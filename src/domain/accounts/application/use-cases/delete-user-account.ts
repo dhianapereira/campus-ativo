@@ -32,17 +32,14 @@ export class DeleteUserAccountUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Only the user can delete their own account
     if (executorId !== userId) {
       return left(new NotAllowedError())
     }
 
-    // System user cannot be deleted (identified by email)
     if (user.email === 'sistema@ifal-arapiraca.edu.br') {
       return left(new NotAllowedError())
     }
 
-    // Find system user to migrate problems to
     const systemUser = await this.usersRepository.findByEmail(
       'sistema@ifal-arapiraca.edu.br',
     )
@@ -51,7 +48,7 @@ export class DeleteUserAccountUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Migrate all user's problems to the system user
+    // Reassign reported problems so historical records keep a valid reporter.
     await this.problemsRepository.migrateUserProblems(
       userId,
       systemUser.id.toValue(),

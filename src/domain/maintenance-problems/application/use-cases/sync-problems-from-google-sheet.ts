@@ -11,8 +11,8 @@ import { Injectable } from '@nestjs/common'
 import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
 
 /**
- * Índices das colunas na planilha (0-based).
- * Formato esperado: [Timestamp, Título, Descrição, Categoria, Localização, Imagem (opcional)]
+ * Worksheet column indexes (0-based).
+ * Expected layout: [Timestamp, Title, Description, Category, Location, Image (optional)].
  */
 const COLUMN_INDEX = {
   TITLE: 1,
@@ -154,7 +154,7 @@ export class SyncProblemsFromGoogleSheetUseCase {
               problemId: problem.id.toValue(),
             })
           } catch {
-            // Linha já registrada como importada; problema fica sem anexo
+            // The import record already exists, so keep the problem and skip the attachment.
           }
         }
 

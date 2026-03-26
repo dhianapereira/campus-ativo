@@ -10,11 +10,9 @@ export class Slug {
   }
 
   /**
-   * Receives a string and normalize it as a slug with a unique UUID suffix.
+   * Normalizes a string into a slug and appends a short UUID suffix for uniqueness.
    *
    * Example: "An example title" => "an-example-title-a1b2c3d4"
-   *
-   * @param text {string}
    */
   static createFromText(text: string): Slug {
     const slugText = text
@@ -27,7 +25,6 @@ export class Slug {
       .replace(/--+/g, '-')
       .replace(/-$/g, '')
 
-    // Add first 8 characters of UUID to ensure uniqueness
     const uniqueId = crypto.randomUUID().split('-')[0]
     const uniqueSlug = `${slugText}-${uniqueId}`
 

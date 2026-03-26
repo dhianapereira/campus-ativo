@@ -1,6 +1,6 @@
 /**
- * Representa uma linha da planilha do Google Sheets.
- * rowIndex é 1-based (primeira linha de dados = 1, ignorando cabeçalho)
+ * Represents a row fetched from Google Sheets.
+ * `rowIndex` is 1-based for data rows, excluding the header.
  */
 export interface GoogleSheetRow {
   rowIndex: number

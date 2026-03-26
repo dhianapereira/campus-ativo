@@ -17,7 +17,7 @@ const prisma = new PrismaClient({
 })
 
 async function main() {
-  // Criar usuário padrão do sistema
+  // Keep a stable internal user for imports and ownership reassignment flows.
   const systemUserEmail = 'sistema@ifal-arapiraca.edu.br'
   const existingSystemUser = await prisma.user.findUnique({
     where: { email: systemUserEmail },

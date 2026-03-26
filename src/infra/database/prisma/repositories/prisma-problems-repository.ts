@@ -164,7 +164,6 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
 
-    // Count total problems (excluding deleted)
     const totalProblems = await this.prisma.problem.count({
       where: {
         deletedAt: null,
@@ -172,7 +171,6 @@ export class PrismaProblemsRepository implements ProblemsRepository {
       },
     })
 
-    // Count problems by status
     const problemsByStatus = await this.prisma.problem.groupBy({
       by: ['status'],
       where: {
@@ -184,7 +182,6 @@ export class PrismaProblemsRepository implements ProblemsRepository {
       },
     })
 
-    // Count recent problems (last 7 days)
     const recentProblems = await this.prisma.problem.count({
       where: {
         deletedAt: null,
@@ -195,7 +192,6 @@ export class PrismaProblemsRepository implements ProblemsRepository {
       },
     })
 
-    // Calculate average resolution time for finished problems
     const finishedProblems = await this.prisma.problem.findMany({
       where: {
         deletedAt: null,

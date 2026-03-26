@@ -56,12 +56,10 @@ export class EditProblemUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Only the reporter can edit the problem
     if (reporterId !== problem.reporterId.toValue()) {
       return left(new NotAllowedError())
     }
 
-    // Problem can only be edited when status is TO_ANALYSIS
     if (problem.status !== ProblemStatus.TO_ANALYSIS) {
       return left(new ProblemNotEditableError())
     }

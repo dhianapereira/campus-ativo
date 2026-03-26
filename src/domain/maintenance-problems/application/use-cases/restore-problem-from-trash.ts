@@ -31,7 +31,6 @@ export class RestoreProblemFromTrashUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Only the reporter can restore the problem from trash
     if (reporterId !== problem.reporterId.toValue()) {
       return left(new NotAllowedError())
     }

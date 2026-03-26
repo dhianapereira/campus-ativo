@@ -43,7 +43,7 @@ export class GoogleSheetsFetcherService implements GoogleSheetsFetcher {
       return []
     }
 
-    // Primeira linha é o cabeçalho, dados começam na linha 2
+    // Row 1 is the header, so imported data starts at spreadsheet row 2.
     const dataRows = rows.slice(1)
 
     return dataRows.map((values, index) => ({

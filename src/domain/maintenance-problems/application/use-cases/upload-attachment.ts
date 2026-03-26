@@ -30,26 +30,22 @@ export class UploadAttachmentUseCase {
     fileType,
     body,
   }: UploadAttachmentUseCaseRequest): Promise<UploadAttachmentUseCaseResponse> {
-    // Validate file type (only images)
     const validImageTypes = /^image\/(jpeg|jpg|png|gif|webp)$/
     if (!validImageTypes.test(fileType)) {
       return left(new InvalidAttachmentTypeError(fileType))
     }
 
-    // Upload to ImgBB
     const { url } = await this.imageUploader.upload({
       fileName,
       fileType,
       body,
     })
 
-    // Create attachment entity
     const attachment = Attachment.create({
       title: fileName,
       link: url,
     })
 
-    // Save to database
     await this.attachmentsRepository.create(attachment)
 
     return right({

@@ -31,14 +31,11 @@ export class FetchUsersUseCase {
       isActive,
     })
 
-    // Filter users based on current user role
     const filteredUsers = users.filter((user) => {
-      // ADMIN can see all users
       if (currentUserRole === UserRole.ADMIN) {
         return true
       }
 
-      // DIRECTOR and below cannot see ADMIN users
       return user.role !== UserRole.ADMIN
     })
 

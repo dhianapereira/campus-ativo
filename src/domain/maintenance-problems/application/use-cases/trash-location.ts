@@ -27,7 +27,6 @@ export class TrashLocationUseCase {
     locationId,
     userRole,
   }: TrashLocationUseCaseRequest): Promise<TrashLocationUseCaseResponse> {
-    // Only Manager+ can move locations to trash
     if (!RoleHierarchy.hasPermission(userRole, UserRole.MANAGER)) {
       return left(new NotAllowedError())
     }

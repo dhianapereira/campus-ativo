@@ -82,7 +82,6 @@ export class EditCategoryController {
   ) {
     const { name, description, isActive } = body
 
-    // At least one field must be provided
     if (
       name === undefined &&
       description === undefined &&
@@ -91,7 +90,6 @@ export class EditCategoryController {
       throw new BadRequestException('At least one field must be provided')
     }
 
-    // If name is not provided, we need to get the current category to preserve the name
     let categoryName = name
     if (!categoryName) {
       const existingCategory =

@@ -31,7 +31,6 @@ export class ChangeUserRoleUseCase {
     currentUserId,
     currentUserRole,
   }: ChangeUserRoleUseCaseRequest): Promise<ChangeUserRoleUseCaseResponse> {
-    // Only DIRECTOR and ADMIN can change roles
     if (
       currentUserRole !== UserRole.DIRECTOR &&
       currentUserRole !== UserRole.ADMIN
@@ -45,17 +44,14 @@ export class ChangeUserRoleUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // User cannot change their own role
     if (currentUserId === targetUserId) {
       return left(new CannotModifyOwnAccountError())
     }
 
-    // Check if the current user can manage the target user's current role
     if (!RoleHierarchy.canManageRole(currentUserRole, user.role)) {
       return left(new NotAllowedError())
     }
 
-    // Check if the current user can assign the new role
     if (!RoleHierarchy.canManageRole(currentUserRole, newRole)) {
       return left(new NotAllowedError())
     }

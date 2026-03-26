@@ -24,7 +24,6 @@ export class DeleteCategoryUseCase {
     categoryId,
     userRole,
   }: DeleteCategoryUseCaseRequest): Promise<DeleteCategoryUseCaseResponse> {
-    // Only Manager+ can delete categories permanently
     if (!RoleHierarchy.hasPermission(userRole, UserRole.MANAGER)) {
       return left(new NotAllowedError())
     }
@@ -35,12 +34,10 @@ export class DeleteCategoryUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Permanent delete is only allowed for categories already in trash.
     if (!category.isInTrash || category.isPurged) {
       return left(new NotAllowedError())
     }
 
-    // Mark as permanently deleted instead of hard deleting
     category.permanentDelete()
     await this.categoriesRepository.save(category)
 

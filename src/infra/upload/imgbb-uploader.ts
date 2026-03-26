@@ -57,7 +57,6 @@ export class ImgBBUploader implements ImageUploader {
   async upload({ fileName, body }: UploadParams): Promise<UploadResponse> {
     const formData = new FormData()
 
-    // Convert Buffer to base64
     const base64Image = body.toString('base64')
 
     formData.append('key', this.apiKey)

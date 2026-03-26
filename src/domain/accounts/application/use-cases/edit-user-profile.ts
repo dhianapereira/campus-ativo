@@ -35,7 +35,6 @@ export class EditUserProfileUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    // Only the user can edit their own profile
     if (executorId !== userId) {
       return left(new NotAllowedError())
     }

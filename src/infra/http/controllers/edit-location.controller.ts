@@ -83,7 +83,6 @@ export class EditLocationController {
   ) {
     const { name, code, description, isActive } = body
 
-    // At least one field must be provided
     if (
       name === undefined &&
       code === undefined &&
@@ -93,7 +92,6 @@ export class EditLocationController {
       throw new BadRequestException('At least one field must be provided')
     }
 
-    // Get existing location to preserve unmodified fields
     const existingLocation = await this.locationsRepository.findById(locationId)
     if (!existingLocation) {
       throw new BadRequestException('Location not found')

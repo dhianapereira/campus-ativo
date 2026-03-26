@@ -31,7 +31,6 @@ export class ChangeUserStatusUseCase {
     executorId,
     executorRole,
   }: ChangeUserStatusUseCaseRequest): Promise<ChangeUserStatusUseCaseResponse> {
-    // Only DIRECTOR+ can change user status
     if (!RoleHierarchy.hasPermission(executorRole, UserRole.DIRECTOR)) {
       return left(new NotAllowedError())
     }
@@ -46,7 +45,6 @@ export class ChangeUserStatusUseCase {
       return left(new NotAllowedError())
     }
 
-    // ADMIN cannot deactivate their own account
     if (executorId === userId && !isActive) {
       return left(new CannotModifyOwnAccountError())
     }

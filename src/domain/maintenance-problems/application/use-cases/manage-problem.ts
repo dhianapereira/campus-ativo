@@ -51,7 +51,6 @@ export class ManageProblemUseCase {
     maintenanceType,
     note,
   }: ManageProblemUseCaseRequest): Promise<ManageProblemUseCaseResponse> {
-    // Only MANAGER or higher can manage problem
     if (!RoleHierarchy.hasPermission(executorRole, UserRole.MANAGER)) {
       return left(new NotAllowedError())
     }
