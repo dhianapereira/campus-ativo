@@ -1,6 +1,8 @@
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 import { FetchCategoriesUseCase } from './fetch-categories'
 import { makeCategory } from 'test/factories/make-category'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
+import { NotAllowedError } from '@/core/errors/not-allowed-error'
 
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let sut: FetchCategoriesUseCase
@@ -76,9 +78,28 @@ describe('Fetch Recent Categories', () => {
     const result = await sut.execute({
       page: 1,
       includeDeleted: true,
+      userRole: UserRole.MANAGER,
     })
 
     expect(result.value?.categories).toHaveLength(2)
+  })
+
+  it('should not allow reporter to fetch deleted categories', async () => {
+    const category = makeCategory({ name: 'Deleted Category' })
+
+    await inMemoryCategoriesRepository.create(category)
+
+    category.moveToTrash()
+    await inMemoryCategoriesRepository.save(category)
+
+    const result = await sut.execute({
+      page: 1,
+      includeDeleted: true,
+      userRole: UserRole.REPORTER,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 
   it('should filter categories by isActive', async () => {

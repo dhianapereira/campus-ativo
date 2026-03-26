@@ -1,6 +1,8 @@
 import { InMemoryLocationsRepository } from 'test/repositories/in-memory-locations-repository'
 import { FetchLocationsUseCase } from './fetch-locations'
 import { makeLocation } from 'test/factories/make-location'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
+import { NotAllowedError } from '@/core/errors/not-allowed-error'
 
 let inMemoryLocationsRepository: InMemoryLocationsRepository
 let sut: FetchLocationsUseCase
@@ -76,9 +78,28 @@ describe('Fetch Recent Locations', () => {
     const result = await sut.execute({
       page: 1,
       includeDeleted: true,
+      userRole: UserRole.MANAGER,
     })
 
     expect(result.value?.locations).toHaveLength(2)
+  })
+
+  it('should not allow reporter to fetch deleted locations', async () => {
+    const location = makeLocation({ name: 'Deleted Location' })
+
+    await inMemoryLocationsRepository.create(location)
+
+    location.moveToTrash()
+    await inMemoryLocationsRepository.save(location)
+
+    const result = await sut.execute({
+      page: 1,
+      includeDeleted: true,
+      userRole: UserRole.REPORTER,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 
   it('should filter locations by isActive', async () => {

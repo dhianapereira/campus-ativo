@@ -1,9 +1,19 @@
-import { BadRequestException, Controller, Get, Query } from '@nestjs/common'
+import {
+  BadRequestException,
+  Controller,
+  ForbiddenException,
+  Get,
+  Query,
+} from '@nestjs/common'
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { FetchLocationsUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-locations'
 import { LocationPresenter } from '../presenters/location-presenter'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import { UserPayload } from '@/infra/auth/jwt.strategy'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
+import { NotAllowedError } from '@/core/errors/not-allowed-error'
 
 const pageQueryParamSchema = z
   .string()
@@ -98,7 +108,12 @@ export class FetchLocationsController {
     },
   })
   @ApiResponse({ status: 400, description: 'Parâmetros inválidos' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão para listar itens deletados',
+  })
   async handle(
+    @CurrentUser() user: UserPayload,
     @Query('page', pageValidationPipe) page: PageQueryParamSchema,
     @Query('query', queryValidationPipe) query: QueryQueryParamSchema,
     @Query('isActive', isActiveValidationPipe)
@@ -111,9 +126,14 @@ export class FetchLocationsController {
       query,
       isActive,
       includeDeleted,
+      userRole: (user.role as UserRole) || UserRole.REPORTER,
     })
 
     if (result.isLeft()) {
+      if (result.value instanceof NotAllowedError) {
+        throw new ForbiddenException(result.value.message)
+      }
+
       throw new BadRequestException()
     }
 
