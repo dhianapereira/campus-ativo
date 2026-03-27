@@ -9,8 +9,7 @@ import { FakeGoogleSheetsFetcher } from 'test/google-sheets/fake-google-sheets-f
 import { makeCategory } from 'test/factories/make-category'
 import { makeLocation } from 'test/factories/make-location'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
-import { makeUser } from 'test/factories/make-user'
-import { UserRole } from '@/domain/accounts/enterprise/entities/user'
+import { makeSystemUser } from 'test/factories/make-user'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
@@ -52,11 +51,7 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve importar problemas novos da planilha', async () => {
-    const systemUser = makeUser({
-      email: 'sistema@ifal-arapiraca.edu.br',
-      role: UserRole.SYSTEM,
-      isActive: false,
-    })
+    const systemUser = makeSystemUser()
     const category = makeCategory({ name: 'Climatização' })
     const location = makeLocation({ name: 'Sala 101' })
     inMemoryUsersRepository.items.push(systemUser)
@@ -96,13 +91,7 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('não deve importar linhas já importadas (evitar duplicatas)', async () => {
-    inMemoryUsersRepository.items.push(
-      makeUser({
-        email: 'sistema@ifal-arapiraca.edu.br',
-        role: UserRole.SYSTEM,
-        isActive: false,
-      }),
-    )
+    inMemoryUsersRepository.items.push(makeSystemUser())
     const category = makeCategory({ name: 'Elétrica' })
     const location = makeLocation({ name: 'Bloco A' })
     inMemoryCategoriesRepository.items.push(category)
@@ -131,13 +120,7 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve pular linhas com título ou descrição vazios', async () => {
-    inMemoryUsersRepository.items.push(
-      makeUser({
-        email: 'sistema@ifal-arapiraca.edu.br',
-        role: UserRole.SYSTEM,
-        isActive: false,
-      }),
-    )
+    inMemoryUsersRepository.items.push(makeSystemUser())
     const category = makeCategory({ name: 'Hidráulica' })
     inMemoryCategoriesRepository.items.push(category)
 
@@ -167,13 +150,7 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve registrar erro quando categoria não existe', async () => {
-    inMemoryUsersRepository.items.push(
-      makeUser({
-        email: 'sistema@ifal-arapiraca.edu.br',
-        role: UserRole.SYSTEM,
-        isActive: false,
-      }),
-    )
+    inMemoryUsersRepository.items.push(makeSystemUser())
     const location = makeLocation({ name: 'Sala 201' })
     inMemoryLocationsRepository.items.push(location)
 
@@ -203,13 +180,7 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve registrar erro quando localização não existe', async () => {
-    inMemoryUsersRepository.items.push(
-      makeUser({
-        email: 'sistema@ifal-arapiraca.edu.br',
-        role: UserRole.SYSTEM,
-        isActive: false,
-      }),
-    )
+    inMemoryUsersRepository.items.push(makeSystemUser())
     const category = makeCategory({ name: 'Outros' })
     inMemoryCategoriesRepository.items.push(category)
 
@@ -239,13 +210,7 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve importar múltiplas linhas e ignorar duplicatas na mesma execução', async () => {
-    inMemoryUsersRepository.items.push(
-      makeUser({
-        email: 'sistema@ifal-arapiraca.edu.br',
-        role: UserRole.SYSTEM,
-        isActive: false,
-      }),
-    )
+    inMemoryUsersRepository.items.push(makeSystemUser())
     const category = makeCategory({ name: 'Climatização' })
     const location = makeLocation({ name: 'Sala 101' })
     inMemoryCategoriesRepository.items.push(category)
@@ -284,13 +249,7 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve criar attachment quando a linha tem URL de imagem válida', async () => {
-    inMemoryUsersRepository.items.push(
-      makeUser({
-        email: 'sistema@ifal-arapiraca.edu.br',
-        role: UserRole.SYSTEM,
-        isActive: false,
-      }),
-    )
+    inMemoryUsersRepository.items.push(makeSystemUser())
     const category = makeCategory({ name: 'Outros' })
     const location = makeLocation({ name: 'Sala 1' })
     inMemoryCategoriesRepository.items.push(category)

@@ -30,6 +30,23 @@ export function makeUser(
   return user
 }
 
+export function makeSystemUser(
+  override: Partial<UserProps> = {},
+  id?: UniqueEntityID,
+) {
+  return makeUser(
+    {
+      name: 'Sistema IFAL Arapiraca',
+      position: 'Usuario do Sistema',
+      email: 'sistema@ifal.edu.br',
+      role: UserRole.SYSTEM,
+      isActive: false,
+      ...override,
+    },
+    id,
+  )
+}
+
 @Injectable()
 export class UserFactory {
   constructor(private prisma: PrismaService) {}

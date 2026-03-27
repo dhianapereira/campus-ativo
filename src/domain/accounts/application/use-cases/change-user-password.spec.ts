@@ -1,4 +1,4 @@
-import { makeUser } from 'test/factories/make-user'
+import { makeSystemUser, makeUser } from 'test/factories/make-user'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { ChangeUserPasswordUseCase } from './change-user-password'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
@@ -6,8 +6,6 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { WrongCredentialsError } from './errors/wrong-credentials-error'
 import { HashComparer } from '../cryptography/hash-comparer'
 import { HashGenerator } from '../cryptography/hash-generator'
-import { UserRole } from '../../enterprise/entities/user'
-
 let inMemoryUsersRepository: InMemoryUsersRepository
 let fakeHashComparer: HashComparer
 let fakeHashGenerator: HashGenerator
@@ -119,11 +117,8 @@ describe('Change User Password', () => {
   })
 
   it('should not allow changing the password of a system user', async () => {
-    const systemUser = makeUser({
-      email: 'sistema@ifal-arapiraca.edu.br',
+    const systemUser = makeSystemUser({
       password: 'hashed-system-password',
-      role: UserRole.SYSTEM,
-      isActive: false,
     })
 
     inMemoryUsersRepository.items.push(systemUser)

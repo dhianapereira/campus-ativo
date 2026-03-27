@@ -1,7 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common'
 import { JwtStrategy } from './jwt.strategy'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
-import { makeUser } from 'test/factories/make-user'
+import { makeSystemUser, makeUser } from 'test/factories/make-user'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 describe('JwtStrategy', () => {
@@ -57,8 +57,7 @@ describe('JwtStrategy', () => {
   })
 
   it('should reject system users even if they are marked as active', async () => {
-    const user = makeUser({
-      role: UserRole.SYSTEM,
+    const user = makeSystemUser({
       isActive: true,
     })
 

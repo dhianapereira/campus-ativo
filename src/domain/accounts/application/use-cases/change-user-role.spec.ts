@@ -1,4 +1,4 @@
-import { makeUser } from 'test/factories/make-user'
+import { makeSystemUser, makeUser } from 'test/factories/make-user'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { ChangeUserRoleUseCase } from './change-user-role'
 import { UserRole } from '../../enterprise/entities/user'
@@ -172,11 +172,7 @@ describe('Change User Role', () => {
       role: UserRole.ADMIN,
     })
 
-    const systemUser = makeUser({
-      email: 'sistema@ifal-arapiraca.edu.br',
-      role: UserRole.SYSTEM,
-      isActive: false,
-    })
+    const systemUser = makeSystemUser()
 
     inMemoryUsersRepository.items.push(admin, systemUser)
 

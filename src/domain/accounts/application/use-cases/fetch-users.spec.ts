@@ -1,4 +1,4 @@
-import { makeUser } from 'test/factories/make-user'
+import { makeSystemUser, makeUser } from 'test/factories/make-user'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { FetchUsersUseCase } from './fetch-users'
 import { UserRole } from '../../enterprise/entities/user'
@@ -140,12 +140,7 @@ describe('Fetch Users', () => {
       role: UserRole.REPORTER,
     })
 
-    const systemUser = makeUser({
-      name: 'Sistema IFAL Arapiraca',
-      email: 'sistema@ifal-arapiraca.edu.br',
-      role: UserRole.SYSTEM,
-      isActive: false,
-    })
+    const systemUser = makeSystemUser()
 
     inMemoryUsersRepository.items.push(reporter, systemUser)
 

@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import { makeUser } from 'test/factories/make-user'
+import { makeSystemUser, makeUser } from 'test/factories/make-user'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems-repository'
 import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/problem-attachments-repository'
@@ -32,11 +32,7 @@ describe('Delete User Account', () => {
 
   it('should be able to delete own account', async () => {
     const user = makeUser()
-    const systemUser = makeUser({
-      email: 'sistema@ifal-arapiraca.edu.br',
-      role: UserRole.SYSTEM,
-      isActive: false,
-    })
+    const systemUser = makeSystemUser()
 
     inMemoryUsersRepository.items.push(user)
     inMemoryUsersRepository.items.push(systemUser)
@@ -102,11 +98,7 @@ describe('Delete User Account', () => {
   })
 
   it('should not be able to delete a system user account', async () => {
-    const systemUser = makeUser({
-      email: 'sistema@ifal-arapiraca.edu.br',
-      role: UserRole.SYSTEM,
-      isActive: false,
-    })
+    const systemUser = makeSystemUser()
 
     inMemoryUsersRepository.items.push(systemUser)
 
@@ -136,11 +128,7 @@ describe('Delete User Account', () => {
 
   it('should migrate user problems to system user when deleting account', async () => {
     const user = makeUser()
-    const systemUser = makeUser({
-      email: 'sistema@ifal-arapiraca.edu.br',
-      role: UserRole.SYSTEM,
-      isActive: false,
-    })
+    const systemUser = makeSystemUser()
 
     inMemoryUsersRepository.items.push(user)
     inMemoryUsersRepository.items.push(systemUser)

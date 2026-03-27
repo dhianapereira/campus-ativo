@@ -2,7 +2,7 @@ import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repos
 import { FakeHasher } from 'test/cryptography/fake-hasher'
 import { FakeEncrypter } from 'test/cryptography/fake-encrypter'
 import { AuthenticateUserUseCase } from './authenticate-user'
-import { makeUser } from 'test/factories/make-user'
+import { makeSystemUser, makeUser } from 'test/factories/make-user'
 import { UserRole } from '../../enterprise/entities/user'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
@@ -86,17 +86,15 @@ describe('Authenticate User', () => {
   })
 
   it('should not be able to authenticate a system user', async () => {
-    const user = makeUser({
-      email: 'sistema@ifal-arapiraca.edu.br',
+    const user = makeSystemUser({
       password: await fakeHasher.hash('123456'),
       isActive: true,
-      role: UserRole.SYSTEM,
     })
 
     await inMemoryUsersRepository.create(user)
 
     const result = await sut.execute({
-      email: 'sistema@ifal-arapiraca.edu.br',
+      email: user.email,
       password: '123456',
     })
 

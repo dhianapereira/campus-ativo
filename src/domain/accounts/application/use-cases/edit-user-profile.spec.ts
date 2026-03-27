@@ -1,9 +1,8 @@
-import { makeUser } from 'test/factories/make-user'
+import { makeSystemUser, makeUser } from 'test/factories/make-user'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { EditUserProfileUseCase } from './edit-user-profile'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { UserRole } from '../../enterprise/entities/user'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let sut: EditUserProfileUseCase
@@ -75,13 +74,7 @@ describe('Edit User Profile', () => {
   })
 
   it('should not allow editing the profile of a system user', async () => {
-    const systemUser = makeUser({
-      name: 'Sistema IFAL Arapiraca',
-      position: 'Usuário do Sistema',
-      email: 'sistema@ifal-arapiraca.edu.br',
-      role: UserRole.SYSTEM,
-      isActive: false,
-    })
+    const systemUser = makeSystemUser()
 
     inMemoryUsersRepository.items.push(systemUser)
 
@@ -94,6 +87,6 @@ describe('Edit User Profile', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(NotAllowedError)
-    expect(inMemoryUsersRepository.items[0].name).toBe('Sistema IFAL Arapiraca')
+    expect(inMemoryUsersRepository.items[0].name).toBe(systemUser.name)
   })
 })
