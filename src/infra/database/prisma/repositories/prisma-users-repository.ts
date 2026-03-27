@@ -9,6 +9,8 @@ import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
 import { PrismaUserMapper } from '../mappers/prisma-user-mapper'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
+const DEFAULT_PAGE_SIZE = 20
+
 @Injectable()
 export class PrismaUsersRepository implements UsersRepository {
   constructor(private prisma: PrismaService) {}
@@ -166,54 +168,70 @@ export class PrismaUsersRepository implements UsersRepository {
     return users.map(PrismaUserMapper.toDomain)
   }
 
-  async findManyForListing(params?: FetchUsersParams): Promise<UserSummary[]> {
-    const users = await this.prisma.user.findMany({
-      where: {
-        ...(params?.query && {
-          OR: [
-            {
-              name: {
-                contains: params.query,
-                mode: 'insensitive',
-              },
+  async findManyForListing(params?: FetchUsersParams) {
+    const page = params?.page ?? 1
+    const pageSize = params?.pageSize ?? DEFAULT_PAGE_SIZE
+    const where = {
+      ...(params?.query && {
+        OR: [
+          {
+            name: {
+              contains: params.query,
+              mode: 'insensitive' as const,
             },
-            {
-              email: {
-                contains: params.query,
-                mode: 'insensitive',
-              },
+          },
+          {
+            email: {
+              contains: params.query,
+              mode: 'insensitive' as const,
             },
-            {
-              position: {
-                contains: params.query,
-                mode: 'insensitive',
-              },
+          },
+          {
+            position: {
+              contains: params.query,
+              mode: 'insensitive' as const,
             },
-          ],
-        }),
-        role: {
-          not: UserRole.SYSTEM,
-        },
-        ...(params?.isActive !== undefined && { isActive: params.isActive }),
-      },
-      orderBy: [
-        {
-          isActive: 'desc',
-        },
-        {
-          name: 'asc',
-        },
-      ],
-      select: {
-        id: true,
-        name: true,
-        position: true,
-        email: true,
-        role: true,
-        isActive: true,
-      },
-    })
+          },
+        ],
+      }),
+      role: params?.includeAdmins
+        ? {
+            not: UserRole.SYSTEM,
+          }
+        : {
+            notIn: [UserRole.SYSTEM, UserRole.ADMIN],
+          },
+      ...(params?.isActive !== undefined && { isActive: params.isActive }),
+    }
 
-    return users.map(PrismaUserMapper.toUserSummary)
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({
+        where,
+        orderBy: [
+          {
+            isActive: 'desc',
+          },
+          {
+            name: 'asc',
+          },
+        ],
+        select: {
+          id: true,
+          name: true,
+          position: true,
+          email: true,
+          role: true,
+          isActive: true,
+        },
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+      }),
+      this.prisma.user.count({ where }),
+    ])
+
+    return {
+      items: users.map(PrismaUserMapper.toUserSummary),
+      total,
+    }
   }
 }

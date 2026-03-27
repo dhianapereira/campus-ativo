@@ -6,12 +6,13 @@ import {
   Problem,
   ProblemStatus,
 } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
-import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
 import { DashboardMetrics } from '@/domain/maintenance-problems/enterprise/entities/value-objects/dashboard-metrics'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaProblemMapper } from '../mappers/prisma-problem-mapper'
 import { PrismaProblemWithDetailsMapper } from '../mappers/prisma-problem-with-details-mapper'
+
+const DEFAULT_PAGE_SIZE = 20
 
 @Injectable()
 export class PrismaProblemsRepository implements ProblemsRepository {
@@ -49,86 +50,118 @@ export class PrismaProblemsRepository implements ProblemsRepository {
 
   async findMany({
     page,
+    pageSize = DEFAULT_PAGE_SIZE,
     query,
+    statuses,
     includeDeleted = false,
     reporterId,
-  }: FetchProblemsParams): Promise<Problem[]> {
-    const problems = await this.prisma.problem.findMany({
-      where: {
-        purgedAt: null,
-        ...(reporterId && { reporterId }),
-        ...(!includeDeleted && { deletedAt: null }),
-        ...(query && {
-          OR: [
-            {
-              title: {
-                contains: query,
-                mode: 'insensitive',
-              },
+  }: FetchProblemsParams) {
+    const where = {
+      purgedAt: null,
+      ...(reporterId && { reporterId }),
+      ...(!includeDeleted && { deletedAt: null }),
+      ...(statuses &&
+        statuses.length > 0 && {
+        status: {
+          in: statuses,
+        },
+      }),
+      ...(query && {
+        OR: [
+          {
+            title: {
+              contains: query,
+              mode: 'insensitive' as const,
             },
-            {
-              description: {
-                contains: query,
-                mode: 'insensitive',
-              },
+          },
+          {
+            description: {
+              contains: query,
+              mode: 'insensitive' as const,
             },
-          ],
-        }),
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: 20,
-      skip: (page - 1) * 20,
-    })
+          },
+        ],
+      }),
+    }
 
-    return problems.map(PrismaProblemMapper.toDomain)
+    const [problems, total] = await Promise.all([
+      this.prisma.problem.findMany({
+        where,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+      }),
+      this.prisma.problem.count({ where }),
+    ])
+
+    return {
+      items: problems.map(PrismaProblemMapper.toDomain),
+      total,
+    }
   }
 
   async findManyWithDetails({
     page,
+    pageSize = DEFAULT_PAGE_SIZE,
     query,
+    statuses,
     includeDeleted = false,
     reporterId,
-  }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
-    const problems = await this.prisma.problem.findMany({
-      where: {
-        purgedAt: null,
-        ...(reporterId && { reporterId }),
-        ...(!includeDeleted && { deletedAt: null }),
-        ...(query && {
-          OR: [
-            {
-              title: {
-                contains: query,
-                mode: 'insensitive',
-              },
+  }: FetchProblemsParams) {
+    const where = {
+      purgedAt: null,
+      ...(reporterId && { reporterId }),
+      ...(!includeDeleted && { deletedAt: null }),
+      ...(statuses &&
+        statuses.length > 0 && {
+        status: {
+          in: statuses,
+        },
+      }),
+      ...(query && {
+        OR: [
+          {
+            title: {
+              contains: query,
+              mode: 'insensitive' as const,
             },
-            {
-              description: {
-                contains: query,
-                mode: 'insensitive',
-              },
+          },
+          {
+            description: {
+              contains: query,
+              mode: 'insensitive' as const,
             },
-          ],
-        }),
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      include: {
-        location: true,
-        reporter: {
-          select: {
-            email: true,
+          },
+        ],
+      }),
+    }
+
+    const [problems, total] = await Promise.all([
+      this.prisma.problem.findMany({
+        where,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        include: {
+          location: true,
+          reporter: {
+            select: {
+              email: true,
+            },
           },
         },
-      },
-      take: 20,
-      skip: (page - 1) * 20,
-    })
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+      }),
+      this.prisma.problem.count({ where }),
+    ])
 
-    return problems.map(PrismaProblemWithDetailsMapper.toDomain)
+    return {
+      items: problems.map(PrismaProblemWithDetailsMapper.toDomain),
+      total,
+    }
   }
 
   async create(problem: Problem): Promise<void> {

@@ -13,12 +13,14 @@ interface FetchCategoriesUseCaseRequest {
   isActive?: boolean
   includeDeleted?: boolean
   userRole?: UserRole
+  pageSize?: number
 }
 
 type FetchCategoriesUseCaseResponse = Either<
   NotAllowedError,
   {
     categories: Category[]
+    total: number
   }
 >
 
@@ -32,6 +34,7 @@ export class FetchCategoriesUseCase {
     isActive,
     includeDeleted = false,
     userRole,
+    pageSize,
   }: FetchCategoriesUseCaseRequest): Promise<FetchCategoriesUseCaseResponse> {
     if (
       includeDeleted &&
@@ -40,15 +43,18 @@ export class FetchCategoriesUseCase {
       return left(new NotAllowedError())
     }
 
-    const categories = await this.categoriesRepository.findMany({
-      page,
-      query,
-      isActive,
-      includeDeleted,
-    })
+    const { items: categories, total } =
+      await this.categoriesRepository.findMany({
+        page,
+        query,
+        isActive,
+        includeDeleted,
+        pageSize,
+      })
 
     return right({
       categories,
+      total,
     })
   }
 }

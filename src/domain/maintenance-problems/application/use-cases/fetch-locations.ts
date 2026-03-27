@@ -13,12 +13,14 @@ interface FetchLocationsUseCaseRequest {
   isActive?: boolean
   includeDeleted?: boolean
   userRole?: UserRole
+  pageSize?: number
 }
 
 type FetchLocationsUseCaseResponse = Either<
   NotAllowedError,
   {
     locations: Location[]
+    total: number
   }
 >
 
@@ -32,6 +34,7 @@ export class FetchLocationsUseCase {
     isActive,
     includeDeleted = false,
     userRole,
+    pageSize,
   }: FetchLocationsUseCaseRequest): Promise<FetchLocationsUseCaseResponse> {
     if (
       includeDeleted &&
@@ -40,15 +43,19 @@ export class FetchLocationsUseCase {
       return left(new NotAllowedError())
     }
 
-    const locations = await this.locationsRepository.findMany({
-      page,
-      query,
-      isActive,
-      includeDeleted,
-    })
+    const { items: locations, total } = await this.locationsRepository.findMany(
+      {
+        page,
+        query,
+        isActive,
+        includeDeleted,
+        pageSize,
+      },
+    )
 
     return right({
       locations,
+      total,
     })
   }
 }

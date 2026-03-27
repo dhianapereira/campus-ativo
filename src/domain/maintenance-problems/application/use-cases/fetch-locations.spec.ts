@@ -45,6 +45,21 @@ describe('Fetch Recent Locations', () => {
     })
 
     expect(result.value?.locations).toHaveLength(2)
+    expect(result.value?.total).toBe(22)
+  })
+
+  it('should respect a custom page size when fetching locations', async () => {
+    for (let i = 1; i <= 22; i++) {
+      await inMemoryLocationsRepository.create(makeLocation())
+    }
+
+    const result = await sut.execute({
+      page: 2,
+      pageSize: 10,
+    })
+
+    expect(result.value?.locations).toHaveLength(10)
+    expect(result.value?.total).toBe(22)
   })
 
   it('should not fetch deleted locations by default', async () => {

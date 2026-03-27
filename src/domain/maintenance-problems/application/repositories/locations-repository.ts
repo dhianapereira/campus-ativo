@@ -1,4 +1,5 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
+import { PaginatedResult } from '@/core/repositories/paginated-result'
 import { Location } from '../../enterprise/entities/location'
 
 export interface FetchLocationsParams extends PaginationParams {
@@ -8,7 +9,9 @@ export interface FetchLocationsParams extends PaginationParams {
 }
 
 export abstract class LocationsRepository {
-  abstract findMany(params: FetchLocationsParams): Promise<Location[]>
+  abstract findMany(
+    params: FetchLocationsParams,
+  ): Promise<PaginatedResult<Location>>
   abstract findById(id: string): Promise<Location | null>
   abstract findByName(name: string): Promise<Location | null>
   abstract create(location: Location): Promise<void>

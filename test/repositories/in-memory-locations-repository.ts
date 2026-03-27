@@ -12,6 +12,7 @@ export class InMemoryLocationsRepository implements LocationsRepository {
     query,
     isActive,
     includeDeleted = false,
+    pageSize = 20,
   }: FetchLocationsParams) {
     let locations = this.items
 
@@ -40,11 +41,14 @@ export class InMemoryLocationsRepository implements LocationsRepository {
     }
 
     // Sort and paginate
-    locations = locations
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page - 1) * 20, page * 20)
+    locations = locations.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    )
 
-    return locations
+    return {
+      items: locations.slice((page - 1) * pageSize, page * pageSize),
+      total: locations.length,
+    }
   }
 
   async findById(id: string) {

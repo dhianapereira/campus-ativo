@@ -1,9 +1,12 @@
+import { PaginatedResult } from '@/core/repositories/paginated-result'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 import { User } from '../../enterprise/entities/user'
 import { UserSummary } from '../../enterprise/entities/user-summary'
 
-export interface FetchUsersParams {
+export interface FetchUsersParams extends PaginationParams {
   query?: string
   isActive?: boolean
+  includeAdmins?: boolean
 }
 
 export abstract class UsersRepository {
@@ -16,5 +19,7 @@ export abstract class UsersRepository {
   abstract save(user: User): Promise<void>
   abstract delete(user: User): Promise<void>
   abstract findMany(params?: FetchUsersParams): Promise<User[]>
-  abstract findManyForListing(params?: FetchUsersParams): Promise<UserSummary[]>
+  abstract findManyForListing(
+    params?: FetchUsersParams,
+  ): Promise<PaginatedResult<UserSummary>>
 }

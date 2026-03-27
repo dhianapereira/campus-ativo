@@ -86,8 +86,12 @@ export class InMemoryUsersRepository implements UsersRepository {
 
   async findManyForListing(
     params?: import('@/domain/accounts/application/repositories/users-repository').FetchUsersParams,
-  ): Promise<UserSummary[]> {
+  ): Promise<{ items: UserSummary[]; total: number }> {
     let users = this.items.filter((user) => user.role !== UserRole.SYSTEM)
+
+    if (!params?.includeAdmins) {
+      users = users.filter((user) => user.role !== UserRole.ADMIN)
+    }
 
     // Filter by isActive
     if (params?.isActive !== undefined) {
@@ -116,17 +120,24 @@ export class InMemoryUsersRepository implements UsersRepository {
       return a.name.localeCompare(b.name)
     })
 
-    return users.map((user) =>
-      UserSummary.create(
-        {
-          name: user.name,
-          position: user.position,
-          email: user.email,
-          role: user.role,
-          isActive: user.isActive,
-        },
-        user.id,
+    const page = params?.page ?? 1
+    const pageSize = params?.pageSize ?? 20
+    const paginatedUsers = users.slice((page - 1) * pageSize, page * pageSize)
+
+    return {
+      items: paginatedUsers.map((user) =>
+        UserSummary.create(
+          {
+            name: user.name,
+            position: user.position,
+            email: user.email,
+            role: user.role,
+            isActive: user.isActive,
+          },
+          user.id,
+        ),
       ),
-    )
+      total: users.length,
+    }
   }
 }

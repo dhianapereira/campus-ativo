@@ -126,7 +126,7 @@ describe('Restore Problem From Trash', () => {
     await inMemoryProblemsRepository.create(problem2)
 
     // Verify they don't appear in list
-    let problems = await inMemoryProblemsRepository.findMany({
+    let { items: problems } = await inMemoryProblemsRepository.findMany({
       page: 1,
     })
     expect(problems).toHaveLength(0)
@@ -138,9 +138,9 @@ describe('Restore Problem From Trash', () => {
     })
 
     // Now only problem 1 should appear
-    problems = await inMemoryProblemsRepository.findMany({
+    ;({ items: problems } = await inMemoryProblemsRepository.findMany({
       page: 1,
-    })
+    }))
 
     expect(problems).toHaveLength(1)
     expect(problems[0].id.toValue()).toBe('problem-1')

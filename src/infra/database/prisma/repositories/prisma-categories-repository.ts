@@ -7,6 +7,8 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaCategoryMapper } from '../mappers/prisma-category-mapper'
 
+const DEFAULT_PAGE_SIZE = 20
+
 @Injectable()
 export class PrismaCategoriesRepository implements CategoriesRepository {
   constructor(private prisma: PrismaService) {}
@@ -16,37 +18,46 @@ export class PrismaCategoriesRepository implements CategoriesRepository {
     query,
     isActive,
     includeDeleted,
-  }: FetchCategoriesParams): Promise<Category[]> {
-    const categories = await this.prisma.category.findMany({
-      where: {
-        purgedAt: null,
-        ...(query && {
-          OR: [
-            {
-              name: {
-                contains: query,
-                mode: 'insensitive',
-              },
+    pageSize = DEFAULT_PAGE_SIZE,
+  }: FetchCategoriesParams) {
+    const where = {
+      purgedAt: null,
+      ...(query && {
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: 'insensitive' as const,
             },
-            {
-              description: {
-                contains: query,
-                mode: 'insensitive',
-              },
+          },
+          {
+            description: {
+              contains: query,
+              mode: 'insensitive' as const,
             },
-          ],
-        }),
-        ...(isActive !== undefined && { isActive }),
-        ...(!includeDeleted && { deletedAt: null }),
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: 20,
-      skip: (page - 1) * 20,
-    })
+          },
+        ],
+      }),
+      ...(isActive !== undefined && { isActive }),
+      ...(!includeDeleted && { deletedAt: null }),
+    }
 
-    return categories.map(PrismaCategoryMapper.toDomain)
+    const [categories, total] = await Promise.all([
+      this.prisma.category.findMany({
+        where,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+      }),
+      this.prisma.category.count({ where }),
+    ])
+
+    return {
+      items: categories.map(PrismaCategoryMapper.toDomain),
+      total,
+    }
   }
 
   async findById(id: string): Promise<Category | null> {

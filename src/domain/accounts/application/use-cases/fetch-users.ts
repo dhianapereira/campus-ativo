@@ -3,8 +3,9 @@ import { Injectable } from '@nestjs/common'
 import { UsersRepository } from '../repositories/users-repository'
 import { UserRole } from '../../enterprise/entities/user'
 import { UserSummary } from '../../enterprise/entities/user-summary'
+import { PaginationParams } from '@/core/repositories/pagination-params'
 
-interface FetchUsersUseCaseRequest {
+interface FetchUsersUseCaseRequest extends PaginationParams {
   currentUserRole: UserRole
   query?: string
   isActive?: boolean
@@ -14,6 +15,7 @@ type FetchUsersUseCaseResponse = Either<
   null,
   {
     users: UserSummary[]
+    total: number
   }
 >
 
@@ -23,24 +25,23 @@ export class FetchUsersUseCase {
 
   async execute({
     currentUserRole,
+    page,
+    pageSize,
     query,
     isActive,
   }: FetchUsersUseCaseRequest): Promise<FetchUsersUseCaseResponse> {
-    const users = await this.usersRepository.findManyForListing({
-      query,
-      isActive,
-    })
-
-    const filteredUsers = users.filter((user) => {
-      if (currentUserRole === UserRole.ADMIN) {
-        return true
-      }
-
-      return user.role !== UserRole.ADMIN
-    })
+    const { items: users, total } =
+      await this.usersRepository.findManyForListing({
+        page,
+        pageSize,
+        query,
+        isActive,
+        includeAdmins: currentUserRole === UserRole.ADMIN,
+      })
 
     return right({
-      users: filteredUsers,
+      users,
+      total,
     })
   }
 }

@@ -45,6 +45,21 @@ describe('Fetch Recent Categories', () => {
     })
 
     expect(result.value?.categories).toHaveLength(2)
+    expect(result.value?.total).toBe(22)
+  })
+
+  it('should respect a custom page size when fetching categories', async () => {
+    for (let i = 1; i <= 22; i++) {
+      await inMemoryCategoriesRepository.create(makeCategory())
+    }
+
+    const result = await sut.execute({
+      page: 2,
+      pageSize: 10,
+    })
+
+    expect(result.value?.categories).toHaveLength(10)
+    expect(result.value?.total).toBe(22)
   })
 
   it('should not fetch deleted categories by default', async () => {

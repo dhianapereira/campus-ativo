@@ -1,4 +1,5 @@
 import { PaginationParams } from '@/core/repositories/pagination-params'
+import { PaginatedResult } from '@/core/repositories/paginated-result'
 import { Category } from '../../enterprise/entities/category'
 
 export interface FetchCategoriesParams extends PaginationParams {
@@ -8,7 +9,9 @@ export interface FetchCategoriesParams extends PaginationParams {
 }
 
 export abstract class CategoriesRepository {
-  abstract findMany(params: FetchCategoriesParams): Promise<Category[]>
+  abstract findMany(
+    params: FetchCategoriesParams,
+  ): Promise<PaginatedResult<Category>>
   abstract findById(id: string): Promise<Category | null>
   abstract findByName(name: string): Promise<Category | null>
   abstract create(category: Category): Promise<void>

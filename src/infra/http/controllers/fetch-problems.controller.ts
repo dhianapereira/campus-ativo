@@ -19,6 +19,7 @@ import { ProblemPresenter } from '../presenters/problem-presenter'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ProblemWithDetailsResponse } from '../dtos/interfaces.dto'
+import { ProblemStatus } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 
 const pageQueryParamSchema = z
   .string()
@@ -27,7 +28,30 @@ const pageQueryParamSchema = z
   .transform(Number)
   .pipe(z.number().min(1))
 
+const pageSizeQueryParamSchema = z
+  .string()
+  .optional()
+  .default('20')
+  .transform(Number)
+  .pipe(z.number().min(1).max(100))
+
 const queryQueryParamSchema = z.string().optional()
+
+const statusesQueryParamSchema = z
+  .string()
+  .optional()
+  .transform((val) => {
+    if (!val) return undefined
+
+    const statuses = val
+      .split(',')
+      .map((status) => status.trim())
+      .filter(Boolean)
+
+    if (statuses.length === 0) return undefined
+
+    return z.array(z.nativeEnum(ProblemStatus)).parse(statuses)
+  })
 
 const includeDeletedQueryParamSchema = z
   .string()
@@ -38,13 +62,17 @@ const includeDeletedQueryParamSchema = z
   })
 
 const pageValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
+const pageSizeValidationPipe = new ZodValidationPipe(pageSizeQueryParamSchema)
 const queryValidationPipe = new ZodValidationPipe(queryQueryParamSchema)
+const statusesValidationPipe = new ZodValidationPipe(statusesQueryParamSchema)
 const includeDeletedValidationPipe = new ZodValidationPipe(
   includeDeletedQueryParamSchema,
 )
 
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
+type PageSizeQueryParamSchema = z.infer<typeof pageSizeQueryParamSchema>
 type QueryQueryParamSchema = z.infer<typeof queryQueryParamSchema>
+type StatusesQueryParamSchema = z.infer<typeof statusesQueryParamSchema>
 type IncludeDeletedQueryParamSchema = z.infer<
   typeof includeDeletedQueryParamSchema
 >
@@ -69,11 +97,25 @@ export class FetchProblemsController {
     type: Number,
   })
   @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Quantidade de itens por página',
+    example: 20,
+    type: Number,
+  })
+  @ApiQuery({
     name: 'query',
     required: false,
     description:
       'Termo de busca para filtrar problemas por título ou descrição',
     example: 'ar condicionado',
+    type: String,
+  })
+  @ApiQuery({
+    name: 'statuses',
+    required: false,
+    description: 'Lista de status separada por vírgula para filtrar problemas',
+    example: 'TO_ANALYSIS,IN_PROGRESS',
     type: String,
   })
   @ApiQuery({
@@ -93,6 +135,18 @@ export class FetchProblemsController {
           type: 'array',
           items: { $ref: '#/components/schemas/ProblemWithDetailsResponse' },
         },
+        total: {
+          type: 'number',
+          example: 42,
+        },
+        page: {
+          type: 'number',
+          example: 1,
+        },
+        pageSize: {
+          type: 'number',
+          example: 20,
+        },
       },
     },
   })
@@ -100,7 +154,11 @@ export class FetchProblemsController {
   async handle(
     @CurrentUser() user: UserPayload,
     @Query('page', pageValidationPipe) page: PageQueryParamSchema,
+    @Query('pageSize', pageSizeValidationPipe)
+    pageSize: PageSizeQueryParamSchema,
     @Query('query', queryValidationPipe) query: QueryQueryParamSchema,
+    @Query('statuses', statusesValidationPipe)
+    statuses: StatusesQueryParamSchema,
     @Query('includeDeleted', includeDeletedValidationPipe)
     includeDeleted: IncludeDeletedQueryParamSchema,
   ) {
@@ -114,7 +172,9 @@ export class FetchProblemsController {
 
     const result = await this.fetchProblems.execute({
       page,
+      pageSize,
       query,
+      statuses,
       includeDeleted,
       reporterId: reporterIdFilter,
     })
@@ -123,8 +183,13 @@ export class FetchProblemsController {
       throw new BadRequestException()
     }
 
-    const problems = result.value.problems
+    const { problems, total } = result.value
 
-    return { problems: problems.map(ProblemPresenter.toHTTPWithDetails) }
+    return {
+      problems: problems.map(ProblemPresenter.toHTTPWithDetails),
+      total,
+      page,
+      pageSize,
+    }
   }
 }

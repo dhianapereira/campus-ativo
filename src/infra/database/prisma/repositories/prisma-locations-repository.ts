@@ -7,6 +7,8 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '../prisma.service'
 import { PrismaLocationMapper } from '../mappers/prisma-location-mapper'
 
+const DEFAULT_PAGE_SIZE = 20
+
 @Injectable()
 export class PrismaLocationsRepository implements LocationsRepository {
   constructor(private prisma: PrismaService) {}
@@ -16,43 +18,52 @@ export class PrismaLocationsRepository implements LocationsRepository {
     query,
     isActive,
     includeDeleted,
-  }: FetchLocationsParams): Promise<Location[]> {
-    const locations = await this.prisma.location.findMany({
-      where: {
-        purgedAt: null,
-        ...(query && {
-          OR: [
-            {
-              name: {
-                contains: query,
-                mode: 'insensitive',
-              },
+    pageSize = DEFAULT_PAGE_SIZE,
+  }: FetchLocationsParams) {
+    const where = {
+      purgedAt: null,
+      ...(query && {
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: 'insensitive' as const,
             },
-            {
-              code: {
-                contains: query,
-                mode: 'insensitive',
-              },
+          },
+          {
+            code: {
+              contains: query,
+              mode: 'insensitive' as const,
             },
-            {
-              description: {
-                contains: query,
-                mode: 'insensitive',
-              },
+          },
+          {
+            description: {
+              contains: query,
+              mode: 'insensitive' as const,
             },
-          ],
-        }),
-        ...(isActive !== undefined && { isActive }),
-        ...(!includeDeleted && { deletedAt: null }),
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-      take: 20,
-      skip: (page - 1) * 20,
-    })
+          },
+        ],
+      }),
+      ...(isActive !== undefined && { isActive }),
+      ...(!includeDeleted && { deletedAt: null }),
+    }
 
-    return locations.map(PrismaLocationMapper.toDomain)
+    const [locations, total] = await Promise.all([
+      this.prisma.location.findMany({
+        where,
+        orderBy: {
+          createdAt: 'desc',
+        },
+        take: pageSize,
+        skip: (page - 1) * pageSize,
+      }),
+      this.prisma.location.count({ where }),
+    ])
+
+    return {
+      items: locations.map(PrismaLocationMapper.toDomain),
+      total,
+    }
   }
 
   async findById(id: string): Promise<Location | null> {

@@ -22,9 +22,18 @@ const pageQueryParamSchema = z
   .transform(Number)
   .pipe(z.number().min(1))
 
+const pageSizeQueryParamSchema = z
+  .string()
+  .optional()
+  .default('20')
+  .transform(Number)
+  .pipe(z.number().min(1).max(100))
+
 const queryValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
+const pageSizeValidationPipe = new ZodValidationPipe(pageSizeQueryParamSchema)
 
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
+type PageSizeQueryParamSchema = z.infer<typeof pageSizeQueryParamSchema>
 
 const querySearchParamSchema = z.string().optional()
 const isActiveQueryParamSchema = z
@@ -73,6 +82,13 @@ export class FetchCategoriesController {
     type: Number,
   })
   @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Quantidade de itens por página',
+    example: 20,
+    type: Number,
+  })
+  @ApiQuery({
     name: 'query',
     required: false,
     description: 'Busca por nome ou descrição',
@@ -103,6 +119,18 @@ export class FetchCategoriesController {
           type: 'array',
           items: { $ref: '#/components/schemas/CategoryResponse' },
         },
+        total: {
+          type: 'number',
+          example: 42,
+        },
+        page: {
+          type: 'number',
+          example: 1,
+        },
+        pageSize: {
+          type: 'number',
+          example: 20,
+        },
       },
     },
   })
@@ -114,6 +142,8 @@ export class FetchCategoriesController {
   async handle(
     @CurrentUser() user: UserPayload,
     @Query('page', queryValidationPipe) page: PageQueryParamSchema,
+    @Query('pageSize', pageSizeValidationPipe)
+    pageSize: PageSizeQueryParamSchema,
     @Query('query', querySearchValidationPipe) query: QuerySearchParamSchema,
     @Query('isActive', isActiveValidationPipe)
     isActive: IsActiveQueryParamSchema,
@@ -125,6 +155,7 @@ export class FetchCategoriesController {
       query,
       isActive,
       includeDeleted,
+      pageSize,
       userRole: (user.role as UserRole) || UserRole.REPORTER,
     })
 
@@ -136,8 +167,13 @@ export class FetchCategoriesController {
       throw new BadRequestException()
     }
 
-    const categories = result.value.categories
+    const { categories, total } = result.value
 
-    return { categories: categories.map(CategoryPresenter.toHTTP) }
+    return {
+      categories: categories.map(CategoryPresenter.toHTTP),
+      total,
+      page,
+      pageSize,
+    }
   }
 }

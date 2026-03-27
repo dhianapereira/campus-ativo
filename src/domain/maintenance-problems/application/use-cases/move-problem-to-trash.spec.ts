@@ -161,7 +161,7 @@ describe('Move Problem To Trash', () => {
       reporterId: 'reporter-1',
     })
 
-    const problems = await inMemoryProblemsRepository.findMany({
+    const { items: problems } = await inMemoryProblemsRepository.findMany({
       page: 1,
     })
 

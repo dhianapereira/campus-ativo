@@ -22,6 +22,13 @@ const pageQueryParamSchema = z
   .transform(Number)
   .pipe(z.number().min(1))
 
+const pageSizeQueryParamSchema = z
+  .string()
+  .optional()
+  .default('20')
+  .transform(Number)
+  .pipe(z.number().min(1).max(100))
+
 const queryQueryParamSchema = z.string().optional()
 
 const isActiveQueryParamSchema = z
@@ -41,6 +48,7 @@ const includeDeletedQueryParamSchema = z
   })
 
 const pageValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
+const pageSizeValidationPipe = new ZodValidationPipe(pageSizeQueryParamSchema)
 const queryValidationPipe = new ZodValidationPipe(queryQueryParamSchema)
 const isActiveValidationPipe = new ZodValidationPipe(isActiveQueryParamSchema)
 const includeDeletedValidationPipe = new ZodValidationPipe(
@@ -48,6 +56,7 @@ const includeDeletedValidationPipe = new ZodValidationPipe(
 )
 
 type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
+type PageSizeQueryParamSchema = z.infer<typeof pageSizeQueryParamSchema>
 type QueryQueryParamSchema = z.infer<typeof queryQueryParamSchema>
 type IsActiveQueryParamSchema = z.infer<typeof isActiveQueryParamSchema>
 type IncludeDeletedQueryParamSchema = z.infer<
@@ -70,6 +79,13 @@ export class FetchLocationsController {
     required: false,
     description: 'Número da página (começa em 1)',
     example: 1,
+    type: Number,
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Quantidade de itens por página',
+    example: 20,
     type: Number,
   })
   @ApiQuery({
@@ -104,6 +120,18 @@ export class FetchLocationsController {
           type: 'array',
           items: { $ref: '#/components/schemas/LocationResponse' },
         },
+        total: {
+          type: 'number',
+          example: 42,
+        },
+        page: {
+          type: 'number',
+          example: 1,
+        },
+        pageSize: {
+          type: 'number',
+          example: 20,
+        },
       },
     },
   })
@@ -115,6 +143,8 @@ export class FetchLocationsController {
   async handle(
     @CurrentUser() user: UserPayload,
     @Query('page', pageValidationPipe) page: PageQueryParamSchema,
+    @Query('pageSize', pageSizeValidationPipe)
+    pageSize: PageSizeQueryParamSchema,
     @Query('query', queryValidationPipe) query: QueryQueryParamSchema,
     @Query('isActive', isActiveValidationPipe)
     isActive: IsActiveQueryParamSchema,
@@ -126,6 +156,7 @@ export class FetchLocationsController {
       query,
       isActive,
       includeDeleted,
+      pageSize,
       userRole: (user.role as UserRole) || UserRole.REPORTER,
     })
 
@@ -137,8 +168,13 @@ export class FetchLocationsController {
       throw new BadRequestException()
     }
 
-    const locations = result.value.locations
+    const { locations, total } = result.value
 
-    return { locations: locations.map(LocationPresenter.toHTTP) }
+    return {
+      locations: locations.map(LocationPresenter.toHTTP),
+      total,
+      page,
+      pageSize,
+    }
   }
 }

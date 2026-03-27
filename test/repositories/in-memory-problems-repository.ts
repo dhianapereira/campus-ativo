@@ -42,7 +42,9 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
 
   async findMany({
     page,
+    pageSize = 20,
     query,
+    statuses,
     includeDeleted = false,
     reporterId,
   }: FetchProblemsParams) {
@@ -60,6 +62,10 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
       problems = problems.filter((problem) => !problem.isDeleted)
     }
 
+    if (statuses && statuses.length > 0) {
+      problems = problems.filter((problem) => statuses.includes(problem.status))
+    }
+
     // Filter by query (case-insensitive search in title and description)
     if (query) {
       const lowerQuery = query.toLowerCase()
@@ -73,19 +79,27 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     }
 
     // Sort and paginate
-    problems = problems
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page - 1) * 20, page * 20)
+    problems = problems.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    )
 
-    return problems
+    return {
+      items: problems.slice((page - 1) * pageSize, page * pageSize),
+      total: problems.length,
+    }
   }
 
   async findManyWithDetails({
     page,
+    pageSize = 20,
     query,
+    statuses,
     includeDeleted = false,
     reporterId,
-  }: FetchProblemsParams): Promise<ProblemWithDetails[]> {
+  }: FetchProblemsParams): Promise<{
+    items: ProblemWithDetails[]
+    total: number
+  }> {
     // Purged problems are never listed.
     let problems = this.items.filter((problem) => !problem.isPurged)
 
@@ -100,6 +114,10 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
       problems = problems.filter((problem) => !problem.isDeleted)
     }
 
+    if (statuses && statuses.length > 0) {
+      problems = problems.filter((problem) => statuses.includes(problem.status))
+    }
+
     // Filter by query (case-insensitive search in title and description)
     if (query) {
       const lowerQuery = query.toLowerCase()
@@ -113,12 +131,17 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     }
 
     // Sort and paginate
-    problems = problems
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page - 1) * 20, page * 20)
+    problems = problems.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    )
+
+    const paginatedProblems = problems.slice(
+      (page - 1) * pageSize,
+      page * pageSize,
+    )
 
     // Map to ProblemWithDetails
-    const problemsWithDetails = problems.map(
+    const problemsWithDetails = paginatedProblems.map(
       (problem) =>
         new ProblemWithDetails({
           problemId: problem.id,
@@ -135,7 +158,10 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
         }),
     )
 
-    return problemsWithDetails
+    return {
+      items: problemsWithDetails,
+      total: problems.length,
+    }
   }
 
   async create(problem: Problem) {

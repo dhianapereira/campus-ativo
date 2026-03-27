@@ -12,6 +12,7 @@ export class InMemoryCategoriesRepository implements CategoriesRepository {
     query,
     isActive,
     includeDeleted = false,
+    pageSize = 20,
   }: FetchCategoriesParams) {
     let categories = this.items
 
@@ -42,11 +43,14 @@ export class InMemoryCategoriesRepository implements CategoriesRepository {
     }
 
     // Sort and paginate
-    categories = categories
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice((page - 1) * 20, page * 20)
+    categories = categories.sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+    )
 
-    return categories
+    return {
+      items: categories.slice((page - 1) * pageSize, page * pageSize),
+      total: categories.length,
+    }
   }
 
   async findById(id: string) {

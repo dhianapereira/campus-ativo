@@ -35,10 +35,14 @@ describe('Fetch Users', () => {
 
     inMemoryUsersRepository.items.push(user1, user2, user3, admin)
 
-    const result = await sut.execute({ currentUserRole: UserRole.ADMIN })
+    const result = await sut.execute({
+      currentUserRole: UserRole.ADMIN,
+      page: 1,
+    })
 
     expect(result.isRight()).toBe(true)
     expect(result.value?.users).toHaveLength(4)
+    expect(result.value?.total).toBe(4)
     // Users are now sorted alphabetically by name (all active)
     expect(result.value?.users).toEqual([
       expect.objectContaining({ name: 'Admin User', role: UserRole.ADMIN }),
@@ -71,10 +75,14 @@ describe('Fetch Users', () => {
 
     inMemoryUsersRepository.items.push(user1, user2, user3, admin)
 
-    const result = await sut.execute({ currentUserRole: UserRole.DIRECTOR })
+    const result = await sut.execute({
+      currentUserRole: UserRole.DIRECTOR,
+      page: 1,
+    })
 
     expect(result.isRight()).toBe(true)
     expect(result.value?.users).toHaveLength(3)
+    expect(result.value?.total).toBe(3)
     // Users are now sorted alphabetically by name
     expect(result.value?.users).toEqual([
       expect.objectContaining({ name: 'Bob Smith', role: UserRole.DIRECTOR }),
@@ -101,7 +109,10 @@ describe('Fetch Users', () => {
 
     inMemoryUsersRepository.items.push(user1, admin)
 
-    const result = await sut.execute({ currentUserRole: UserRole.MANAGER })
+    const result = await sut.execute({
+      currentUserRole: UserRole.MANAGER,
+      page: 1,
+    })
 
     expect(result.isRight()).toBe(true)
     expect(result.value?.users).toHaveLength(1)
@@ -111,7 +122,10 @@ describe('Fetch Users', () => {
   })
 
   it('should return empty array when no users exist', async () => {
-    const result = await sut.execute({ currentUserRole: UserRole.DIRECTOR })
+    const result = await sut.execute({
+      currentUserRole: UserRole.DIRECTOR,
+      page: 1,
+    })
 
     expect(result.isRight()).toBe(true)
     expect(result.value?.users).toHaveLength(0)
@@ -126,7 +140,10 @@ describe('Fetch Users', () => {
 
     inMemoryUsersRepository.items.push(user1)
 
-    const result = await sut.execute({ currentUserRole: UserRole.ADMIN })
+    const result = await sut.execute({
+      currentUserRole: UserRole.ADMIN,
+      page: 1,
+    })
 
     expect(result.isRight()).toBe(true)
     expect(result.value?.users).toHaveLength(1)
@@ -144,7 +161,10 @@ describe('Fetch Users', () => {
 
     inMemoryUsersRepository.items.push(reporter, systemUser)
 
-    const result = await sut.execute({ currentUserRole: UserRole.ADMIN })
+    const result = await sut.execute({
+      currentUserRole: UserRole.ADMIN,
+      page: 1,
+    })
 
     expect(result.isRight()).toBe(true)
     expect(result.value?.users).toHaveLength(1)
@@ -168,6 +188,7 @@ describe('Fetch Users', () => {
 
     const resultActive = await sut.execute({
       currentUserRole: UserRole.ADMIN,
+      page: 1,
       isActive: true,
     })
 
@@ -177,6 +198,7 @@ describe('Fetch Users', () => {
 
     const resultInactive = await sut.execute({
       currentUserRole: UserRole.ADMIN,
+      page: 1,
       isActive: false,
     })
 
@@ -208,6 +230,7 @@ describe('Fetch Users', () => {
 
     const result = await sut.execute({
       currentUserRole: UserRole.ADMIN,
+      page: 1,
       query: 'john',
     })
 
@@ -236,6 +259,7 @@ describe('Fetch Users', () => {
 
     const result = await sut.execute({
       currentUserRole: UserRole.ADMIN,
+      page: 1,
       query: 'company',
     })
 
@@ -276,7 +300,10 @@ describe('Fetch Users', () => {
       inactiveUser2,
     )
 
-    const result = await sut.execute({ currentUserRole: UserRole.ADMIN })
+    const result = await sut.execute({
+      currentUserRole: UserRole.ADMIN,
+      page: 1,
+    })
 
     expect(result.isRight()).toBe(true)
     expect(result.value?.users).toHaveLength(4)
@@ -317,6 +344,7 @@ describe('Fetch Users', () => {
 
     const result = await sut.execute({
       currentUserRole: UserRole.ADMIN,
+      page: 1,
       query: 'john',
       isActive: true,
     })
@@ -324,5 +352,27 @@ describe('Fetch Users', () => {
     expect(result.isRight()).toBe(true)
     expect(result.value?.users).toHaveLength(1)
     expect(result.value?.users[0].name).toBe('John Active')
+  })
+
+  it('should respect a custom page size when fetching users', async () => {
+    for (let i = 1; i <= 22; i++) {
+      inMemoryUsersRepository.items.push(
+        makeUser({
+          name: `User ${String(i).padStart(2, '0')}`,
+          email: `user${i}@example.com`,
+          role: UserRole.REPORTER,
+        }),
+      )
+    }
+
+    const result = await sut.execute({
+      currentUserRole: UserRole.ADMIN,
+      page: 2,
+      pageSize: 10,
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.users).toHaveLength(10)
+    expect(result.value?.total).toBe(22)
   })
 })

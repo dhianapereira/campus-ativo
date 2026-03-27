@@ -20,6 +20,28 @@ import { Roles } from '@/infra/auth/roles.decorator'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
+import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
+import { z } from 'zod'
+
+const pageQueryParamSchema = z
+  .string()
+  .optional()
+  .default('1')
+  .transform(Number)
+  .pipe(z.number().min(1))
+
+const pageSizeQueryParamSchema = z
+  .string()
+  .optional()
+  .default('20')
+  .transform(Number)
+  .pipe(z.number().min(1).max(100))
+
+const pageValidationPipe = new ZodValidationPipe(pageQueryParamSchema)
+const pageSizeValidationPipe = new ZodValidationPipe(pageSizeQueryParamSchema)
+
+type PageQueryParamSchema = z.infer<typeof pageQueryParamSchema>
+type PageSizeQueryParamSchema = z.infer<typeof pageSizeQueryParamSchema>
 
 @Controller('/users')
 @ApiTags('User Management')
@@ -34,6 +56,20 @@ export class FetchUsersController {
     summary: 'Listar usuários',
     description:
       'Lista usuários humanos do sistema com filtros baseados no role do usuário autenticado. ADMIN pode ver todos os usuários humanos, DIRECTOR e abaixo não veem usuários ADMIN.',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Número da página (começa em 1)',
+    type: Number,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'pageSize',
+    required: false,
+    description: 'Quantidade de itens por página',
+    type: Number,
+    example: 20,
   })
   @ApiQuery({
     name: 'query',
@@ -81,6 +117,18 @@ export class FetchUsersController {
             },
           },
         },
+        total: {
+          type: 'number',
+          example: 42,
+        },
+        page: {
+          type: 'number',
+          example: 1,
+        },
+        pageSize: {
+          type: 'number',
+          example: 20,
+        },
       },
     },
   })
@@ -94,6 +142,9 @@ export class FetchUsersController {
   })
   async handle(
     @CurrentUser() user: UserPayload,
+    @Query('page', pageValidationPipe) page: PageQueryParamSchema,
+    @Query('pageSize', pageSizeValidationPipe)
+    pageSize: PageSizeQueryParamSchema,
     @Query('query') query?: string,
     @Query('isActive') isActive?: string,
   ) {
@@ -101,6 +152,8 @@ export class FetchUsersController {
 
     const result = await this.fetchUsers.execute({
       currentUserRole,
+      page,
+      pageSize,
       query,
       isActive: isActive !== undefined
         ? isActive === 'true'
@@ -113,6 +166,9 @@ export class FetchUsersController {
 
     return {
       users: result.value.users.map(UserListPresenter.toHTTP),
+      total: result.value.total,
+      page,
+      pageSize,
     }
   }
 }

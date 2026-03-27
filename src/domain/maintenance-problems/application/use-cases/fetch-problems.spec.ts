@@ -3,6 +3,7 @@ import { makeProblem } from 'test/factories/make-problem'
 import { FetchProblemsUseCase } from './fetch-problems'
 import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { ProblemStatus } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
@@ -50,6 +51,21 @@ describe('Fetch Recent Problems', () => {
     })
 
     expect(result.value?.problems).toHaveLength(2)
+    expect(result.value?.total).toBe(22)
+  })
+
+  it('should respect a custom page size when fetching problems', async () => {
+    for (let i = 1; i <= 22; i++) {
+      await inMemoryProblemsRepository.create(makeProblem())
+    }
+
+    const result = await sut.execute({
+      page: 2,
+      pageSize: 10,
+    })
+
+    expect(result.value?.problems).toHaveLength(10)
+    expect(result.value?.total).toBe(22)
   })
 
   it('should filter problems by query in title', async () => {
@@ -105,6 +121,41 @@ describe('Fetch Recent Problems', () => {
 
     expect(result.value?.problems).toHaveLength(1)
     expect(result.value?.problems[0].title).toBe('Problem B')
+  })
+
+  it('should filter problems by statuses', async () => {
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Problem A',
+        status: ProblemStatus.TO_ANALYSIS,
+      }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Problem B',
+        status: ProblemStatus.IN_PROGRESS,
+      }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Problem C',
+        status: ProblemStatus.FINISHED,
+      }),
+    )
+
+    const result = await sut.execute({
+      page: 1,
+      statuses: [ProblemStatus.IN_PROGRESS, ProblemStatus.FINISHED],
+    })
+
+    expect(result.value?.problems).toHaveLength(2)
+    expect(result.value?.total).toBe(2)
+    expect(result.value?.problems).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ title: 'Problem B' }),
+        expect.objectContaining({ title: 'Problem C' }),
+      ]),
+    )
   })
 
   it('should return all problems when no query is provided', async () => {
