@@ -15,7 +15,7 @@ import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { GetUserProfileUseCase } from '@/domain/accounts/application/use-cases/get-user-profile'
 import { UserProfilePresenter } from '../presenters/user-profile-presenter'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
-import { UserResponse } from '../dtos/interfaces.dto'
+import { UserProfileResponse } from '../dtos/interfaces.dto'
 
 @Controller('/profile')
 @ApiTags('User Profile')
@@ -31,7 +31,7 @@ export class GetUserProfileController {
   @ApiResponse({
     status: 200,
     description: 'Perfil do usuário retornado com sucesso',
-    type: UserResponse,
+    type: UserProfileResponse,
   })
   @ApiResponse({ status: 404, description: 'Usuário não encontrado' })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })

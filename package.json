@@ -9,11 +9,10 @@
     "dev": "nest start --debug --watch",
     "test": "vitest run",
     "test:watch": "vitest",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" \"prisma/**/*.ts\"",
-    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" \"prisma/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "openapi": "./scripts/generate-openapi.sh",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "openapi": "./scripts/generate-openapi.sh"
   },
   "dependencies": {
     "@nestjs/common": "11.1.6",

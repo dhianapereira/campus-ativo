@@ -1,5 +1,5 @@
 import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
-import { User } from '@/domain/accounts/enterprise/entities/user'
+import { User, UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
 
 export class InMemoryUsersRepository implements UsersRepository {
@@ -25,6 +25,16 @@ export class InMemoryUsersRepository implements UsersRepository {
     return user
   }
 
+  async findSystemUser(): Promise<User | null> {
+    const user = this.items.find((item) => item.role === UserRole.SYSTEM)
+
+    if (!user) {
+      return null
+    }
+
+    return user
+  }
+
   async findManyByIds(ids: string[]): Promise<User[]> {
     if (ids.length === 0) {
       return []
@@ -34,7 +44,9 @@ export class InMemoryUsersRepository implements UsersRepository {
   }
 
   async findByIdForListing(id: string): Promise<UserSummary | null> {
-    const user = this.items.find((item) => item.id.toValue() === id)
+    const user = this.items.find(
+      (item) => item.id.toValue() === id && item.role !== UserRole.SYSTEM,
+    )
 
     if (!user) {
       return null
@@ -75,7 +87,7 @@ export class InMemoryUsersRepository implements UsersRepository {
   async findManyForListing(
     params?: import('@/domain/accounts/application/repositories/users-repository').FetchUsersParams,
   ): Promise<UserSummary[]> {
-    let users = this.items
+    let users = this.items.filter((user) => user.role !== UserRole.SYSTEM)
 
     // Filter by isActive
     if (params?.isActive !== undefined) {

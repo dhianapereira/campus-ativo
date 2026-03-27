@@ -44,7 +44,6 @@ src/
 prisma/
   schema.prisma                  schema do banco
   migrations/                    histórico de migrations
-  seed.ts                        seed inicial
 test/
   repositories/, factories/      doubles e suporte para testes unitários
 ```
@@ -88,6 +87,7 @@ Observações:
 - `JWT_PRIVATE_KEY` e `JWT_PUBLIC_KEY` são obrigatórias para a API subir.
 - `IMGBB_API_KEY` é obrigatória porque o módulo de upload usa ImgBB.
 - `GOOGLE_SHEETS_CLIENT_EMAIL` e `GOOGLE_SHEETS_PRIVATE_KEY` são opcionais no boot, mas necessárias para o endpoint de sincronização com planilhas.
+- `SYSTEM_USER_EMAIL`, `SYSTEM_USER_NAME` e `SYSTEM_USER_POSITION` são obrigatórias para identificar o usuário interno `SYSTEM`.
 
 ## Como rodar localmente
 
@@ -127,6 +127,9 @@ Preencha ao menos:
 - `JWT_PRIVATE_KEY`
 - `JWT_PUBLIC_KEY`
 - `IMGBB_API_KEY`
+- `SYSTEM_USER_EMAIL`
+- `SYSTEM_USER_NAME`
+- `SYSTEM_USER_POSITION`
 
 ### 4. Aplicar as migrations
 
@@ -142,19 +145,13 @@ Se quiser apenas aplicar o histórico existente sem criar nova migration:
 npx prisma migrate deploy
 ```
 
-### 5. Popular dados iniciais
-
-```bash
-npm run prisma:seed
-```
-
-O seed cria um usuário interno do sistema com email `sistema@ifal-arapiraca.edu.br`, usado por fluxos internos de importação.
-
-### 6. Iniciar a aplicação
+### 5. Iniciar a aplicação
 
 ```bash
 npm run dev
 ```
+
+No boot da API, o usuário interno `SYSTEM` é sincronizado automaticamente a partir de `SYSTEM_USER_EMAIL`, `SYSTEM_USER_NAME` e `SYSTEM_USER_POSITION`. Esse usuário é um bot interno, não faz login e é usado para reatribuir problemas quando contas são excluídas.
 
 Por padrão, a API sobe em `http://localhost:3333`.
 
@@ -180,7 +177,6 @@ npm run format         # formata src/, test/ e prisma/
 npm run format:check   # valida formatação sem alterar arquivos
 npm run test           # testes com Vitest
 npm run test:watch     # testes em watch mode
-npm run prisma:seed    # seed inicial
 npm run openapi        # gera openapi.json
 ```
 

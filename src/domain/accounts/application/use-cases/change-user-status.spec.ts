@@ -232,6 +232,32 @@ describe('Change User Status', () => {
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
   })
 
+  it('should not allow changing the status of a system user', async () => {
+    const admin = makeUser({
+      role: UserRole.ADMIN,
+      isActive: true,
+    })
+
+    const systemUser = makeUser({
+      email: 'sistema@ifal-arapiraca.edu.br',
+      role: UserRole.SYSTEM,
+      isActive: false,
+    })
+
+    inMemoryUsersRepository.items.push(admin, systemUser)
+
+    const result = await sut.execute({
+      userId: systemUser.id.toValue(),
+      isActive: true,
+      executorId: admin.id.toValue(),
+      executorRole: UserRole.ADMIN,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(inMemoryUsersRepository.items[1].isActive).toBe(false)
+  })
+
   it('should not allow user to deactivate their own account', async () => {
     const admin = makeUser({
       role: UserRole.ADMIN,

@@ -7,6 +7,7 @@ import {
 import { User } from '@/domain/accounts/enterprise/entities/user'
 import { UserSummary } from '@/domain/accounts/enterprise/entities/user-summary'
 import { PrismaUserMapper } from '../mappers/prisma-user-mapper'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 @Injectable()
 export class PrismaUsersRepository implements UsersRepository {
@@ -30,6 +31,20 @@ export class PrismaUsersRepository implements UsersRepository {
     const user = await this.prisma.user.findUnique({
       where: {
         id,
+      },
+    })
+
+    if (!user) {
+      return null
+    }
+
+    return PrismaUserMapper.toDomain(user)
+  }
+
+  async findSystemUser(): Promise<User | null> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        role: UserRole.SYSTEM,
       },
     })
 
@@ -84,9 +99,12 @@ export class PrismaUsersRepository implements UsersRepository {
   }
 
   async findByIdForListing(id: string): Promise<UserSummary | null> {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findFirst({
       where: {
         id,
+        role: {
+          not: UserRole.SYSTEM,
+        },
       },
       select: {
         id: true,
@@ -130,6 +148,9 @@ export class PrismaUsersRepository implements UsersRepository {
             },
           ],
         }),
+        role: {
+          not: UserRole.SYSTEM,
+        },
         ...(params?.isActive !== undefined && { isActive: params.isActive }),
       },
       orderBy: [
@@ -170,6 +191,9 @@ export class PrismaUsersRepository implements UsersRepository {
             },
           ],
         }),
+        role: {
+          not: UserRole.SYSTEM,
+        },
         ...(params?.isActive !== undefined && { isActive: params.isActive }),
       },
       orderBy: [

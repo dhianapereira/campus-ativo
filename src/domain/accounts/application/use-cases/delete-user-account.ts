@@ -4,6 +4,7 @@ import { UsersRepository } from '../repositories/users-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ProblemsRepository } from '@/domain/maintenance-problems/application/repositories/problems-repository'
+import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 
 interface DeleteUserAccountUseCaseRequest {
   userId: string
@@ -36,13 +37,11 @@ export class DeleteUserAccountUseCase {
       return left(new NotAllowedError())
     }
 
-    if (user.email === 'sistema@ifal-arapiraca.edu.br') {
+    if (RoleHierarchy.isSystemRole(user.role)) {
       return left(new NotAllowedError())
     }
 
-    const systemUser = await this.usersRepository.findByEmail(
-      'sistema@ifal-arapiraca.edu.br',
-    )
+    const systemUser = await this.usersRepository.findSystemUser()
 
     if (!systemUser) {
       return left(new ResourceNotFoundError())

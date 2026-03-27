@@ -34,6 +34,8 @@ describe('Delete User Account', () => {
     const user = makeUser()
     const systemUser = makeUser({
       email: 'sistema@ifal-arapiraca.edu.br',
+      role: UserRole.SYSTEM,
+      isActive: false,
     })
 
     inMemoryUsersRepository.items.push(user)
@@ -102,6 +104,8 @@ describe('Delete User Account', () => {
   it('should not be able to delete a system user account', async () => {
     const systemUser = makeUser({
       email: 'sistema@ifal-arapiraca.edu.br',
+      role: UserRole.SYSTEM,
+      isActive: false,
     })
 
     inMemoryUsersRepository.items.push(systemUser)
@@ -134,6 +138,8 @@ describe('Delete User Account', () => {
     const user = makeUser()
     const systemUser = makeUser({
       email: 'sistema@ifal-arapiraca.edu.br',
+      role: UserRole.SYSTEM,
+      isActive: false,
     })
 
     inMemoryUsersRepository.items.push(user)

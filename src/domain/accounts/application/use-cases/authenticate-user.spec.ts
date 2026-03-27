@@ -84,4 +84,22 @@ describe('Authenticate User', () => {
 
     expect(result.isLeft()).toBe(true)
   })
+
+  it('should not be able to authenticate a system user', async () => {
+    const user = makeUser({
+      email: 'sistema@ifal-arapiraca.edu.br',
+      password: await fakeHasher.hash('123456'),
+      isActive: true,
+      role: UserRole.SYSTEM,
+    })
+
+    await inMemoryUsersRepository.create(user)
+
+    const result = await sut.execute({
+      email: 'sistema@ifal-arapiraca.edu.br',
+      password: '123456',
+    })
+
+    expect(result.isLeft()).toBe(true)
+  })
 })

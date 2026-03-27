@@ -166,4 +166,29 @@ describe('Change User Role', () => {
     expect(result.value).toBeInstanceOf(CannotModifyOwnAccountError)
     expect(inMemoryUsersRepository.items[0].role).toBe(UserRole.ADMIN)
   })
+
+  it('should not allow changing the role of a system user', async () => {
+    const admin = makeUser({
+      role: UserRole.ADMIN,
+    })
+
+    const systemUser = makeUser({
+      email: 'sistema@ifal-arapiraca.edu.br',
+      role: UserRole.SYSTEM,
+      isActive: false,
+    })
+
+    inMemoryUsersRepository.items.push(admin, systemUser)
+
+    const result = await sut.execute({
+      targetUserId: systemUser.id.toValue(),
+      newRole: UserRole.ADMIN,
+      currentUserId: admin.id.toValue(),
+      currentUserRole: UserRole.ADMIN,
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(inMemoryUsersRepository.items[1].role).toBe(UserRole.SYSTEM)
+  })
 })

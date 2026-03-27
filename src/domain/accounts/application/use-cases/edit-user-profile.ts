@@ -4,6 +4,7 @@ import { UsersRepository } from '../repositories/users-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { User } from '../../enterprise/entities/user'
+import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 
 interface EditUserProfileUseCaseRequest {
   userId: string
@@ -36,6 +37,10 @@ export class EditUserProfileUseCase {
     }
 
     if (executorId !== userId) {
+      return left(new NotAllowedError())
+    }
+
+    if (RoleHierarchy.isSystemRole(user.role)) {
       return left(new NotAllowedError())
     }
 

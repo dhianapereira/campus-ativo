@@ -9,6 +9,7 @@ import { HashGenerator } from '../cryptography/hash-generator'
 import { WrongCredentialsError } from './errors/wrong-credentials-error'
 import { InvalidPasswordError } from './errors/invalid-password-error'
 import { PasswordValidator } from '@/core/utils/password-validator'
+import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 
 interface ChangeUserPasswordUseCaseRequest {
   userId: string
@@ -48,6 +49,10 @@ export class ChangeUserPasswordUseCase {
     }
 
     if (executorId !== userId) {
+      return left(new NotAllowedError())
+    }
+
+    if (RoleHierarchy.isSystemRole(user.role)) {
       return left(new NotAllowedError())
     }
 

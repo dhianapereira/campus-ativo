@@ -33,7 +33,7 @@ export class FetchUsersController {
   @ApiOperation({
     summary: 'Listar usuários',
     description:
-      'Lista todos os usuários do sistema com filtros baseados no role do usuário autenticado. ADMIN pode ver todos os usuários, DIRECTOR e abaixo não veem usuários ADMIN.',
+      'Lista usuários humanos do sistema com filtros baseados no role do usuário autenticado. ADMIN pode ver todos os usuários humanos, DIRECTOR e abaixo não veem usuários ADMIN.',
   })
   @ApiQuery({
     name: 'query',

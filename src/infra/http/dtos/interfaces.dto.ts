@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger'
 
-export enum UserRoleEnum {
+export enum HumanUserRoleEnum {
   REPORTER = 'REPORTER',
   MANAGER = 'MANAGER',
   DIRECTOR = 'DIRECTOR',
@@ -219,13 +219,13 @@ export class EditLocationRequest {
 export class ChangeUserRoleRequest {
   @ApiProperty({
     description: 'Novo role do usuário',
-    enum: UserRoleEnum,
-    example: UserRoleEnum.MANAGER,
+    enum: HumanUserRoleEnum,
+    example: HumanUserRoleEnum.MANAGER,
   })
-  role!: UserRoleEnum
+  role!: HumanUserRoleEnum
 }
 
-export class UserResponse {
+export class UserProfileResponse {
   @ApiProperty({
     description: 'ID do usuário',
     example: '123e4567-e89b-12d3-a456-426614174000',
@@ -249,13 +249,6 @@ export class UserResponse {
     example: 'Técnico em Informática',
   })
   position!: string
-
-  @ApiProperty({
-    description: 'Role do usuário',
-    enum: UserRoleEnum,
-    example: UserRoleEnum.REPORTER,
-  })
-  role!: UserRoleEnum
 }
 
 export enum ProblemStatusEnum {

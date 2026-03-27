@@ -4,6 +4,7 @@ import { UsersRepository } from '../repositories/users-repository'
 import { HashComparer } from '../cryptography/hash-comparer'
 import { Encrypter } from '../cryptography/encrypter'
 import { WrongCredentialsError } from './errors/wrong-credentials-error'
+import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 
 interface AuthenticateUserUseCaseRequest {
   email: string
@@ -35,7 +36,7 @@ export class AuthenticateUserUseCase {
       return left(new WrongCredentialsError())
     }
 
-    if (!user.isActive) {
+    if (!user.isActive || RoleHierarchy.isSystemRole(user.role)) {
       return left(new WrongCredentialsError())
     }
 

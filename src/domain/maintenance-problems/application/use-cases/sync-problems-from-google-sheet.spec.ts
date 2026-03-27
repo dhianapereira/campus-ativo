@@ -10,6 +10,7 @@ import { makeCategory } from 'test/factories/make-category'
 import { makeLocation } from 'test/factories/make-location'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { makeUser } from 'test/factories/make-user'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
@@ -51,7 +52,11 @@ describe('Sync Problems From Google Sheet', () => {
   })
 
   it('deve importar problemas novos da planilha', async () => {
-    const systemUser = makeUser({ email: 'sistema@ifal-arapiraca.edu.br' })
+    const systemUser = makeUser({
+      email: 'sistema@ifal-arapiraca.edu.br',
+      role: UserRole.SYSTEM,
+      isActive: false,
+    })
     const category = makeCategory({ name: 'Climatização' })
     const location = makeLocation({ name: 'Sala 101' })
     inMemoryUsersRepository.items.push(systemUser)
@@ -92,7 +97,11 @@ describe('Sync Problems From Google Sheet', () => {
 
   it('não deve importar linhas já importadas (evitar duplicatas)', async () => {
     inMemoryUsersRepository.items.push(
-      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+      makeUser({
+        email: 'sistema@ifal-arapiraca.edu.br',
+        role: UserRole.SYSTEM,
+        isActive: false,
+      }),
     )
     const category = makeCategory({ name: 'Elétrica' })
     const location = makeLocation({ name: 'Bloco A' })
@@ -123,7 +132,11 @@ describe('Sync Problems From Google Sheet', () => {
 
   it('deve pular linhas com título ou descrição vazios', async () => {
     inMemoryUsersRepository.items.push(
-      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+      makeUser({
+        email: 'sistema@ifal-arapiraca.edu.br',
+        role: UserRole.SYSTEM,
+        isActive: false,
+      }),
     )
     const category = makeCategory({ name: 'Hidráulica' })
     inMemoryCategoriesRepository.items.push(category)
@@ -155,7 +168,11 @@ describe('Sync Problems From Google Sheet', () => {
 
   it('deve registrar erro quando categoria não existe', async () => {
     inMemoryUsersRepository.items.push(
-      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+      makeUser({
+        email: 'sistema@ifal-arapiraca.edu.br',
+        role: UserRole.SYSTEM,
+        isActive: false,
+      }),
     )
     const location = makeLocation({ name: 'Sala 201' })
     inMemoryLocationsRepository.items.push(location)
@@ -187,7 +204,11 @@ describe('Sync Problems From Google Sheet', () => {
 
   it('deve registrar erro quando localização não existe', async () => {
     inMemoryUsersRepository.items.push(
-      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+      makeUser({
+        email: 'sistema@ifal-arapiraca.edu.br',
+        role: UserRole.SYSTEM,
+        isActive: false,
+      }),
     )
     const category = makeCategory({ name: 'Outros' })
     inMemoryCategoriesRepository.items.push(category)
@@ -219,7 +240,11 @@ describe('Sync Problems From Google Sheet', () => {
 
   it('deve importar múltiplas linhas e ignorar duplicatas na mesma execução', async () => {
     inMemoryUsersRepository.items.push(
-      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+      makeUser({
+        email: 'sistema@ifal-arapiraca.edu.br',
+        role: UserRole.SYSTEM,
+        isActive: false,
+      }),
     )
     const category = makeCategory({ name: 'Climatização' })
     const location = makeLocation({ name: 'Sala 101' })
@@ -260,7 +285,11 @@ describe('Sync Problems From Google Sheet', () => {
 
   it('deve criar attachment quando a linha tem URL de imagem válida', async () => {
     inMemoryUsersRepository.items.push(
-      makeUser({ email: 'sistema@ifal-arapiraca.edu.br' }),
+      makeUser({
+        email: 'sistema@ifal-arapiraca.edu.br',
+        role: UserRole.SYSTEM,
+        isActive: false,
+      }),
     )
     const category = makeCategory({ name: 'Outros' })
     const location = makeLocation({ name: 'Sala 1' })

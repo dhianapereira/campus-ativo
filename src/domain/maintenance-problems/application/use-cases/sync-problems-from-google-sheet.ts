@@ -64,17 +64,13 @@ export class SyncProblemsFromGoogleSheetUseCase {
       spreadsheetId,
       sheetName,
     )
-    const systemUser = await this.usersRepository.findByEmail(
-      'sistema@ifal-arapiraca.edu.br',
-    )
+    const systemUser = await this.usersRepository.findSystemUser()
 
     if (!systemUser) {
       return right({
         imported: 0,
         skipped: rows.length,
-        errors: [
-          'Usuário do sistema "sistema@ifal-arapiraca.edu.br" não encontrado',
-        ],
+        errors: ['Usuário interno do sistema não encontrado'],
       })
     }
 

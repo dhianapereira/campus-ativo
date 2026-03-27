@@ -55,4 +55,20 @@ describe('JwtStrategy', () => {
       }),
     ).rejects.toBeInstanceOf(UnauthorizedException)
   })
+
+  it('should reject system users even if they are marked as active', async () => {
+    const user = makeUser({
+      role: UserRole.SYSTEM,
+      isActive: true,
+    })
+
+    await inMemoryUsersRepository.create(user)
+
+    await expect(
+      sut.validate({
+        sub: user.id.toValue(),
+        role: UserRole.REPORTER,
+      }),
+    ).rejects.toBeInstanceOf(UnauthorizedException)
+  })
 })

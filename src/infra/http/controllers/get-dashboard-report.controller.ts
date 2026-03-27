@@ -172,27 +172,23 @@ export class GetDashboardReportController {
     ])
 
     const categoryMap = new Map<string, ReportCategorySummary>(
-      categories.map(
-        (c): [string, ReportCategorySummary] => [
-          c.id,
-          {
-            name: c.name,
-            description: c.description,
-          },
-        ],
-      ),
+      categories.map((c): [string, ReportCategorySummary] => [
+        c.id,
+        {
+          name: c.name,
+          description: c.description,
+        },
+      ]),
     )
     const locationMap = new Map<string, ReportLocationSummary>(
-      locations.map(
-        (l): [string, ReportLocationSummary] => [
-          l.id,
-          {
-            name: l.name,
-            code: l.code,
-            description: l.description,
-          },
-        ],
-      ),
+      locations.map((l): [string, ReportLocationSummary] => [
+        l.id,
+        {
+          name: l.name,
+          code: l.code,
+          description: l.description,
+        },
+      ]),
     )
 
     const statusLabels: Record<string, string> = {
@@ -238,7 +234,9 @@ export class GetDashboardReportController {
       byCategory: byCategory
         .map((c) => {
           const category =
-            c.categoryId != null ? categoryMap.get(c.categoryId) : null
+            c.categoryId != null
+              ? categoryMap.get(c.categoryId)
+              : null
 
           return {
             categoryId: c.categoryId,
@@ -251,7 +249,9 @@ export class GetDashboardReportController {
       byLocation: byLocation
         .map((l) => {
           const location =
-            l.locationId != null ? locationMap.get(l.locationId) : null
+            l.locationId != null
+              ? locationMap.get(l.locationId)
+              : null
 
           return {
             locationId: l.locationId,

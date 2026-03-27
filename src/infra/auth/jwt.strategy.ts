@@ -4,10 +4,13 @@ import { ExtractJwt, Strategy } from 'passport-jwt'
 import { z } from 'zod'
 import { EnvService } from '../env/env.service'
 import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
+import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 
 const userPayloadSchema = z.object({
   sub: z.string().uuid(),
-  role: z.enum(['REPORTER', 'MANAGER', 'DIRECTOR', 'ADMIN']).optional(),
+  role: z
+    .enum(['SYSTEM', 'REPORTER', 'MANAGER', 'DIRECTOR', 'ADMIN'])
+    .optional(),
 })
 
 export type UserPayload = z.infer<typeof userPayloadSchema>
@@ -34,7 +37,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // on the current database state instead of trusting the embedded payload.
     const user = await this.usersRepository.findById(validatedPayload.sub)
 
-    if (!user || !user.isActive) {
+    if (!user || !user.isActive || RoleHierarchy.isSystemRole(user.role)) {
       throw new UnauthorizedException('User is not active')
     }
 

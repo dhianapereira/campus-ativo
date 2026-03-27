@@ -134,6 +134,28 @@ describe('Fetch Users', () => {
     expect(result.value?.users[0]).not.toHaveProperty('password')
   })
 
+  it('should not include system users in listings', async () => {
+    const reporter = makeUser({
+      name: 'Reporter User',
+      role: UserRole.REPORTER,
+    })
+
+    const systemUser = makeUser({
+      name: 'Sistema IFAL Arapiraca',
+      email: 'sistema@ifal-arapiraca.edu.br',
+      role: UserRole.SYSTEM,
+      isActive: false,
+    })
+
+    inMemoryUsersRepository.items.push(reporter, systemUser)
+
+    const result = await sut.execute({ currentUserRole: UserRole.ADMIN })
+
+    expect(result.isRight()).toBe(true)
+    expect(result.value?.users).toHaveLength(1)
+    expect(result.value?.users[0].name).toBe('Reporter User')
+  })
+
   it('should filter users by isActive', async () => {
     const activeUser = makeUser({
       name: 'Active User',

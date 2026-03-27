@@ -6,6 +6,7 @@ import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { WrongCredentialsError } from './errors/wrong-credentials-error'
 import { HashComparer } from '../cryptography/hash-comparer'
 import { HashGenerator } from '../cryptography/hash-generator'
+import { UserRole } from '../../enterprise/entities/user'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let fakeHashComparer: HashComparer
@@ -115,5 +116,28 @@ describe('Change User Password', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should not allow changing the password of a system user', async () => {
+    const systemUser = makeUser({
+      email: 'sistema@ifal-arapiraca.edu.br',
+      password: 'hashed-system-password',
+      role: UserRole.SYSTEM,
+      isActive: false,
+    })
+
+    inMemoryUsersRepository.items.push(systemUser)
+
+    const result = await sut.execute({
+      userId: systemUser.id.toValue(),
+      executorId: systemUser.id.toValue(),
+      oldPassword: 'old-password',
+      newPassword: 'NewPassword123',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(NotAllowedError)
+    expect(fakeHashComparer.compare).not.toHaveBeenCalled()
+    expect(fakeHashGenerator.hash).not.toHaveBeenCalled()
   })
 })
