@@ -15,6 +15,17 @@ import {
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
 
+type ReportCategorySummary = {
+  name: string
+  description: string | null
+}
+
+type ReportLocationSummary = {
+  name: string
+  code: string | null
+  description: string | null
+}
+
 @Controller('/dashboard/report')
 @ApiTags('Dashboard')
 @UseGuards(JwtAuthGuard)
@@ -87,22 +98,22 @@ export class GetDashboardReportController {
       this.prisma.problem.groupBy({
         by: ['status'],
         where: baseWhere,
-        _count: { status: true },
+        _count: { _all: true },
       }),
       this.prisma.problem.groupBy({
         by: ['categoryId'],
         where: baseWhere,
-        _count: { categoryId: true },
+        _count: { _all: true },
       }),
       this.prisma.problem.groupBy({
         by: ['locationId'],
         where: baseWhere,
-        _count: { locationId: true },
+        _count: { _all: true },
       }),
       this.prisma.problem.groupBy({
         by: ['maintenanceType'],
         where: baseWhere,
-        _count: { maintenanceType: true },
+        _count: { _all: true },
       }),
       this.prisma.problem.findMany({
         where: baseWhere,
@@ -112,8 +123,19 @@ export class GetDashboardReportController {
           createdAt: true,
           status: true,
           maintenanceType: true,
-          location: { select: { name: true } },
-          category: { select: { name: true } },
+          location: {
+            select: {
+              name: true,
+              code: true,
+              description: true,
+            },
+          },
+          category: {
+            select: {
+              name: true,
+              description: true,
+            },
+          },
         },
         orderBy: { createdAt: 'asc' },
       }),
@@ -138,22 +160,39 @@ export class GetDashboardReportController {
       categoryIds.length > 0
         ? this.prisma.category.findMany({
             where: { id: { in: categoryIds } },
-            select: { id: true, name: true },
+            select: { id: true, name: true, description: true },
           })
         : [],
       locationIds.length > 0
         ? this.prisma.location.findMany({
             where: { id: { in: locationIds } },
-            select: { id: true, name: true },
+            select: { id: true, name: true, code: true, description: true },
           })
         : [],
     ])
 
-    const categoryMap = new Map(
-      categories.map((c) => [c.id, c.name] as [string, string]),
+    const categoryMap = new Map<string, ReportCategorySummary>(
+      categories.map(
+        (c): [string, ReportCategorySummary] => [
+          c.id,
+          {
+            name: c.name,
+            description: c.description,
+          },
+        ],
+      ),
     )
-    const locationMap = new Map(
-      locations.map((l) => [l.id, l.name] as [string, string]),
+    const locationMap = new Map<string, ReportLocationSummary>(
+      locations.map(
+        (l): [string, ReportLocationSummary] => [
+          l.id,
+          {
+            name: l.name,
+            code: l.code,
+            description: l.description,
+          },
+        ],
+      ),
     )
 
     const statusLabels: Record<string, string> = {
@@ -170,47 +209,79 @@ export class GetDashboardReportController {
       CORRECTIVE: 'Corretiva',
     }
 
+    const statusOrder: Record<string, number> = {
+      TO_ANALYSIS: 1,
+      IN_ANALYSIS: 2,
+      ACCEPTED: 3,
+      IN_PROGRESS: 4,
+      FINISHED: 5,
+      REJECTED: 6,
+    }
+
     return {
       period: {
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
       },
       totalProblems: total,
-      byStatus: byStatus.map((s) => ({
-        status: s.status,
-        label: statusLabels[s.status] ?? s.status,
-        count: s._count.status,
-      })),
-      byCategory: byCategory.map((c) => ({
-        categoryId: c.categoryId,
-        name: c.categoryId
-          ? (categoryMap.get(c.categoryId) ?? 'Não informado')
-          : 'Não informado',
-        count: c._count.categoryId,
-      })),
-      byLocation: byLocation.map((l) => ({
-        locationId: l.locationId,
-        name:
-          l.locationId != null
-            ? (locationMap.get(l.locationId) ?? 'Não informado')
-            : 'Não informado',
-        count: l._count.locationId,
-      })),
-      byMaintenanceType: byMaintenanceType.map((m) => ({
-        type: m.maintenanceType,
-        label:
-          m.maintenanceType != null
-            ? (maintenanceTypeLabels[m.maintenanceType] ?? m.maintenanceType)
-            : 'Não informado',
-        count: m._count.maintenanceType,
-      })),
+      byStatus: byStatus
+        .map((s) => ({
+          status: s.status,
+          label: statusLabels[s.status] ?? s.status,
+          count: s._count._all,
+        }))
+        .sort(
+          (a, b) =>
+            (statusOrder[a.status] ?? Number.MAX_SAFE_INTEGER) -
+            (statusOrder[b.status] ?? Number.MAX_SAFE_INTEGER),
+        ),
+      byCategory: byCategory
+        .map((c) => {
+          const category =
+            c.categoryId != null ? categoryMap.get(c.categoryId) : null
+
+          return {
+            categoryId: c.categoryId,
+            name: category?.name ?? 'Não informado',
+            description: category?.description ?? null,
+            count: c._count._all,
+          }
+        })
+        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
+      byLocation: byLocation
+        .map((l) => {
+          const location =
+            l.locationId != null ? locationMap.get(l.locationId) : null
+
+          return {
+            locationId: l.locationId,
+            name: location?.name ?? 'Não informado',
+            code: location?.code ?? null,
+            description: location?.description ?? null,
+            count: l._count._all,
+          }
+        })
+        .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name)),
+      byMaintenanceType: byMaintenanceType
+        .map((m) => ({
+          type: m.maintenanceType,
+          label:
+            m.maintenanceType != null
+              ? (maintenanceTypeLabels[m.maintenanceType] ?? m.maintenanceType)
+              : 'Não informado',
+          count: m._count._all,
+        }))
+        .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label)),
       problems: problems.map((p) => ({
         title: p.title,
         description: p.description,
         location: p.location?.name ?? '-',
+        locationCode: p.location?.code ?? null,
+        locationDescription: p.location?.description ?? null,
         createdAt: p.createdAt.toISOString(),
         status: statusLabels[p.status] ?? p.status,
         category: p.category?.name ?? '-',
+        categoryDescription: p.category?.description ?? null,
         maintenanceType:
           p.maintenanceType != null
             ? maintenanceTypeLabels[p.maintenanceType]
