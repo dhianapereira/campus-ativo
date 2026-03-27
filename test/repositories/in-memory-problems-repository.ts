@@ -79,9 +79,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     }
 
     // Sort and paginate
-    problems = problems.sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-    )
+    problems = problems.sort(compareProblemsForListing)
 
     return {
       items: problems.slice((page - 1) * pageSize, page * pageSize),
@@ -131,9 +129,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     }
 
     // Sort and paginate
-    problems = problems.sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-    )
+    problems = problems.sort(compareProblemsForListing)
 
     const paginatedProblems = problems.slice(
       (page - 1) * pageSize,
@@ -253,4 +249,26 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
       problem.changeReporter(new UniqueEntityID(toUserId))
     })
   }
+}
+
+const problemStatusOrder = Object.values(ProblemStatus)
+
+function compareProblemsForListing(
+  a: Pick<Problem, 'createdAt' | 'status' | 'id'>,
+  b: Pick<Problem, 'createdAt' | 'status' | 'id'>,
+) {
+  const statusDifference =
+    problemStatusOrder.indexOf(a.status) - problemStatusOrder.indexOf(b.status)
+
+  if (statusDifference !== 0) {
+    return statusDifference
+  }
+
+  const createdAtDifference = b.createdAt.getTime() - a.createdAt.getTime()
+
+  if (createdAtDifference !== 0) {
+    return createdAtDifference
+  }
+
+  return b.id.toValue().localeCompare(a.id.toValue())
 }

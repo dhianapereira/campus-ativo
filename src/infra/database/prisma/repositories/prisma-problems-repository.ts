@@ -18,6 +18,41 @@ const DEFAULT_PAGE_SIZE = 20
 export class PrismaProblemsRepository implements ProblemsRepository {
   constructor(private prisma: PrismaService) {}
 
+  private buildProblemWhere({
+    query,
+    statuses,
+    includeDeleted,
+    reporterId,
+  }: Omit<FetchProblemsParams, 'page' | 'pageSize'>) {
+    return {
+      purgedAt: null,
+      ...(reporterId && { reporterId }),
+      ...(!includeDeleted && { deletedAt: null }),
+      ...(statuses &&
+        statuses.length > 0 && {
+        status: {
+          in: statuses,
+        },
+      }),
+      ...(query && {
+        OR: [
+          {
+            title: {
+              contains: query,
+              mode: 'insensitive' as const,
+            },
+          },
+          {
+            description: {
+              contains: query,
+              mode: 'insensitive' as const,
+            },
+          },
+        ],
+      }),
+    }
+  }
+
   async findById(id: string): Promise<Problem | null> {
     const problem = await this.prisma.problem.findUnique({
       where: {
@@ -56,40 +91,17 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     includeDeleted = false,
     reporterId,
   }: FetchProblemsParams) {
-    const where = {
-      purgedAt: null,
-      ...(reporterId && { reporterId }),
-      ...(!includeDeleted && { deletedAt: null }),
-      ...(statuses &&
-        statuses.length > 0 && {
-        status: {
-          in: statuses,
-        },
-      }),
-      ...(query && {
-        OR: [
-          {
-            title: {
-              contains: query,
-              mode: 'insensitive' as const,
-            },
-          },
-          {
-            description: {
-              contains: query,
-              mode: 'insensitive' as const,
-            },
-          },
-        ],
-      }),
-    }
+    const where = this.buildProblemWhere({
+      query,
+      statuses,
+      includeDeleted,
+      reporterId,
+    })
 
     const [problems, total] = await Promise.all([
       this.prisma.problem.findMany({
         where,
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy: [{ status: 'asc' }, { createdAt: 'desc' }, { id: 'desc' }],
         take: pageSize,
         skip: (page - 1) * pageSize,
       }),
@@ -110,40 +122,17 @@ export class PrismaProblemsRepository implements ProblemsRepository {
     includeDeleted = false,
     reporterId,
   }: FetchProblemsParams) {
-    const where = {
-      purgedAt: null,
-      ...(reporterId && { reporterId }),
-      ...(!includeDeleted && { deletedAt: null }),
-      ...(statuses &&
-        statuses.length > 0 && {
-        status: {
-          in: statuses,
-        },
-      }),
-      ...(query && {
-        OR: [
-          {
-            title: {
-              contains: query,
-              mode: 'insensitive' as const,
-            },
-          },
-          {
-            description: {
-              contains: query,
-              mode: 'insensitive' as const,
-            },
-          },
-        ],
-      }),
-    }
+    const where = this.buildProblemWhere({
+      query,
+      statuses,
+      includeDeleted,
+      reporterId,
+    })
 
     const [problems, total] = await Promise.all([
       this.prisma.problem.findMany({
         where,
-        orderBy: {
-          createdAt: 'desc',
-        },
+        orderBy: [{ status: 'asc' }, { createdAt: 'desc' }, { id: 'desc' }],
         include: {
           location: true,
           reporter: {

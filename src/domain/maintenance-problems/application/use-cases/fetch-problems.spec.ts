@@ -41,6 +41,102 @@ describe('Fetch Recent Problems', () => {
     ])
   })
 
+  it('should keep status as the primary listing order', async () => {
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Mais novo, mas recusado',
+        status: ProblemStatus.REJECTED,
+        createdAt: new Date(2022, 0, 23, 10, 0, 0),
+      }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Mais antigo, mas para análise',
+        status: ProblemStatus.TO_ANALYSIS,
+        createdAt: new Date(2022, 0, 22, 10, 0, 0),
+      }),
+    )
+
+    const result = await sut.execute({
+      page: 1,
+    })
+
+    expect(result.value?.problems).toEqual([
+      expect.objectContaining({ title: 'Mais antigo, mas para análise' }),
+      expect.objectContaining({ title: 'Mais novo, mas recusado' }),
+    ])
+  })
+
+  it('should use creation date as a tie-breaker when status is the same', async () => {
+    const createdAt = new Date(2022, 0, 23, 10, 0, 0)
+
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Recusado',
+        status: ProblemStatus.REJECTED,
+        createdAt,
+      }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Em andamento',
+        status: ProblemStatus.IN_PROGRESS,
+        createdAt,
+      }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Para análise',
+        status: ProblemStatus.TO_ANALYSIS,
+        createdAt,
+      }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Concluído',
+        status: ProblemStatus.FINISHED,
+        createdAt,
+      }),
+    )
+
+    const result = await sut.execute({
+      page: 1,
+    })
+
+    expect(result.value?.problems.map((problem) => problem.title)).toEqual([
+      'Para análise',
+      'Recusado',
+      'Em andamento',
+      'Concluído',
+    ])
+  })
+
+  it('should keep newer problems first inside the same status', async () => {
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Aceito mais antigo',
+        status: ProblemStatus.ACCEPTED,
+        createdAt: new Date(2022, 0, 22, 10, 0, 0),
+      }),
+    )
+    await inMemoryProblemsRepository.create(
+      makeProblem({
+        title: 'Aceito mais novo',
+        status: ProblemStatus.ACCEPTED,
+        createdAt: new Date(2022, 0, 23, 10, 0, 0),
+      }),
+    )
+
+    const result = await sut.execute({
+      page: 1,
+    })
+
+    expect(result.value?.problems).toEqual([
+      expect.objectContaining({ title: 'Aceito mais novo' }),
+      expect.objectContaining({ title: 'Aceito mais antigo' }),
+    ])
+  })
+
   it('should be able to fetch paginated recent problems', async () => {
     for (let i = 1; i <= 22; i++) {
       await inMemoryProblemsRepository.create(makeProblem())
