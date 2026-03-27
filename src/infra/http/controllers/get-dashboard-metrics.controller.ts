@@ -19,6 +19,11 @@ export class GetDashboardMetricsController {
     private readonly prisma: PrismaService,
   ) {}
 
+  private normalizeText(value?: string | null) {
+    const normalized = value?.trim()
+    return normalized || null
+  }
+
   @Get()
   @ApiOperation({
     summary: 'Métricas do dashboard',
@@ -76,35 +81,67 @@ export class GetDashboardMetricsController {
       locationIds.length > 0
         ? this.prisma.location.findMany({
             where: { id: { in: locationIds } },
-            select: { id: true, name: true },
+            select: { id: true, name: true, code: true, description: true },
           })
         : [],
       categoryIds.length > 0
         ? this.prisma.category.findMany({
             where: { id: { in: categoryIds } },
-            select: { id: true, name: true },
+            select: { id: true, name: true, description: true },
           })
         : [],
     ])
 
     const locationMap = new Map(
-      locations.map((l) => [l.id, l.name] as [string, string]),
+      locations.map((location) => [location.id, location] as const),
     )
     const categoryMap = new Map(
-      categories.map((c) => [c.id, c.name] as [string, string]),
+      categories.map((category) => [category.id, category] as const),
     )
 
-    const top3Locations = topLocationsSorted.slice(0, 3).map((r) => ({
-      name: locationMap.get(r.locationId) ?? 'Localização não encontrada',
-      count: r._count._all,
-    }))
+    const top3Locations = topLocationsSorted.slice(0, 3).map((r) => {
+      if (!r.locationId) {
+        return {
+          locationId: null,
+          name: 'Não informado',
+          code: null,
+          description: null,
+          count: r._count._all,
+        }
+      }
 
-    const top3Categories = topCategoriesSorted.slice(0, 3).map((r) => ({
-      name: r.categoryId
-        ? (categoryMap.get(r.categoryId) ?? 'Sem categoria')
-        : 'Sem categoria',
-      count: r._count._all,
-    }))
+      const location = locationMap.get(r.locationId)
+      const normalizedName = this.normalizeText(location?.name)
+
+      return {
+        locationId: r.locationId,
+        name: normalizedName ?? 'Localização sem nome',
+        code: this.normalizeText(location?.code),
+        description: this.normalizeText(location?.description),
+        count: r._count._all,
+      }
+    })
+
+    const top3Categories = topCategoriesSorted.slice(0, 3).map((r) => {
+      if (!r.categoryId) {
+        return {
+          categoryId: null,
+          name: 'Sem categoria',
+          description: null,
+          count: r._count._all,
+        }
+      }
+
+      const category = categoryMap.get(r.categoryId)
+      const normalizedName = this.normalizeText(category?.name)
+
+      return {
+        categoryId: r.categoryId,
+        name: normalizedName ?? 'Categoria sem nome',
+        description: this.normalizeText(category?.description),
+        count: r._count._all,
+      }
+    })
 
     const now = new Date()
     const months: {
