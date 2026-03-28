@@ -8,6 +8,7 @@ import { ProblemAttachment } from '../../enterprise/entities/problems/problem-at
 import { ProblemAttachmentList } from '../../enterprise/entities/problems/problem-attachment-list'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Injectable } from '@nestjs/common'
+import { ProblemAlreadyExistsError } from './errors/problem-already-exists-error'
 
 interface CreateProblemUseCaseRequest {
   reporterId: string
@@ -19,7 +20,7 @@ interface CreateProblemUseCaseRequest {
 }
 
 type CreateProblemUseCaseResponse = Either<
-  ResourceNotFoundError,
+  ResourceNotFoundError | ProblemAlreadyExistsError,
   {
     problem: Problem
   }
@@ -61,6 +62,17 @@ export class CreateProblemUseCase {
       category.isPurged
     ) {
       return left(new ResourceNotFoundError())
+    }
+
+    const duplicateProblem = await this.problemsRepository.findDuplicate({
+      title,
+      description,
+      categoryId,
+      locationId,
+    })
+
+    if (duplicateProblem) {
+      return left(new ProblemAlreadyExistsError())
     }
 
     const problem = Problem.create({

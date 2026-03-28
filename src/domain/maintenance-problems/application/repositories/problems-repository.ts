@@ -14,9 +14,19 @@ export interface FetchProblemsParams extends PaginationParams {
   reporterId?: string
 }
 
+export interface DuplicateProblemLookup {
+  title: string
+  description: string
+  categoryId: string
+  locationId: string
+}
+
 export abstract class ProblemsRepository {
   abstract findById(id: string): Promise<Problem | null>
   abstract findBySlug(slug: string): Promise<Problem | null>
+  abstract findDuplicate(
+    params: DuplicateProblemLookup,
+  ): Promise<Problem | null>
   abstract findMany(
     params: FetchProblemsParams,
   ): Promise<PaginatedResult<Problem>>

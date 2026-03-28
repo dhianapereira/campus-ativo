@@ -91,6 +91,100 @@ export class CreateProblemRequest {
   attachmentIds?: string[]
 }
 
+export class ImportProblemsCsvRowRequest {
+  @ApiProperty({
+    description: 'Número da linha no arquivo CSV (sem contar o cabeçalho).',
+    example: 2,
+  })
+  rowNumber!: number
+
+  @ApiProperty({
+    description: 'Título do problema.',
+    example: 'Ar condicionado sem funcionar',
+  })
+  title!: string
+
+  @ApiProperty({
+    description: 'Descrição detalhada do problema.',
+    example: 'O equipamento da sala 201 não liga há 3 dias.',
+  })
+  description!: string
+
+  @ApiProperty({
+    description: 'Nome da categoria conforme cadastrada no sistema.',
+    example: 'Climatização',
+  })
+  category!: string
+
+  @ApiProperty({
+    description:
+      'Nome ou código da localização conforme cadastrada no sistema.',
+    example: 'BLA-201',
+  })
+  location!: string
+}
+
+export class ImportProblemsCsvRequest {
+  @ApiProperty({
+    description: 'Linhas extraídas do arquivo CSV.',
+    type: [ImportProblemsCsvRowRequest],
+  })
+  rows!: ImportProblemsCsvRowRequest[]
+}
+
+export class ImportProblemsCsvResultItem {
+  @ApiProperty({
+    description: 'Número da linha processada no CSV.',
+    example: 2,
+  })
+  rowNumber!: number
+
+  @ApiProperty({
+    description: 'Título da linha processada.',
+    example: 'Ar condicionado sem funcionar',
+  })
+  title!: string
+
+  @ApiProperty({
+    description: 'Situação final da linha.',
+    example: 'IMPORTED',
+    enum: ['IMPORTED', 'DUPLICATE', 'INVALID'],
+  })
+  status!: 'IMPORTED' | 'DUPLICATE' | 'INVALID'
+
+  @ApiProperty({
+    description: 'Mensagem de feedback do processamento da linha.',
+    example: 'Problema importado com sucesso.',
+  })
+  message!: string
+}
+
+export class ImportProblemsCsvResponse {
+  @ApiProperty({
+    description: 'Quantidade de linhas importadas com sucesso.',
+    example: 8,
+  })
+  imported!: number
+
+  @ApiProperty({
+    description: 'Quantidade de linhas descartadas por duplicidade.',
+    example: 2,
+  })
+  duplicates!: number
+
+  @ApiProperty({
+    description: 'Quantidade de linhas inválidas.',
+    example: 1,
+  })
+  invalid!: number
+
+  @ApiProperty({
+    description: 'Resultado detalhado por linha.',
+    type: [ImportProblemsCsvResultItem],
+  })
+  results!: ImportProblemsCsvResultItem[]
+}
+
 export class EditProblemRequest {
   @ApiProperty({
     description: 'Novo título do problema',

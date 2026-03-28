@@ -14,6 +14,7 @@ export abstract class LocationsRepository {
   ): Promise<PaginatedResult<Location>>
   abstract findById(id: string): Promise<Location | null>
   abstract findByName(name: string): Promise<Location | null>
+  abstract findByNameOrCode(value: string): Promise<Location | null>
   abstract create(location: Location): Promise<void>
   abstract save(location: Location): Promise<void>
   abstract delete(location: Location): Promise<void>

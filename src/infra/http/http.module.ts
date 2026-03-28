@@ -66,6 +66,8 @@ import { GetDashboardMetricsUseCase } from '@/domain/maintenance-problems/applic
 import { GetDashboardReportController } from './controllers/get-dashboard-report.controller'
 import { ManageProblemController } from './controllers/manage-problem.controller'
 import { ManageProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/manage-problem'
+import { ImportProblemsFromCsvController } from './controllers/import-problems-from-csv.controller'
+import { ImportProblemsFromCsvUseCase } from '@/domain/maintenance-problems/application/use-cases/import-problems-from-csv'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, UploadModule],
@@ -100,6 +102,7 @@ import { ManageProblemUseCase } from '@/domain/maintenance-problems/application/
     TrashProblemController,
     RestoreProblemController,
     ManageProblemController,
+    ImportProblemsFromCsvController,
     UploadAttachmentController,
     GetDashboardMetricsController,
     GetDashboardReportController,
@@ -134,6 +137,7 @@ import { ManageProblemUseCase } from '@/domain/maintenance-problems/application/
     MoveProblemToTrashUseCase,
     RestoreProblemFromTrashUseCase,
     ManageProblemUseCase,
+    ImportProblemsFromCsvUseCase,
     UploadAttachmentUseCase,
     GetDashboardMetricsUseCase,
   ],

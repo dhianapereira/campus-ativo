@@ -1,6 +1,7 @@
 import {
   ProblemsRepository,
   FetchProblemsParams,
+  DuplicateProblemLookup,
 } from '@/domain/maintenance-problems/application/repositories/problems-repository'
 import {
   Problem,
@@ -73,6 +74,36 @@ export class PrismaProblemsRepository implements ProblemsRepository {
         slug,
         deletedAt: null,
         purgedAt: null,
+      },
+    })
+
+    if (!problem) {
+      return null
+    }
+
+    return PrismaProblemMapper.toDomain(problem)
+  }
+
+  async findDuplicate({
+    title,
+    description,
+    categoryId,
+    locationId,
+  }: DuplicateProblemLookup): Promise<Problem | null> {
+    const problem = await this.prisma.problem.findFirst({
+      where: {
+        deletedAt: null,
+        purgedAt: null,
+        categoryId,
+        locationId,
+        title: {
+          equals: title,
+          mode: 'insensitive',
+        },
+        description: {
+          equals: description,
+          mode: 'insensitive',
+        },
       },
     })
 

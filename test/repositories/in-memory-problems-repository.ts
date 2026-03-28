@@ -3,6 +3,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import {
   ProblemsRepository,
   FetchProblemsParams,
+  DuplicateProblemLookup,
 } from '@/domain/maintenance-problems/application/repositories/problems-repository'
 import {
   Problem,
@@ -38,6 +39,28 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     }
 
     return problem
+  }
+
+  async findDuplicate({
+    title,
+    description,
+    categoryId,
+    locationId,
+  }: DuplicateProblemLookup) {
+    const normalizedTitle = title.trim().toLowerCase()
+    const normalizedDescription = description.trim().toLowerCase()
+
+    const problem = this.items.find(
+      (item) =>
+        !item.isDeleted &&
+        !item.isPurged &&
+        item.categoryId.toValue() === categoryId &&
+        item.locationId.toValue() === locationId &&
+        item.title.trim().toLowerCase() === normalizedTitle &&
+        item.description.trim().toLowerCase() === normalizedDescription,
+    )
+
+    return problem ?? null
   }
 
   async findMany({

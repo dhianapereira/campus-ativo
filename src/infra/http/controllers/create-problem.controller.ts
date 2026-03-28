@@ -1,4 +1,10 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common'
+import {
+  BadRequestException,
+  Body,
+  ConflictException,
+  Controller,
+  Post,
+} from '@nestjs/common'
 import {
   ApiTags,
   ApiOperation,
@@ -13,6 +19,7 @@ import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { CreateProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/create-problem'
 import { CreateProblemRequest } from '../dtos/interfaces.dto'
+import { ProblemAlreadyExistsError } from '@/domain/maintenance-problems/application/use-cases/errors/problem-already-exists-error'
 
 const createProblemBodySchema = z.object({
   title: z.string(),
@@ -43,6 +50,7 @@ export class CreateProblemController {
     description: 'Problema criado com sucesso',
   })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })
+  @ApiResponse({ status: 409, description: 'Problema duplicado' })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
   async handle(
     @Body(bodyValidationPipe) body: CreateProblemBodySchema,
@@ -61,7 +69,11 @@ export class CreateProblemController {
     })
 
     if (result.isLeft()) {
-      throw new BadRequestException()
+      if (result.value instanceof ProblemAlreadyExistsError) {
+        throw new ConflictException('Já existe um problema igual cadastrado.')
+      }
+
+      throw new BadRequestException('Categoria ou localização inválida.')
     }
   }
 }

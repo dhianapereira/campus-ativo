@@ -7,6 +7,7 @@ import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-catego
 import { makeLocation } from 'test/factories/make-location'
 import { makeCategory } from 'test/factories/make-category'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { ProblemAlreadyExistsError } from './errors/problem-already-exists-error'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
@@ -168,5 +169,33 @@ describe('Create Problem', () => {
 
     expect(result.isLeft()).toBe(true)
     expect(result.value).toBeInstanceOf(ResourceNotFoundError)
+  })
+
+  it('should not create a duplicated problem', async () => {
+    const location = makeLocation({}, new UniqueEntityID('location-id'))
+    const category = makeCategory({}, new UniqueEntityID('category-id'))
+    inMemoryLocationsRepository.items.push(location)
+    inMemoryCategoriesRepository.items.push(category)
+
+    await sut.execute({
+      reporterId: '1',
+      title: 'Novo problema',
+      description: 'Descrição do problema',
+      attachmentsIds: [],
+      locationId: 'location-id',
+      categoryId: 'category-id',
+    })
+
+    const result = await sut.execute({
+      reporterId: '2',
+      title: '  novo problema  ',
+      description: 'descrição do problema',
+      attachmentsIds: [],
+      locationId: 'location-id',
+      categoryId: 'category-id',
+    })
+
+    expect(result.isLeft()).toBe(true)
+    expect(result.value).toBeInstanceOf(ProblemAlreadyExistsError)
   })
 })

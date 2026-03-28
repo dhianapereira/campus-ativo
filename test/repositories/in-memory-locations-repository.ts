@@ -73,6 +73,18 @@ export class InMemoryLocationsRepository implements LocationsRepository {
     return location
   }
 
+  async findByNameOrCode(value: string) {
+    const normalizedValue = value.toLowerCase()
+
+    const location = this.items.find(
+      (item) =>
+        item.name.toLowerCase() === normalizedValue ||
+        item.code?.toLowerCase() === normalizedValue,
+    )
+
+    return location ?? null
+  }
+
   async create(location: Location) {
     this.items.push(location)
   }

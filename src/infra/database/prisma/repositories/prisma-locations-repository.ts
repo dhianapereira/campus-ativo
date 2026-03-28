@@ -99,6 +99,35 @@ export class PrismaLocationsRepository implements LocationsRepository {
     return PrismaLocationMapper.toDomain(location)
   }
 
+  async findByNameOrCode(value: string): Promise<Location | null> {
+    const location = await this.prisma.location.findFirst({
+      where: {
+        deletedAt: null,
+        purgedAt: null,
+        OR: [
+          {
+            name: {
+              equals: value,
+              mode: 'insensitive',
+            },
+          },
+          {
+            code: {
+              equals: value,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+    })
+
+    if (!location) {
+      return null
+    }
+
+    return PrismaLocationMapper.toDomain(location)
+  }
+
   async create(location: Location): Promise<void> {
     const data = PrismaLocationMapper.toPrisma(location)
 
