@@ -22,7 +22,6 @@ Se você vai contribuir com o projeto, consulte o [CONTRIBUTING.md](./.github/do
 - gestão de categorias e localizações
 - upload de anexos via ImgBB
 - métricas e relatório do dashboard
-- importação de problemas via Google Sheets
 
 ## Estrutura resumida
 
@@ -52,11 +51,6 @@ Campos mais importantes para rodar localmente:
 - `SYSTEM_USER_EMAIL`
 - `SYSTEM_USER_NAME`
 - `SYSTEM_USER_POSITION`
-
-Campos opcionais para a sincronização com planilhas:
-
-- `GOOGLE_SHEETS_CLIENT_EMAIL`
-- `GOOGLE_SHEETS_PRIVATE_KEY`
 
 ## Rodando localmente
 

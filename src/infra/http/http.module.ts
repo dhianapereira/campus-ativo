@@ -61,9 +61,6 @@ import { DeleteUserAccountUseCase } from '@/domain/accounts/application/use-case
 import { UploadAttachmentController } from './controllers/upload-attachment.controller'
 import { UploadAttachmentUseCase } from '@/domain/maintenance-problems/application/use-cases/upload-attachment'
 import { UploadModule } from '../upload/upload.module'
-import { SyncGoogleSheetController } from './controllers/sync-google-sheet.controller'
-import { SyncProblemsFromGoogleSheetUseCase } from '@/domain/maintenance-problems/application/use-cases/sync-problems-from-google-sheet'
-import { GoogleSheetsModule } from '../google-sheets/google-sheets.module'
 import { GetDashboardMetricsController } from './controllers/get-dashboard-metrics.controller'
 import { GetDashboardMetricsUseCase } from '@/domain/maintenance-problems/application/use-cases/get-dashboard-metrics'
 import { GetDashboardReportController } from './controllers/get-dashboard-report.controller'
@@ -71,12 +68,7 @@ import { ManageProblemController } from './controllers/manage-problem.controller
 import { ManageProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/manage-problem'
 
 @Module({
-  imports: [
-    DatabaseModule,
-    CryptographyModule,
-    UploadModule,
-    GoogleSheetsModule,
-  ],
+  imports: [DatabaseModule, CryptographyModule, UploadModule],
   controllers: [
     CreateAccountController,
     AuthenticateController,
@@ -109,7 +101,6 @@ import { ManageProblemUseCase } from '@/domain/maintenance-problems/application/
     RestoreProblemController,
     ManageProblemController,
     UploadAttachmentController,
-    SyncGoogleSheetController,
     GetDashboardMetricsController,
     GetDashboardReportController,
   ],
@@ -144,7 +135,6 @@ import { ManageProblemUseCase } from '@/domain/maintenance-problems/application/
     RestoreProblemFromTrashUseCase,
     ManageProblemUseCase,
     UploadAttachmentUseCase,
-    SyncProblemsFromGoogleSheetUseCase,
     GetDashboardMetricsUseCase,
   ],
 })

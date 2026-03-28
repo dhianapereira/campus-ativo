@@ -14,8 +14,6 @@ export const envSchema = z.object({
   JWT_PUBLIC_KEY: z.string(),
   PORT: optionalPortSchema,
   IMGBB_API_KEY: z.string(),
-  GOOGLE_SHEETS_CLIENT_EMAIL: z.string().optional(),
-  GOOGLE_SHEETS_PRIVATE_KEY: z.string().optional(),
   SYSTEM_USER_EMAIL: z.string().min(1),
   SYSTEM_USER_NAME: z.string().min(1),
   SYSTEM_USER_POSITION: z.string().min(1),
