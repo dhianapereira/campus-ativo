@@ -1,6 +1,6 @@
-# IFAL Arapiraca Backend
+# Campus Ativo
 
-API em NestJS do Campus Ativo, sistema de gestão de problemas de infraestrutura do IFAL Arapiraca.
+API em NestJS do Campus Ativo, sistema de gestão de problemas de infraestrutura.
 
 Se você vai contribuir com o projeto, consulte o [CONTRIBUTING.md](./.github/docs/CONTRIBUTING.md).
 

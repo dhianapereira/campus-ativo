@@ -36,9 +36,9 @@ export function makeSystemUser(
 ) {
   return makeUser(
     {
-      name: 'Sistema IFAL Arapiraca',
-      position: 'Usuario do Sistema',
-      email: 'sistema@ifal.edu.br',
+      name: 'Autobot',
+      position: 'Bot',
+      email: 'autobot@campusativo',
       role: UserRole.SYSTEM,
       isActive: false,
       ...override,

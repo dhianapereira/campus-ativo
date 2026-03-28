@@ -7,10 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule)
 
   const config = new DocumentBuilder()
-    .setTitle('IFAL Arapiraca Backend API')
-    .setDescription(
-      'API para gerenciamento de problemas de infraestrutura do IFAL Arapiraca',
-    )
+    .setTitle('Campus Ativo API')
+    .setDescription('API para gerenciamento de problemas de infraestrutura')
     .setVersion('1.0.0')
     .addBearerAuth(
       {
