@@ -117,11 +117,17 @@ export class ImportProblemsCsvRowRequest {
   category!: string
 
   @ApiProperty({
-    description:
-      'Nome ou código da localização conforme cadastrada no sistema.',
-    example: 'BLA-201',
+    description: 'Nome da localização conforme cadastrada no sistema.',
+    example: 'Bloco A - Sala 201',
   })
-  location!: string
+  locationName!: string
+
+  @ApiProperty({
+    description: 'Código da localização conforme cadastrada no sistema.',
+    example: 'BLA-201',
+    required: false,
+  })
+  locationCode?: string
 }
 
 export class ImportProblemsCsvRequest {

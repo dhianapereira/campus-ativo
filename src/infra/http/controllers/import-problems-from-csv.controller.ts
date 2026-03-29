@@ -24,7 +24,8 @@ const importProblemsFromCsvBodySchema = z.object({
         title: z.string(),
         description: z.string(),
         category: z.string(),
-        location: z.string(),
+        locationName: z.string(),
+        locationCode: z.string().optional(),
       }),
     )
     .min(1, 'Envie pelo menos uma linha para importar.')
