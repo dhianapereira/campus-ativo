@@ -13,6 +13,10 @@ export class SystemUserBootstrapService implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap() {
+    if (process.env.OPENAPI_GENERATION === 'true') {
+      return
+    }
+
     const systemUser = {
       email: this.env.get('SYSTEM_USER_EMAIL'),
       name: this.env.get('SYSTEM_USER_NAME'),

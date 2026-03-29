@@ -1,7 +1,17 @@
 import { NestFactory } from '@nestjs/core'
+import { writeFile } from 'node:fs/promises'
+import { join } from 'node:path'
+import { OpenAPIObject } from '@nestjs/swagger'
 import { AppModule } from './app.module'
 import { EnvService } from './env/env.service'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+
+async function generateOpenApiSpec(document: OpenAPIObject) {
+  const openApiPath = join(process.cwd(), 'openapi.json')
+
+  await writeFile(openApiPath, JSON.stringify(document, null, 2))
+  console.log(`OpenAPI spec generated at ${openApiPath}`)
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
@@ -22,6 +32,13 @@ async function bootstrap() {
     .build()
 
   const document = SwaggerModule.createDocument(app, config)
+
+  if (process.env.OPENAPI_GENERATION === 'true') {
+    await generateOpenApiSpec(document)
+    await app.close()
+    return
+  }
+
   SwaggerModule.setup('api', app, document)
 
   const env = app.get(EnvService)
