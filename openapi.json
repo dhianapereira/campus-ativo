@@ -2413,6 +2413,56 @@
           "createdAt"
         ]
       },
+      "CategoryResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID da categoria",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome da categoria",
+            "example": "Climatização"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição da categoria",
+            "example": "Problemas relacionados a ar condicionado, ventilação e climatização"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Status ativo/inativo da categoria",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Data de criação",
+            "example": "2025-01-15T10:30:00Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Data de atualização",
+            "example": "2025-01-15T10:30:00Z"
+          },
+          "deletedAt": {
+            "type": "object",
+            "description": "Data de exclusão (null se não deletado)",
+            "example": "2025-01-15T10:30:00Z",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "isActive",
+          "createdAt"
+        ]
+      },
       "CreateCategoryRequest": {
         "type": "object",
         "properties": {
@@ -2475,6 +2525,62 @@
           "name",
           "description",
           "code"
+        ]
+      },
+      "LocationResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "ID da localização",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Nome da localização",
+            "example": "Bloco A - Sala 201"
+          },
+          "description": {
+            "type": "string",
+            "description": "Descrição da localização",
+            "example": "Sala de aula localizada no primeiro andar do Bloco A"
+          },
+          "code": {
+            "type": "string",
+            "description": "Código identificador da localização",
+            "example": "BLA-201"
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Status ativo/inativo da localização",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Data de criação",
+            "example": "2025-01-15T10:30:00Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Data de atualização",
+            "example": "2025-01-15T10:30:00Z"
+          },
+          "deletedAt": {
+            "type": "object",
+            "description": "Data de exclusão (null se não deletado)",
+            "example": "2025-01-15T10:30:00Z",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "code",
+          "isActive",
+          "createdAt"
         ]
       },
       "EditLocationRequest": {

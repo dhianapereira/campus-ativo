@@ -5,7 +5,13 @@ import {
   Get,
   Query,
 } from '@nestjs/common'
-import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger'
+import {
+  ApiExtraModels,
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiQuery,
+} from '@nestjs/swagger'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { z } from 'zod'
 import { FetchCategoriesUseCase } from '@/domain/maintenance-problems/application/use-cases/fetch-categories'
@@ -14,6 +20,7 @@ import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
+import { CategoryResponse } from '../dtos/interfaces.dto'
 
 const pageQueryParamSchema = z
   .string()
@@ -65,6 +72,7 @@ type IncludeDeletedQueryParamSchema = z.infer<
 
 @Controller('/categories')
 @ApiTags('Categories')
+@ApiExtraModels(CategoryResponse)
 export class FetchCategoriesController {
   constructor(private fetchCategories: FetchCategoriesUseCase) {}
 
