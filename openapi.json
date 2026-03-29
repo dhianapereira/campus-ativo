@@ -1732,7 +1732,7 @@
     },
     "/attachments": {
       "post": {
-        "description": "Faz upload de uma imagem para o ImgBB e retorna o ID do attachment criado",
+        "description": "Faz upload de uma imagem para o S3 privado e retorna o ID do attachment criado",
         "operationId": "UploadAttachmentController_handle",
         "parameters": [],
         "requestBody": {
@@ -1766,7 +1766,7 @@
                     },
                     "url": {
                       "type": "string",
-                      "description": "URL da imagem no ImgBB"
+                      "description": "URL assinada da imagem no S3"
                     }
                   }
                 }

@@ -20,7 +20,7 @@ Se você vai contribuir com o projeto, consulte o [CONTRIBUTING.md](./.github/do
 - cadastro e gestão de usuários
 - criação, edição, descarte, restauração e exclusão definitiva de problemas
 - gestão de categorias e localizações
-- upload de anexos via ImgBB
+- upload de anexos via Amazon S3
 - métricas e relatório do dashboard
 
 ## Estrutura resumida
@@ -47,7 +47,12 @@ Campos mais importantes para rodar localmente:
 - `DATABASE_URL`
 - `JWT_PRIVATE_KEY`
 - `JWT_PUBLIC_KEY`
-- `IMGBB_API_KEY`
+- `AWS_REGION`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_S3_BUCKET`
+- `AWS_S3_PREFIX` (opcional)
+- `AWS_S3_SIGNED_URL_TTL` (opcional, em segundos)
 - `SYSTEM_USER_EMAIL`
 - `SYSTEM_USER_NAME`
 - `SYSTEM_USER_POSITION`

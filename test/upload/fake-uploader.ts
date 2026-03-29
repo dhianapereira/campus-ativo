@@ -12,10 +12,11 @@ export class FakeUploader implements ImageUploader {
     this.uploads.push(params)
 
     const fileId = randomUUID()
+    const storageKey = `fake-uploads/${fileId}/${params.fileName}`
 
     return {
-      url: `https://fake-imgbb.com/${fileId}/${params.fileName}`,
-      deleteUrl: `https://fake-imgbb.com/delete/${fileId}`,
+      storageKey,
+      url: `https://fake-s3.local/${storageKey}`,
     }
   }
 }

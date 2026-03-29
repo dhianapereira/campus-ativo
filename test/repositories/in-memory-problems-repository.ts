@@ -15,7 +15,9 @@ import { InMemoryProblemAttachmentLinksStore } from './in-memory-problem-attachm
 export class InMemoryProblemsRepository implements ProblemsRepository {
   public items: Problem[] = []
 
-  constructor(private problemAttachmentLinksStore: InMemoryProblemAttachmentLinksStore) {}
+  constructor(
+    private problemAttachmentLinksStore: InMemoryProblemAttachmentLinksStore,
+  ) {}
 
   async findById(id: string) {
     const problem = this.items.find((item) => item.id.toValue() === id)
@@ -194,9 +196,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
 
     this.items.splice(itemIndex, 1)
 
-    this.problemAttachmentLinksStore.deleteManyByProblemId(
-      problem.id.toValue(),
-    )
+    this.problemAttachmentLinksStore.deleteManyByProblemId(problem.id.toValue())
   }
 
   async save(problem: Problem) {

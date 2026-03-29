@@ -88,8 +88,14 @@ describe('Edit Problem', () => {
         new UniqueEntityID('2'),
       ),
     )
-    inMemoryAttachmentsRepository.linkAttachmentToProblem('1', newProblem.id.toValue())
-    inMemoryAttachmentsRepository.linkAttachmentToProblem('2', newProblem.id.toValue())
+    inMemoryAttachmentsRepository.linkAttachmentToProblem(
+      '1',
+      newProblem.id.toValue(),
+    )
+    inMemoryAttachmentsRepository.linkAttachmentToProblem(
+      '2',
+      newProblem.id.toValue(),
+    )
 
     await sut.execute({
       problemId: newProblem.id.toValue(),

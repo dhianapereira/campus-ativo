@@ -18,6 +18,7 @@ import {
   ApiBody,
 } from '@nestjs/swagger'
 import { UploadAttachmentUseCase } from '@/domain/maintenance-problems/application/use-cases/upload-attachment'
+import { AttachmentUrlResolver } from '@/domain/maintenance-problems/application/upload/attachment-url-resolver'
 
 interface UploadedFile {
   originalname: string
@@ -29,7 +30,10 @@ interface UploadedFile {
 @ApiTags('Attachments')
 @ApiBearerAuth('JWT-auth')
 export class UploadAttachmentController {
-  constructor(private uploadAttachment: UploadAttachmentUseCase) {}
+  constructor(
+    private uploadAttachment: UploadAttachmentUseCase,
+    private attachmentUrlResolver: AttachmentUrlResolver,
+  ) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
@@ -37,7 +41,7 @@ export class UploadAttachmentController {
   @ApiOperation({
     summary: 'Upload de imagem',
     description:
-      'Faz upload de uma imagem para o ImgBB e retorna o ID do attachment criado',
+      'Faz upload de uma imagem para o S3 privado e retorna o ID do attachment criado',
   })
   @ApiBody({
     schema: {
@@ -63,7 +67,7 @@ export class UploadAttachmentController {
         },
         url: {
           type: 'string',
-          description: 'URL da imagem no ImgBB',
+          description: 'URL assinada da imagem no S3',
         },
       },
     },
@@ -75,7 +79,7 @@ export class UploadAttachmentController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({
-            maxSize: 32 * 1024 * 1024, // 32MB (limite do ImgBB)
+            maxSize: 32 * 1024 * 1024,
           }),
           new FileTypeValidator({
             fileType: /^image\/(jpeg|jpg|png|gif|webp)$/,
@@ -97,10 +101,11 @@ export class UploadAttachmentController {
     }
 
     const { attachment } = result.value
+    const url = await this.attachmentUrlResolver.resolve(attachment.link)
 
     return {
       attachmentId: attachment.id.toValue(),
-      url: attachment.link,
+      url,
     }
   }
 }

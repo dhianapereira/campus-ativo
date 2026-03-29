@@ -1,12 +1,15 @@
 import { Problem } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
-import { Attachment } from '@/domain/maintenance-problems/enterprise/entities/attachment'
 import { ProblemHistory } from '@/domain/maintenance-problems/enterprise/entities/problems/problem-history'
 
 export class ProblemPresenter {
   static toHTTPWithAttachments(
     problem: Problem,
-    attachments: Attachment[],
+    attachments: Array<{
+      id: string
+      title: string
+      url: string
+    }>,
     category: {
       id: string
       name: string
@@ -37,11 +40,7 @@ export class ProblemPresenter {
       createdAt: problem.createdAt,
       updatedAt: problem.updatedAt,
       deletedAt: problem.deletedAt,
-      attachments: attachments.map((attachment) => ({
-        id: attachment.id.toValue(),
-        title: attachment.title,
-        url: attachment.link,
-      })),
+      attachments,
     }
   }
 

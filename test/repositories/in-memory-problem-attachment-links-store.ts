@@ -8,6 +8,8 @@ export class InMemoryProblemAttachmentLinksStore {
   }
 
   async deleteManyByProblemId(problemId: string) {
-    this.items = this.items.filter((item) => item.problemId.toValue() !== problemId)
+    this.items = this.items.filter(
+      (item) => item.problemId.toValue() !== problemId,
+    )
   }
 }

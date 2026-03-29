@@ -21,6 +21,7 @@ import { CategoriesRepository } from '@/domain/maintenance-problems/application/
 import { ProblemPresenter } from '../presenters/problem-presenter'
 import { ProblemResponse } from '../dtos/interfaces.dto'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { AttachmentUrlResolver } from '@/domain/maintenance-problems/application/upload/attachment-url-resolver'
 
 @Controller('/problems/:slug')
 @ApiTags('Problems')
@@ -33,6 +34,7 @@ export class GetProblemBySlugController {
     private usersRepository: UsersRepository,
     private locationsRepository: LocationsRepository,
     private categoriesRepository: CategoriesRepository,
+    private attachmentUrlResolver: AttachmentUrlResolver,
   ) {}
 
   @Get()
@@ -76,6 +78,13 @@ export class GetProblemBySlugController {
     const attachments = await this.attachmentsRepository.findManyByProblemId(
       problem.id.toValue(),
     )
+    const presentedAttachments = await Promise.all(
+      attachments.map(async (attachment) => ({
+        id: attachment.id.toValue(),
+        title: attachment.title,
+        url: await this.attachmentUrlResolver.resolve(attachment.link),
+      })),
+    )
     const history = await this.problemHistoryRepository.findManyByProblemId(
       problem.id.toValue(),
     )
@@ -117,7 +126,7 @@ export class GetProblemBySlugController {
       problem: {
         ...ProblemPresenter.toHTTPWithAttachments(
           problem,
-          attachments,
+          presentedAttachments,
           {
             id: category.id.toValue(),
             name: category.name,

@@ -1,14 +1,20 @@
 import { Module } from '@nestjs/common'
 import { ImageUploader } from '@/domain/maintenance-problems/application/upload/image-uploader'
-import { ImgBBUploader } from './imgbb-uploader'
+import { S3Uploader } from './s3-uploader'
+import { AttachmentUrlResolver } from '@/domain/maintenance-problems/application/upload/attachment-url-resolver'
+import { S3AttachmentUrlResolver } from './s3-attachment-url-resolver'
 
 @Module({
   providers: [
     {
       provide: ImageUploader,
-      useClass: ImgBBUploader,
+      useClass: S3Uploader,
+    },
+    {
+      provide: AttachmentUrlResolver,
+      useClass: S3AttachmentUrlResolver,
     },
   ],
-  exports: [ImageUploader],
+  exports: [ImageUploader, AttachmentUrlResolver],
 })
 export class UploadModule {}

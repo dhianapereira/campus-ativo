@@ -5,6 +5,7 @@ export interface UploadParams {
 }
 
 export interface UploadResponse {
+  storageKey: string
   url: string
   deleteUrl?: string
 }

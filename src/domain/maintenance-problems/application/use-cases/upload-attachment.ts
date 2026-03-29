@@ -35,7 +35,7 @@ export class UploadAttachmentUseCase {
       return left(new InvalidAttachmentTypeError(fileType))
     }
 
-    const { url } = await this.imageUploader.upload({
+    const { storageKey } = await this.imageUploader.upload({
       fileName,
       fileType,
       body,
@@ -43,7 +43,7 @@ export class UploadAttachmentUseCase {
 
     const attachment = Attachment.create({
       title: fileName,
-      link: url,
+      link: storageKey,
     })
 
     await this.attachmentsRepository.create(attachment)
