@@ -3,20 +3,20 @@ import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems
 import { makeProblem } from 'test/factories/make-problem'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
-import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
+import { InMemoryProblemAttachmentLinksStore } from 'test/repositories/in-memory-problem-attachment-links-store'
 import { ProblemStatus } from '../../enterprise/entities/problems/problem'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
-let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
+let inMemoryProblemAttachmentLinksStore: InMemoryProblemAttachmentLinksStore
 let sut: RestoreProblemFromTrashUseCase
 
 describe('Restore Problem From Trash', () => {
   beforeEach(() => {
-    inMemoryProblemAttachmentsRepository =
-      new InMemoryProblemAttachmentsRepository()
+    inMemoryProblemAttachmentLinksStore =
+      new InMemoryProblemAttachmentLinksStore()
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
-      inMemoryProblemAttachmentsRepository,
+      inMemoryProblemAttachmentLinksStore,
     )
     sut = new RestoreProblemFromTrashUseCase(inMemoryProblemsRepository)
   })

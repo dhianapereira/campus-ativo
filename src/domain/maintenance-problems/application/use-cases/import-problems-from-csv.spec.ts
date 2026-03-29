@@ -2,13 +2,13 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { CreateProblemUseCase } from './create-problem'
 import { ImportProblemsFromCsvUseCase } from './import-problems-from-csv'
 import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems-repository'
-import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
+import { InMemoryProblemAttachmentLinksStore } from 'test/repositories/in-memory-problem-attachment-links-store'
 import { InMemoryLocationsRepository } from 'test/repositories/in-memory-locations-repository'
 import { InMemoryCategoriesRepository } from 'test/repositories/in-memory-categories-repository'
 import { makeLocation } from 'test/factories/make-location'
 import { makeCategory } from 'test/factories/make-category'
 
-let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
+let inMemoryProblemAttachmentLinksStore: InMemoryProblemAttachmentLinksStore
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryLocationsRepository: InMemoryLocationsRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
@@ -17,10 +17,10 @@ let sut: ImportProblemsFromCsvUseCase
 
 describe('Import Problems From CSV', () => {
   beforeEach(() => {
-    inMemoryProblemAttachmentsRepository =
-      new InMemoryProblemAttachmentsRepository()
+    inMemoryProblemAttachmentLinksStore =
+      new InMemoryProblemAttachmentLinksStore()
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
-      inMemoryProblemAttachmentsRepository,
+      inMemoryProblemAttachmentLinksStore,
     )
     inMemoryLocationsRepository = new InMemoryLocationsRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()

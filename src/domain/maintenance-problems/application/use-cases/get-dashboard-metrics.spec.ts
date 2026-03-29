@@ -2,19 +2,19 @@ import { GetDashboardMetricsUseCase } from './get-dashboard-metrics'
 import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems-repository'
 import { makeProblem } from 'test/factories/make-problem'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
+import { InMemoryProblemAttachmentLinksStore } from 'test/repositories/in-memory-problem-attachment-links-store'
 import { ProblemStatus } from '../../enterprise/entities/problems/problem'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
-let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
+let inMemoryProblemAttachmentLinksStore: InMemoryProblemAttachmentLinksStore
 let sut: GetDashboardMetricsUseCase
 
 describe('Get Dashboard Metrics', () => {
   beforeEach(() => {
-    inMemoryProblemAttachmentsRepository =
-      new InMemoryProblemAttachmentsRepository()
+    inMemoryProblemAttachmentLinksStore =
+      new InMemoryProblemAttachmentLinksStore()
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
-      inMemoryProblemAttachmentsRepository,
+      inMemoryProblemAttachmentLinksStore,
     )
     sut = new GetDashboardMetricsUseCase(inMemoryProblemsRepository)
   })

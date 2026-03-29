@@ -1,4 +1,3 @@
-import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/problem-attachments-repository'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import {
   ProblemsRepository,
@@ -11,13 +10,12 @@ import {
 } from '@/domain/maintenance-problems/enterprise/entities/problems/problem'
 import { ProblemWithDetails } from '@/domain/maintenance-problems/enterprise/entities/value-objects/problem-with-details'
 import { DashboardMetrics } from '@/domain/maintenance-problems/enterprise/entities/value-objects/dashboard-metrics'
+import { InMemoryProblemAttachmentLinksStore } from './in-memory-problem-attachment-links-store'
 
 export class InMemoryProblemsRepository implements ProblemsRepository {
   public items: Problem[] = []
 
-  constructor(
-    private problemAttachmentsRepository: ProblemAttachmentsRepository,
-  ) {}
+  constructor(private problemAttachmentLinksStore: InMemoryProblemAttachmentLinksStore) {}
 
   async findById(id: string) {
     const problem = this.items.find((item) => item.id.toValue() === id)
@@ -185,6 +183,10 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
 
   async create(problem: Problem) {
     this.items.push(problem)
+
+    for (const attachment of problem.attachments.getItems()) {
+      this.problemAttachmentLinksStore.items.push(attachment)
+    }
   }
 
   async delete(problem: Problem) {
@@ -192,7 +194,7 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
 
     this.items.splice(itemIndex, 1)
 
-    this.problemAttachmentsRepository.deleteManyByProblemId(
+    this.problemAttachmentLinksStore.deleteManyByProblemId(
       problem.id.toValue(),
     )
   }
@@ -201,6 +203,24 @@ export class InMemoryProblemsRepository implements ProblemsRepository {
     const itemIndex = this.items.findIndex((item) => item.id === problem.id)
 
     this.items[itemIndex] = problem
+
+    for (const attachment of problem.attachments.getNewItems()) {
+      this.problemAttachmentLinksStore.items.push(attachment)
+    }
+
+    const removedAttachmentIds = new Set(
+      problem.attachments
+        .getRemovedItems()
+        .map((attachment) => attachment.attachmentId.toValue()),
+    )
+
+    this.problemAttachmentLinksStore.items =
+      this.problemAttachmentLinksStore.items.filter((attachment) => {
+        return (
+          attachment.problemId.toValue() !== problem.id.toValue() ||
+          !removedAttachmentIds.has(attachment.attachmentId.toValue())
+        )
+      })
   }
 
   async getDashboardMetrics(): Promise<DashboardMetrics> {

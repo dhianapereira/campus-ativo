@@ -3,19 +3,19 @@ import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems
 import { Slug } from '@/domain/maintenance-problems/enterprise/entities/value-objects/slug'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { makeProblem } from 'test/factories/make-problem'
-import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
+import { InMemoryProblemAttachmentLinksStore } from 'test/repositories/in-memory-problem-attachment-links-store'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
-let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
+let inMemoryProblemAttachmentLinksStore: InMemoryProblemAttachmentLinksStore
 let sut: GetProblemBySlugUseCase
 
 describe('Get Problem By Slug', () => {
   beforeEach(() => {
-    inMemoryProblemAttachmentsRepository =
-      new InMemoryProblemAttachmentsRepository()
+    inMemoryProblemAttachmentLinksStore =
+      new InMemoryProblemAttachmentLinksStore()
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
-      inMemoryProblemAttachmentsRepository,
+      inMemoryProblemAttachmentLinksStore,
     )
     sut = new GetProblemBySlugUseCase(inMemoryProblemsRepository)
   })

@@ -3,7 +3,7 @@ import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems
 import { makeProblem } from 'test/factories/make-problem'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
-import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
+import { InMemoryProblemAttachmentLinksStore } from 'test/repositories/in-memory-problem-attachment-links-store'
 import {
   ProblemStatus,
   MaintenanceType,
@@ -17,17 +17,17 @@ import { HistoryChangeField } from '../../enterprise/entities/problems/problem-h
 import { ProblemHistory } from '../../enterprise/entities/problems/problem-history'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
-let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
+let inMemoryProblemAttachmentLinksStore: InMemoryProblemAttachmentLinksStore
 let inMemoryProblemHistoryRepository: InMemoryProblemHistoryRepository
 let inMemoryUsersRepository: InMemoryUsersRepository
 let sut: ManageProblemUseCase
 
 describe('Manage Problem', () => {
   beforeEach(() => {
-    inMemoryProblemAttachmentsRepository =
-      new InMemoryProblemAttachmentsRepository()
+    inMemoryProblemAttachmentLinksStore =
+      new InMemoryProblemAttachmentLinksStore()
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
-      inMemoryProblemAttachmentsRepository,
+      inMemoryProblemAttachmentLinksStore,
     )
     inMemoryProblemHistoryRepository = new InMemoryProblemHistoryRepository()
     inMemoryUsersRepository = new InMemoryUsersRepository()

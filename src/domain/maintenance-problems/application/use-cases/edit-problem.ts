@@ -7,13 +7,13 @@ import { ProblemsRepository } from '../repositories/problems-repository'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ProblemNotEditableError } from '@/core/errors/problem-not-editable-error'
-import { ProblemAttachmentsRepository } from '../repositories/problem-attachments-repository'
 import { ProblemAttachmentList } from '../../enterprise/entities/problems/problem-attachment-list'
 import { ProblemAttachment } from '../../enterprise/entities/problems/problem-attachment'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Injectable } from '@nestjs/common'
 import { CategoriesRepository } from '../repositories/categories-repository'
 import { LocationsRepository } from '../repositories/locations-repository'
+import { AttachmentsRepository } from '../repositories/attachments-repository'
 
 interface EditProblemUseCaseRequest {
   reporterId: string
@@ -36,7 +36,7 @@ type EditProblemUseCaseResponse = Either<
 export class EditProblemUseCase {
   constructor(
     private problemsRepository: ProblemsRepository,
-    private problemAttachmentsRepository: ProblemAttachmentsRepository,
+    private attachmentsRepository: AttachmentsRepository,
     private locationsRepository: LocationsRepository,
     private categoriesRepository: CategoriesRepository,
   ) {}
@@ -89,8 +89,14 @@ export class EditProblemUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    const currentProblemAttachments =
-      await this.problemAttachmentsRepository.findManyByProblemId(problemId)
+    const currentProblemAttachments = (
+      await this.attachmentsRepository.findManyByProblemId(problemId)
+    ).map((attachment) =>
+      ProblemAttachment.create({
+        attachmentId: attachment.id,
+        problemId: problem.id,
+      }),
+    )
     const problemAttachmentList = new ProblemAttachmentList(
       currentProblemAttachments,
     )

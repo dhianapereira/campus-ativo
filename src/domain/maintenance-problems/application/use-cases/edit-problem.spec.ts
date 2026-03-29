@@ -3,7 +3,8 @@ import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems
 import { makeProblem } from 'test/factories/make-problem'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
-import { InMemoryProblemAttachmentsRepository } from 'test/repositories/in-memory-problem-attachments-repository'
+import { InMemoryProblemAttachmentLinksStore } from 'test/repositories/in-memory-problem-attachment-links-store'
+import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { makeProblemAttachment } from 'test/factories/make-problem-attachments'
 import { ProblemStatus } from '../../enterprise/entities/problems/problem'
 import { ProblemNotEditableError } from '@/core/errors/problem-not-editable-error'
@@ -12,25 +13,28 @@ import { InMemoryLocationsRepository } from 'test/repositories/in-memory-locatio
 import { makeCategory } from 'test/factories/make-category'
 import { makeLocation } from 'test/factories/make-location'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { Attachment } from '../../enterprise/entities/attachment'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
-let inMemoryProblemAttachmentsRepository: InMemoryProblemAttachmentsRepository
+let inMemoryProblemAttachmentLinksStore: InMemoryProblemAttachmentLinksStore
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryLocationsRepository: InMemoryLocationsRepository
 let sut: EditProblemUseCase
 
 describe('Edit Problem', () => {
   beforeEach(() => {
-    inMemoryProblemAttachmentsRepository =
-      new InMemoryProblemAttachmentsRepository()
+    inMemoryProblemAttachmentLinksStore =
+      new InMemoryProblemAttachmentLinksStore()
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryLocationsRepository = new InMemoryLocationsRepository()
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
-      inMemoryProblemAttachmentsRepository,
+      inMemoryProblemAttachmentLinksStore,
     )
     sut = new EditProblemUseCase(
       inMemoryProblemsRepository,
-      inMemoryProblemAttachmentsRepository,
+      inMemoryAttachmentsRepository,
       inMemoryLocationsRepository,
       inMemoryCategoriesRepository,
     )
@@ -58,7 +62,7 @@ describe('Edit Problem', () => {
     )
 
     await inMemoryProblemsRepository.create(newProblem)
-    inMemoryProblemAttachmentsRepository.items.push(
+    inMemoryProblemAttachmentLinksStore.items.push(
       makeProblemAttachment({
         problemId: newProblem.id,
         attachmentId: new UniqueEntityID('1'),
@@ -68,6 +72,24 @@ describe('Edit Problem', () => {
         attachmentId: new UniqueEntityID('2'),
       }),
     )
+    inMemoryAttachmentsRepository.items.push(
+      Attachment.create(
+        {
+          title: 'attachment-1',
+          link: 'https://example.com/1.png',
+        },
+        new UniqueEntityID('1'),
+      ),
+      Attachment.create(
+        {
+          title: 'attachment-2',
+          link: 'https://example.com/2.png',
+        },
+        new UniqueEntityID('2'),
+      ),
+    )
+    inMemoryAttachmentsRepository.linkAttachmentToProblem('1', newProblem.id.toValue())
+    inMemoryAttachmentsRepository.linkAttachmentToProblem('2', newProblem.id.toValue())
 
     await sut.execute({
       problemId: newProblem.id.toValue(),

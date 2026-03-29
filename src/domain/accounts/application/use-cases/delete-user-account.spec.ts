@@ -1,18 +1,11 @@
-import { vi } from 'vitest'
 import { makeSystemUser, makeUser } from 'test/factories/make-user'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems-repository'
-import { ProblemAttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/problem-attachments-repository'
+import { InMemoryProblemAttachmentLinksStore } from 'test/repositories/in-memory-problem-attachment-links-store'
 import { DeleteUserAccountUseCase } from './delete-user-account'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { UserRole } from '../../enterprise/entities/user'
-
-// Mock para o ProblemAttachmentsRepository
-const mockProblemAttachmentsRepository: ProblemAttachmentsRepository = {
-  findManyByProblemId: vi.fn().mockResolvedValue([]),
-  deleteManyByProblemId: vi.fn(),
-}
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let inMemoryProblemsRepository: InMemoryProblemsRepository
@@ -22,7 +15,7 @@ describe('Delete User Account', () => {
   beforeEach(() => {
     inMemoryUsersRepository = new InMemoryUsersRepository()
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
-      mockProblemAttachmentsRepository,
+      new InMemoryProblemAttachmentLinksStore(),
     )
     sut = new DeleteUserAccountUseCase(
       inMemoryUsersRepository,

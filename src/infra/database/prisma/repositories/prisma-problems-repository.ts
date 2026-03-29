@@ -187,29 +187,96 @@ export class PrismaProblemsRepository implements ProblemsRepository {
   async create(problem: Problem): Promise<void> {
     const data = PrismaProblemMapper.toPrisma(problem)
 
-    await this.prisma.problem.create({
-      data,
+    await this.prisma.$transaction(async (tx) => {
+      await tx.problem.create({
+        data,
+      })
+
+      const attachmentIds = problem.attachments
+        .getItems()
+        .map((attachment) => attachment.attachmentId.toValue())
+
+      if (attachmentIds.length > 0) {
+        await tx.attachment.updateMany({
+          where: {
+            id: {
+              in: attachmentIds,
+            },
+          },
+          data: {
+            problemId: problem.id.toValue(),
+          },
+        })
+      }
     })
   }
 
   async save(problem: Problem): Promise<void> {
     const data = PrismaProblemMapper.toPrisma(problem)
 
-    await this.prisma.problem.update({
-      where: {
-        id: problem.id.toValue(),
-      },
-      data,
+    await this.prisma.$transaction(async (tx) => {
+      await tx.problem.update({
+        where: {
+          id: problem.id.toValue(),
+        },
+        data,
+      })
+
+      const newAttachmentIds = problem.attachments
+        .getNewItems()
+        .map((attachment) => attachment.attachmentId.toValue())
+
+      if (newAttachmentIds.length > 0) {
+        await tx.attachment.updateMany({
+          where: {
+            id: {
+              in: newAttachmentIds,
+            },
+          },
+          data: {
+            problemId: problem.id.toValue(),
+          },
+        })
+      }
+
+      const removedAttachmentIds = problem.attachments
+        .getRemovedItems()
+        .map((attachment) => attachment.attachmentId.toValue())
+
+      if (removedAttachmentIds.length > 0) {
+        await tx.attachment.updateMany({
+          where: {
+            id: {
+              in: removedAttachmentIds,
+            },
+            problemId: problem.id.toValue(),
+          },
+          data: {
+            problemId: null,
+          },
+        })
+      }
     })
   }
 
   async delete(problem: Problem): Promise<void> {
     const data = PrismaProblemMapper.toPrisma(problem)
 
-    await this.prisma.problem.delete({
-      where: {
-        id: data.id,
-      },
+    await this.prisma.$transaction(async (tx) => {
+      await tx.attachment.updateMany({
+        where: {
+          problemId: data.id,
+        },
+        data: {
+          problemId: null,
+        },
+      })
+
+      await tx.problem.delete({
+        where: {
+          id: data.id,
+        },
+      })
     })
   }
 
