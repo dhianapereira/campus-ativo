@@ -126,6 +126,11 @@ describe('Edit Problem', () => {
       expect.objectContaining({ attachmentId: new UniqueEntityID('1') }),
       expect.objectContaining({ attachmentId: new UniqueEntityID('3') }),
     ])
+    expect(
+      inMemoryAttachmentsRepository.items.map((attachment) =>
+        attachment.id.toValue(),
+      ),
+    ).toEqual(['1'])
   })
 
   it('should not be able to edit a problem from another user', async () => {

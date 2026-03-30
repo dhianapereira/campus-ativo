@@ -89,16 +89,22 @@ export class EditProblemUseCase {
       return left(new ResourceNotFoundError())
     }
 
-    const currentProblemAttachments = (
+    const currentProblemAttachments =
       await this.attachmentsRepository.findManyByProblemId(problemId)
-    ).map((attachment) =>
-      ProblemAttachment.create({
-        attachmentId: attachment.id,
-        problemId: problem.id,
-      }),
+    const nextProblemAttachmentIds = new Set(attachmentsIds)
+    const removedAttachments = currentProblemAttachments.filter(
+      (attachment) => !nextProblemAttachmentIds.has(attachment.id.toValue()),
+    )
+
+    const currentProblemAttachmentLinks = currentProblemAttachments.map(
+      (attachment) =>
+        ProblemAttachment.create({
+          attachmentId: attachment.id,
+          problemId: problem.id,
+        }),
     )
     const problemAttachmentList = new ProblemAttachmentList(
-      currentProblemAttachments,
+      currentProblemAttachmentLinks,
     )
     const problemAttachments = attachmentsIds.map((attachmentId) => {
       return ProblemAttachment.create({
@@ -115,6 +121,11 @@ export class EditProblemUseCase {
     problem.attachments = problemAttachmentList
 
     await this.problemsRepository.save(problem)
+    await Promise.all(
+      removedAttachments.map((attachment) =>
+        this.attachmentsRepository.delete(attachment),
+      ),
+    )
 
     return right({
       problem,

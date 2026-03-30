@@ -128,6 +128,13 @@ export class ImportProblemsCsvRowRequest {
     required: false,
   })
   locationCode?: string
+
+  @ApiProperty({
+    description: 'URL pública da imagem a ser baixada e anexada ao problema.',
+    example: 'https://example.com/imagens/ar-condicionado.jpg',
+    required: false,
+  })
+  imageUrl?: string
 }
 
 export class ImportProblemsCsvRequest {

@@ -2729,6 +2729,11 @@
             "type": "string",
             "description": "Código da localização conforme cadastrada no sistema.",
             "example": "BLA-201"
+          },
+          "imageUrl": {
+            "type": "string",
+            "description": "URL pública da imagem a ser baixada e anexada ao problema.",
+            "example": "https://example.com/imagens/ar-condicionado.jpg"
           }
         },
         "required": [

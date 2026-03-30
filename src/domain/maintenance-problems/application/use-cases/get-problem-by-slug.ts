@@ -24,7 +24,7 @@ export class GetProblemBySlugUseCase {
   }: GetProblemBySlugUseCaseRequest): Promise<GetProblemBySlugUseCaseResponse> {
     const problem = await this.problemsRepository.findBySlug(slug)
 
-    if (!problem) {
+    if (!problem || problem.isDeleted || problem.isPurged) {
       return left(new ResourceNotFoundError())
     }
 

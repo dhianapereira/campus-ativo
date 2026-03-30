@@ -69,7 +69,7 @@ export class PrismaProblemsRepository implements ProblemsRepository {
   }
 
   async findBySlug(slug: string): Promise<Problem | null> {
-    const problem = await this.prisma.problem.findUnique({
+    const problem = await this.prisma.problem.findFirst({
       where: {
         slug,
         deletedAt: null,
