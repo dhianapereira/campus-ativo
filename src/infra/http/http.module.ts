@@ -69,6 +69,7 @@ import { ManageProblemUseCase } from '@/domain/maintenance-problems/application/
 import { ImportProblemsFromCsvController } from './controllers/import-problems-from-csv.controller'
 import { ImportProblemsFromCsvUseCase } from '@/domain/maintenance-problems/application/use-cases/import-problems-from-csv'
 import { HealthController } from './controllers/health.controller'
+import { RateLimitGuard } from './rate-limit/rate-limit.guard'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, UploadModule],
@@ -142,6 +143,7 @@ import { HealthController } from './controllers/health.controller'
     ImportProblemsFromCsvUseCase,
     UploadAttachmentUseCase,
     GetDashboardMetricsUseCase,
+    RateLimitGuard,
   ],
 })
 export class HttpModule {}

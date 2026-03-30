@@ -4,6 +4,7 @@ import {
   InternalServerErrorException,
   NotFoundException,
   Param,
+  UseGuards,
 } from '@nestjs/common'
 import {
   ApiTags,
@@ -23,6 +24,8 @@ import { ProblemResponse } from '../dtos/interfaces.dto'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { AttachmentUrlResolver } from '@/domain/maintenance-problems/application/upload/attachment-url-resolver'
 import { PROBLEM_NOT_FOUND_MESSAGE } from './controller-error-messages'
+import { RateLimit } from '../rate-limit/rate-limit.decorator'
+import { RateLimitGuard } from '../rate-limit/rate-limit.guard'
 
 @Controller('/problems/:slug')
 @ApiTags('Problems')
@@ -39,6 +42,12 @@ export class GetProblemBySlugController {
   ) {}
 
   @Get()
+  @UseGuards(RateLimitGuard)
+  @RateLimit({
+    key: 'problem-details',
+    limit: 120,
+    windowMs: 5 * 60 * 1000,
+  })
   @ApiOperation({
     summary: 'Buscar problema por slug',
     description: 'Retorna um problema específico pelo seu slug',

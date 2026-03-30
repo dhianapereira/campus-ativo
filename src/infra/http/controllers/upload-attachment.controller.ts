@@ -5,6 +5,7 @@ import {
   MaxFileSizeValidator,
   ParseFilePipe,
   Post,
+  UseGuards,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common'
@@ -20,6 +21,10 @@ import {
 import { UploadAttachmentUseCase } from '@/domain/maintenance-problems/application/use-cases/upload-attachment'
 import { AttachmentUrlResolver } from '@/domain/maintenance-problems/application/upload/attachment-url-resolver'
 import { INVALID_ATTACHMENT_TYPE_MESSAGE } from './controller-error-messages'
+import { RateLimit } from '../rate-limit/rate-limit.decorator'
+import { RateLimitGuard } from '../rate-limit/rate-limit.guard'
+
+const MAX_ATTACHMENT_SIZE_BYTES = 5 * 1024 * 1024
 
 interface UploadedFile {
   originalname: string
@@ -37,6 +42,12 @@ export class UploadAttachmentController {
   ) {}
 
   @Post()
+  @UseGuards(RateLimitGuard)
+  @RateLimit({
+    key: 'attachment-upload',
+    limit: 10,
+    windowMs: 5 * 60 * 1000,
+  })
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiOperation({
@@ -80,7 +91,7 @@ export class UploadAttachmentController {
       new ParseFilePipe({
         validators: [
           new MaxFileSizeValidator({
-            maxSize: 32 * 1024 * 1024,
+            maxSize: MAX_ATTACHMENT_SIZE_BYTES,
           }),
           new FileTypeValidator({
             fileType: /^image\/(jpeg|jpg|png|gif|webp)$/,

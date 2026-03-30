@@ -12,4 +12,5 @@ export interface UploadResponse {
 
 export abstract class ImageUploader {
   abstract upload(params: UploadParams): Promise<UploadResponse>
+  abstract delete(storageKey: string): Promise<void>
 }

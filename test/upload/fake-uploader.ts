@@ -7,6 +7,7 @@ import { randomUUID } from 'crypto'
 
 export class FakeUploader implements ImageUploader {
   public uploads: UploadParams[] = []
+  public deletedStorageKeys: string[] = []
 
   async upload(params: UploadParams): Promise<UploadResponse> {
     this.uploads.push(params)
@@ -18,5 +19,9 @@ export class FakeUploader implements ImageUploader {
       storageKey,
       url: `https://fake-s3.local/${storageKey}`,
     }
+  }
+
+  async delete(storageKey: string): Promise<void> {
+    this.deletedStorageKeys.push(storageKey)
   }
 }

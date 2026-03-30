@@ -5,7 +5,11 @@ import {
 } from '@/domain/maintenance-problems/application/upload/image-uploader'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3'
 import { Env } from '../env/env'
 import { randomUUID } from 'crypto'
 
@@ -52,6 +56,25 @@ export class S3Uploader implements ImageUploader {
     return {
       storageKey: objectKey,
       url: objectKey,
+    }
+  }
+
+  async delete(storageKey: string): Promise<void> {
+    if (/^https?:\/\//i.test(storageKey)) {
+      return
+    }
+
+    try {
+      await this.client.send(
+        new DeleteObjectCommand({
+          Bucket: this.bucketName,
+          Key: storageKey,
+        }),
+      )
+    } catch {
+      throw new InternalServerErrorException(
+        'Não foi possível remover o arquivo no momento.',
+      )
     }
   }
 
