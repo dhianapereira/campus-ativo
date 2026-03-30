@@ -3,9 +3,20 @@ import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repos
 import { EditUserProfileUseCase } from './edit-user-profile'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
+import { Either } from '@/core/either'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let sut: EditUserProfileUseCase
+
+function expectRight<L, R>(result: Either<L, R>): R {
+  expect(result.isRight()).toBe(true)
+
+  if (result.isLeft()) {
+    throw new Error('Expected a successful result')
+  }
+
+  return result.value
+}
 
 describe('Edit User Profile', () => {
   beforeEach(() => {
@@ -28,9 +39,10 @@ describe('Edit User Profile', () => {
       position: 'Senior Developer',
     })
 
-    expect(result.isRight()).toBe(true)
-    expect(result.value?.user.name).toBe('Jane Doe')
-    expect(result.value?.user.position).toBe('Senior Developer')
+    const value = expectRight(result)
+
+    expect(value.user.name).toBe('Jane Doe')
+    expect(value.user.position).toBe('Senior Developer')
     expect(inMemoryUsersRepository.items[0].name).toBe('Jane Doe')
     expect(inMemoryUsersRepository.items[0].position).toBe('Senior Developer')
   })

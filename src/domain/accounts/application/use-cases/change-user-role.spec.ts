@@ -5,9 +5,20 @@ import { UserRole } from '../../enterprise/entities/user'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { CannotModifyOwnAccountError } from '@/core/errors/cannot-modify-own-account-error'
+import { Either } from '@/core/either'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let sut: ChangeUserRoleUseCase
+
+function expectRight<L, R>(result: Either<L, R>): R {
+  expect(result.isRight()).toBe(true)
+
+  if (result.isLeft()) {
+    throw new Error('Expected a successful result')
+  }
+
+  return result.value
+}
 
 describe('Change User Role', () => {
   beforeEach(() => {
@@ -34,8 +45,9 @@ describe('Change User Role', () => {
       currentUserRole: UserRole.ADMIN,
     })
 
-    expect(result.isRight()).toBe(true)
-    expect(result.value?.user.role).toBe(UserRole.MANAGER)
+    const value = expectRight(result)
+
+    expect(value.user.role).toBe(UserRole.MANAGER)
   })
 
   it('should be able to change lower role as director', async () => {
@@ -57,8 +69,9 @@ describe('Change User Role', () => {
       currentUserRole: UserRole.DIRECTOR,
     })
 
-    expect(result.isRight()).toBe(true)
-    expect(result.value?.user.role).toBe(UserRole.MANAGER)
+    const value = expectRight(result)
+
+    expect(value.user.role).toBe(UserRole.MANAGER)
   })
 
   it('should not allow director to change admin role', async () => {

@@ -5,9 +5,20 @@ import { UserRole } from '../../enterprise/entities/user'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { CannotModifyOwnAccountError } from '@/core/errors/cannot-modify-own-account-error'
+import { Either } from '@/core/either'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let sut: ChangeUserStatusUseCase
+
+function expectRight<L, R>(result: Either<L, R>): R {
+  expect(result.isRight()).toBe(true)
+
+  if (result.isLeft()) {
+    throw new Error('Expected a successful result')
+  }
+
+  return result.value
+}
 
 describe('Change User Status', () => {
   beforeEach(() => {
@@ -35,8 +46,9 @@ describe('Change User Status', () => {
       executorRole: UserRole.DIRECTOR,
     })
 
-    expect(result.isRight()).toBe(true)
-    expect(result.value?.user.isActive).toBe(false)
+    const value = expectRight(result)
+
+    expect(value.user.isActive).toBe(false)
     expect(inMemoryUsersRepository.items[1].isActive).toBe(false)
   })
 
@@ -60,8 +72,9 @@ describe('Change User Status', () => {
       executorRole: UserRole.DIRECTOR,
     })
 
-    expect(result.isRight()).toBe(true)
-    expect(result.value?.user.isActive).toBe(true)
+    const value = expectRight(result)
+
+    expect(value.user.isActive).toBe(true)
     expect(inMemoryUsersRepository.items[1].isActive).toBe(true)
   })
 
@@ -85,8 +98,9 @@ describe('Change User Status', () => {
       executorRole: UserRole.ADMIN,
     })
 
-    expect(result.isRight()).toBe(true)
-    expect(result.value?.user.isActive).toBe(false)
+    const value = expectRight(result)
+
+    expect(value.user.isActive).toBe(false)
   })
 
   it('should allow admin to deactivate a director', async () => {
@@ -110,8 +124,9 @@ describe('Change User Status', () => {
       executorRole: UserRole.ADMIN,
     })
 
-    expect(result.isRight()).toBe(true)
-    expect(result.value?.user.isActive).toBe(false)
+    const value = expectRight(result)
+
+    expect(value.user.isActive).toBe(false)
   })
 
   it('should not allow manager to change user status', async () => {

@@ -3,9 +3,20 @@ import { FetchCategoriesUseCase } from './fetch-categories'
 import { makeCategory } from 'test/factories/make-category'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
+import { Either } from '@/core/either'
 
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let sut: FetchCategoriesUseCase
+
+function expectRight<L, R>(result: Either<L, R>): R {
+  expect(result.isRight()).toBe(true)
+
+  if (result.isLeft()) {
+    throw new Error('Expected a successful result')
+  }
+
+  return result.value
+}
 
 describe('Fetch Recent Categories', () => {
   beforeEach(() => {
@@ -28,7 +39,9 @@ describe('Fetch Recent Categories', () => {
       page: 1,
     })
 
-    expect(result.value?.categories).toEqual([
+    const value = expectRight(result)
+
+    expect(value.categories).toEqual([
       expect.objectContaining({ createdAt: new Date(2022, 0, 23) }),
       expect.objectContaining({ createdAt: new Date(2022, 0, 20) }),
       expect.objectContaining({ createdAt: new Date(2022, 0, 18) }),
@@ -44,8 +57,10 @@ describe('Fetch Recent Categories', () => {
       page: 2,
     })
 
-    expect(result.value?.categories).toHaveLength(2)
-    expect(result.value?.total).toBe(22)
+    const value = expectRight(result)
+
+    expect(value.categories).toHaveLength(2)
+    expect(value.total).toBe(22)
   })
 
   it('should respect a custom page size when fetching categories', async () => {
@@ -58,8 +73,10 @@ describe('Fetch Recent Categories', () => {
       pageSize: 10,
     })
 
-    expect(result.value?.categories).toHaveLength(10)
-    expect(result.value?.total).toBe(22)
+    const value = expectRight(result)
+
+    expect(value.categories).toHaveLength(10)
+    expect(value.total).toBe(22)
   })
 
   it('should not fetch deleted categories by default', async () => {
@@ -76,8 +93,10 @@ describe('Fetch Recent Categories', () => {
       page: 1,
     })
 
-    expect(result.value?.categories).toHaveLength(1)
-    expect(result.value?.categories[0].name).toBe('Active Category')
+    const value = expectRight(result)
+
+    expect(value.categories).toHaveLength(1)
+    expect(value.categories[0].name).toBe('Active Category')
   })
 
   it('should fetch deleted categories when includeDeleted is true', async () => {
@@ -96,7 +115,9 @@ describe('Fetch Recent Categories', () => {
       userRole: UserRole.MANAGER,
     })
 
-    expect(result.value?.categories).toHaveLength(2)
+    const value = expectRight(result)
+
+    expect(value.categories).toHaveLength(2)
   })
 
   it('should not allow reporter to fetch deleted categories', async () => {
@@ -130,16 +151,20 @@ describe('Fetch Recent Categories', () => {
       isActive: true,
     })
 
-    expect(resultActive.value?.categories).toHaveLength(1)
-    expect(resultActive.value?.categories[0].name).toBe('Active Category')
+    const activeValue = expectRight(resultActive)
+
+    expect(activeValue.categories).toHaveLength(1)
+    expect(activeValue.categories[0].name).toBe('Active Category')
 
     const resultInactive = await sut.execute({
       page: 1,
       isActive: false,
     })
 
-    expect(resultInactive.value?.categories).toHaveLength(1)
-    expect(resultInactive.value?.categories[0].name).toBe('Inactive Category')
+    const inactiveValue = expectRight(resultInactive)
+
+    expect(inactiveValue.categories).toHaveLength(1)
+    expect(inactiveValue.categories[0].name).toBe('Inactive Category')
   })
 
   it('should filter categories by query in name', async () => {
@@ -161,8 +186,10 @@ describe('Fetch Recent Categories', () => {
       query: 'electron',
     })
 
-    expect(result.value?.categories).toHaveLength(2)
-    expect(result.value?.categories).toEqual([
+    const value = expectRight(result)
+
+    expect(value.categories).toHaveLength(2)
+    expect(value.categories).toEqual([
       expect.objectContaining({ name: 'Electronic Devices' }),
       expect.objectContaining({ name: 'Electronics' }),
     ])
@@ -187,8 +214,10 @@ describe('Fetch Recent Categories', () => {
       query: 'electronics',
     })
 
-    expect(result.value?.categories).toHaveLength(1)
-    expect(result.value?.categories[0].name).toBe('Category A')
+    const value = expectRight(result)
+
+    expect(value.categories).toHaveLength(1)
+    expect(value.categories[0].name).toBe('Category A')
   })
 
   it('should combine multiple filters', async () => {
@@ -215,7 +244,9 @@ describe('Fetch Recent Categories', () => {
       isActive: true,
     })
 
-    expect(result.value?.categories).toHaveLength(1)
-    expect(result.value?.categories[0].name).toBe('Active Electronics')
+    const value = expectRight(result)
+
+    expect(value.categories).toHaveLength(1)
+    expect(value.categories[0].name).toBe('Active Electronics')
   })
 })

@@ -3,9 +3,20 @@ import { FetchLocationsUseCase } from './fetch-locations'
 import { makeLocation } from 'test/factories/make-location'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
+import { Either } from '@/core/either'
 
 let inMemoryLocationsRepository: InMemoryLocationsRepository
 let sut: FetchLocationsUseCase
+
+function expectRight<L, R>(result: Either<L, R>): R {
+  expect(result.isRight()).toBe(true)
+
+  if (result.isLeft()) {
+    throw new Error('Expected a successful result')
+  }
+
+  return result.value
+}
 
 describe('Fetch Recent Locations', () => {
   beforeEach(() => {
@@ -28,7 +39,9 @@ describe('Fetch Recent Locations', () => {
       page: 1,
     })
 
-    expect(result.value?.locations).toEqual([
+    const value = expectRight(result)
+
+    expect(value.locations).toEqual([
       expect.objectContaining({ createdAt: new Date(2022, 0, 23) }),
       expect.objectContaining({ createdAt: new Date(2022, 0, 20) }),
       expect.objectContaining({ createdAt: new Date(2022, 0, 18) }),
@@ -44,8 +57,10 @@ describe('Fetch Recent Locations', () => {
       page: 2,
     })
 
-    expect(result.value?.locations).toHaveLength(2)
-    expect(result.value?.total).toBe(22)
+    const value = expectRight(result)
+
+    expect(value.locations).toHaveLength(2)
+    expect(value.total).toBe(22)
   })
 
   it('should respect a custom page size when fetching locations', async () => {
@@ -58,8 +73,10 @@ describe('Fetch Recent Locations', () => {
       pageSize: 10,
     })
 
-    expect(result.value?.locations).toHaveLength(10)
-    expect(result.value?.total).toBe(22)
+    const value = expectRight(result)
+
+    expect(value.locations).toHaveLength(10)
+    expect(value.total).toBe(22)
   })
 
   it('should not fetch deleted locations by default', async () => {
@@ -76,8 +93,10 @@ describe('Fetch Recent Locations', () => {
       page: 1,
     })
 
-    expect(result.value?.locations).toHaveLength(1)
-    expect(result.value?.locations[0].name).toBe('Active Location')
+    const value = expectRight(result)
+
+    expect(value.locations).toHaveLength(1)
+    expect(value.locations[0].name).toBe('Active Location')
   })
 
   it('should fetch deleted locations when includeDeleted is true', async () => {
@@ -96,7 +115,9 @@ describe('Fetch Recent Locations', () => {
       userRole: UserRole.MANAGER,
     })
 
-    expect(result.value?.locations).toHaveLength(2)
+    const value = expectRight(result)
+
+    expect(value.locations).toHaveLength(2)
   })
 
   it('should not allow reporter to fetch deleted locations', async () => {
@@ -130,16 +151,20 @@ describe('Fetch Recent Locations', () => {
       isActive: true,
     })
 
-    expect(resultActive.value?.locations).toHaveLength(1)
-    expect(resultActive.value?.locations[0].name).toBe('Active Location')
+    const activeValue = expectRight(resultActive)
+
+    expect(activeValue.locations).toHaveLength(1)
+    expect(activeValue.locations[0].name).toBe('Active Location')
 
     const resultInactive = await sut.execute({
       page: 1,
       isActive: false,
     })
 
-    expect(resultInactive.value?.locations).toHaveLength(1)
-    expect(resultInactive.value?.locations[0].name).toBe('Inactive Location')
+    const inactiveValue = expectRight(resultInactive)
+
+    expect(inactiveValue.locations).toHaveLength(1)
+    expect(inactiveValue.locations[0].name).toBe('Inactive Location')
   })
 
   it('should filter locations by query in name', async () => {
@@ -158,8 +183,10 @@ describe('Fetch Recent Locations', () => {
       query: 'building',
     })
 
-    expect(result.value?.locations).toHaveLength(2)
-    expect(result.value?.locations).toEqual([
+    const value = expectRight(result)
+
+    expect(value.locations).toHaveLength(2)
+    expect(value.locations).toEqual([
       expect.objectContaining({ name: 'Building B' }),
       expect.objectContaining({ name: 'Building A' }),
     ])
@@ -184,8 +211,10 @@ describe('Fetch Recent Locations', () => {
       query: 'auditorium',
     })
 
-    expect(result.value?.locations).toHaveLength(1)
-    expect(result.value?.locations[0].name).toBe('Location B')
+    const value = expectRight(result)
+
+    expect(value.locations).toHaveLength(1)
+    expect(value.locations[0].name).toBe('Location B')
   })
 
   it('should combine multiple filters', async () => {
@@ -212,7 +241,9 @@ describe('Fetch Recent Locations', () => {
       isActive: true,
     })
 
-    expect(result.value?.locations).toHaveLength(1)
-    expect(result.value?.locations[0].name).toBe('Active Building')
+    const value = expectRight(result)
+
+    expect(value.locations).toHaveLength(1)
+    expect(value.locations[0].name).toBe('Active Building')
   })
 })
