@@ -1,28 +1,28 @@
 import { Entity } from '@/core/entities/entity'
 import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
-export enum HistoryAction {
+export enum ProblemHistoryAction {
   STATUS_CHANGED = 'STATUS_CHANGED',
   MAINTENANCE_TYPE_CHANGED = 'MAINTENANCE_TYPE_CHANGED',
   NOTE_ADDED = 'NOTE_ADDED',
   UPDATED = 'UPDATED',
 }
 
-export enum HistoryChangeField {
+export enum ProblemHistoryChangeField {
   STATUS = 'status',
   MAINTENANCE_TYPE = 'maintenanceType',
   NOTE = 'note',
 }
 
 export interface ProblemHistoryChange {
-  field: HistoryChangeField
+  field: ProblemHistoryChangeField
   oldValue?: string | null
   newValue?: string | null
 }
 
 export interface ProblemHistoryProps {
   problemId: UniqueEntityID
-  action: HistoryAction
+  action: ProblemHistoryAction
   userId: UniqueEntityID
   note?: string | null
   changes?: ProblemHistoryChange[] | null

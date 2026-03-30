@@ -12,8 +12,8 @@ import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { InMemoryProblemHistoryRepository } from 'test/repositories/in-memory-problem-history-repository'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { makeUser } from 'test/factories/make-user'
-import { HistoryAction } from '../../enterprise/entities/problems/problem-history'
-import { HistoryChangeField } from '../../enterprise/entities/problems/problem-history'
+import { ProblemHistoryAction } from '../../enterprise/entities/problems/problem-history'
+import { ProblemHistoryChangeField } from '../../enterprise/entities/problems/problem-history'
 import { ProblemHistory } from '../../enterprise/entities/problems/problem-history'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
@@ -70,11 +70,11 @@ describe('Manage Problem', () => {
     )
     expect(inMemoryProblemHistoryRepository.items).toHaveLength(1)
     expect(inMemoryProblemHistoryRepository.items[0].action).toBe(
-      HistoryAction.STATUS_CHANGED,
+      ProblemHistoryAction.STATUS_CHANGED,
     )
     expect(inMemoryProblemHistoryRepository.items[0].changes).toEqual([
       {
-        field: HistoryChangeField.STATUS,
+        field: ProblemHistoryChangeField.STATUS,
         oldValue: ProblemStatus.TO_ANALYSIS,
         newValue: ProblemStatus.IN_ANALYSIS,
       },
@@ -113,11 +113,11 @@ describe('Manage Problem', () => {
     )
     expect(inMemoryProblemHistoryRepository.items).toHaveLength(1)
     expect(inMemoryProblemHistoryRepository.items[0].action).toBe(
-      HistoryAction.MAINTENANCE_TYPE_CHANGED,
+      ProblemHistoryAction.MAINTENANCE_TYPE_CHANGED,
     )
     expect(inMemoryProblemHistoryRepository.items[0].changes).toEqual([
       {
-        field: HistoryChangeField.MAINTENANCE_TYPE,
+        field: ProblemHistoryChangeField.MAINTENANCE_TYPE,
         oldValue: null,
         newValue: MaintenanceType.CORRECTIVE,
       },
@@ -152,14 +152,14 @@ describe('Manage Problem', () => {
     expect(result.isRight()).toBe(true)
     expect(inMemoryProblemHistoryRepository.items).toHaveLength(1)
     expect(inMemoryProblemHistoryRepository.items[0].action).toBe(
-      HistoryAction.NOTE_ADDED,
+      ProblemHistoryAction.NOTE_ADDED,
     )
     expect(inMemoryProblemHistoryRepository.items[0].note).toBe(
       'This problem needs urgent attention',
     )
     expect(inMemoryProblemHistoryRepository.items[0].changes).toEqual([
       {
-        field: HistoryChangeField.NOTE,
+        field: ProblemHistoryChangeField.NOTE,
         oldValue: null,
         newValue: 'This problem needs urgent attention',
       },
@@ -232,24 +232,24 @@ describe('Manage Problem', () => {
     )
     expect(inMemoryProblemHistoryRepository.items).toHaveLength(1)
     expect(inMemoryProblemHistoryRepository.items[0].action).toBe(
-      HistoryAction.UPDATED,
+      ProblemHistoryAction.UPDATED,
     )
     expect(inMemoryProblemHistoryRepository.items[0].note).toBe(
       'Updated all fields',
     )
     expect(inMemoryProblemHistoryRepository.items[0].changes).toEqual([
       {
-        field: HistoryChangeField.STATUS,
+        field: ProblemHistoryChangeField.STATUS,
         oldValue: ProblemStatus.TO_ANALYSIS,
         newValue: ProblemStatus.ACCEPTED,
       },
       {
-        field: HistoryChangeField.MAINTENANCE_TYPE,
+        field: ProblemHistoryChangeField.MAINTENANCE_TYPE,
         oldValue: null,
         newValue: MaintenanceType.PREVENTIVE,
       },
       {
-        field: HistoryChangeField.NOTE,
+        field: ProblemHistoryChangeField.NOTE,
         oldValue: null,
         newValue: 'Updated all fields',
       },
@@ -335,12 +335,12 @@ describe('Manage Problem', () => {
       ProblemHistory.create(
         {
           problemId: problem.id,
-          action: HistoryAction.NOTE_ADDED,
+          action: ProblemHistoryAction.NOTE_ADDED,
           userId: manager.id,
           note: 'Previous note',
           changes: [
             {
-              field: HistoryChangeField.NOTE,
+              field: ProblemHistoryChangeField.NOTE,
               oldValue: null,
               newValue: 'Previous note',
             },
@@ -360,12 +360,12 @@ describe('Manage Problem', () => {
     expect(result.isRight()).toBe(true)
     expect(inMemoryProblemHistoryRepository.items).toHaveLength(2)
     expect(inMemoryProblemHistoryRepository.items[1].action).toBe(
-      HistoryAction.UPDATED,
+      ProblemHistoryAction.UPDATED,
     )
     expect(inMemoryProblemHistoryRepository.items[1].note).toBeNull()
     expect(inMemoryProblemHistoryRepository.items[1].changes).toEqual([
       {
-        field: HistoryChangeField.NOTE,
+        field: ProblemHistoryChangeField.NOTE,
         oldValue: 'Previous note',
         newValue: null,
       },

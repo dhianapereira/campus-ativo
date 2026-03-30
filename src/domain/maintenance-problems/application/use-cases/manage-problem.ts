@@ -13,8 +13,8 @@ import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 import { ProblemHistoryRepository } from '../repositories/problem-history-repository'
 import {
   ProblemHistory,
-  HistoryAction,
-  HistoryChangeField,
+  ProblemHistoryAction,
+  ProblemHistoryChangeField,
   ProblemHistoryChange,
 } from '../../enterprise/entities/problems/problem-history'
 import { UsersRepository } from '@/domain/accounts/application/repositories/users-repository'
@@ -87,7 +87,7 @@ export class ManageProblemUseCase {
       const oldStatus = problem.status
       problem.changeStatus(status)
       historyChanges.push({
-        field: HistoryChangeField.STATUS,
+        field: ProblemHistoryChangeField.STATUS,
         oldValue: oldStatus,
         newValue: status,
       })
@@ -98,7 +98,7 @@ export class ManageProblemUseCase {
         const oldType = problem.maintenanceType
         problem.changeMaintenanceType(maintenanceType)
         historyChanges.push({
-          field: HistoryChangeField.MAINTENANCE_TYPE,
+          field: ProblemHistoryChangeField.MAINTENANCE_TYPE,
           oldValue: oldType,
           newValue: maintenanceType,
         })
@@ -107,7 +107,7 @@ export class ManageProblemUseCase {
 
     if (note !== undefined && nextNote !== currentNote) {
       historyChanges.push({
-        field: HistoryChangeField.NOTE,
+        field: ProblemHistoryChangeField.NOTE,
         oldValue: currentNote ?? null,
         newValue: nextNote,
       })
@@ -136,18 +136,18 @@ export class ManageProblemUseCase {
     // A single-field update keeps a specific action; combined changes collapse
     // into UPDATED so consumers can treat the history entry as one mutation.
     if (changes.length > 1) {
-      return HistoryAction.UPDATED
+      return ProblemHistoryAction.UPDATED
     }
 
     switch (changes[0].field) {
-      case HistoryChangeField.STATUS:
-        return HistoryAction.STATUS_CHANGED
-      case HistoryChangeField.MAINTENANCE_TYPE:
-        return HistoryAction.MAINTENANCE_TYPE_CHANGED
-      case HistoryChangeField.NOTE:
+      case ProblemHistoryChangeField.STATUS:
+        return ProblemHistoryAction.STATUS_CHANGED
+      case ProblemHistoryChangeField.MAINTENANCE_TYPE:
+        return ProblemHistoryAction.MAINTENANCE_TYPE_CHANGED
+      case ProblemHistoryChangeField.NOTE:
         return changes[0].newValue
-          ? HistoryAction.NOTE_ADDED
-          : HistoryAction.UPDATED
+          ? ProblemHistoryAction.NOTE_ADDED
+          : ProblemHistoryAction.UPDATED
     }
   }
 
@@ -161,7 +161,7 @@ export class ManageProblemUseCase {
     // the latest user-visible note state.
     for (const entry of history) {
       const noteChange = entry.changes?.find(
-        (change) => change.field === HistoryChangeField.NOTE,
+        (change) => change.field === ProblemHistoryChangeField.NOTE,
       )
 
       if (noteChange) {

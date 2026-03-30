@@ -75,26 +75,46 @@ model Problem {
   @@map("problems")
 }
 
-enum HistoryAction {
+enum ProblemHistoryAction {
   STATUS_CHANGED
   MAINTENANCE_TYPE_CHANGED
   NOTE_ADDED
   UPDATED
 }
 
+enum ProblemHistoryChangeField {
+  STATUS
+  MAINTENANCE_TYPE
+  NOTE
+}
+
 model ProblemHistory {
   id        String        @id @default(uuid())
   problemId String        @map("problem_id")
-  action    HistoryAction
+  action    ProblemHistoryAction
   userId    String        @map("user_id")
   note      String?
-  changes   Json?
   createdAt DateTime      @default(now()) @map("created_at")
 
-  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Restrict)
+  problem Problem                @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  user    User                   @relation(fields: [userId], references: [id], onDelete: Restrict)
+  changes ProblemHistoryChange[]
 
   @@map("problem_history")
+}
+
+model ProblemHistoryChange {
+  id        String             @id @default(uuid())
+  historyId String             @map("history_id")
+  position  Int
+  field     ProblemHistoryChangeField
+  oldValue  String?            @map("old_value")
+  newValue  String?            @map("new_value")
+
+  history ProblemHistory @relation(fields: [historyId], references: [id], onDelete: Cascade)
+
+  @@unique([historyId, position])
+  @@map("problem_history_changes")
 }
 
 model Attachment {

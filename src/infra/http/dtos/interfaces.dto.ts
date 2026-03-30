@@ -365,14 +365,14 @@ export enum MaintenanceTypeEnum {
   CORRECTIVE = 'CORRECTIVE',
 }
 
-export enum HistoryActionEnum {
+export enum ProblemHistoryActionEnum {
   STATUS_CHANGED = 'STATUS_CHANGED',
   MAINTENANCE_TYPE_CHANGED = 'MAINTENANCE_TYPE_CHANGED',
   NOTE_ADDED = 'NOTE_ADDED',
   UPDATED = 'UPDATED',
 }
 
-export enum HistoryChangeFieldEnum {
+export enum ProblemHistoryChangeFieldEnum {
   STATUS = 'status',
   MAINTENANCE_TYPE = 'maintenanceType',
   NOTE = 'note',
@@ -381,10 +381,10 @@ export enum HistoryChangeFieldEnum {
 export class ProblemHistoryChangeResponse {
   @ApiProperty({
     description: 'Campo alterado no registro de histórico',
-    enum: HistoryChangeFieldEnum,
-    example: HistoryChangeFieldEnum.STATUS,
+    enum: ProblemHistoryChangeFieldEnum,
+    example: ProblemHistoryChangeFieldEnum.STATUS,
   })
-  field!: HistoryChangeFieldEnum
+  field!: ProblemHistoryChangeFieldEnum
 
   @ApiProperty({
     description: 'Valor antigo da alteração',
@@ -483,10 +483,10 @@ export class ProblemHistoryEntryResponse {
 
   @ApiProperty({
     description: 'Ação realizada no histórico do problema',
-    enum: HistoryActionEnum,
-    example: HistoryActionEnum.NOTE_ADDED,
+    enum: ProblemHistoryActionEnum,
+    example: ProblemHistoryActionEnum.NOTE_ADDED,
   })
-  action!: HistoryActionEnum
+  action!: ProblemHistoryActionEnum
 
   @ApiProperty({
     description: 'ID do usuário que realizou a ação',

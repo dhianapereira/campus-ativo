@@ -21,6 +21,13 @@ export class PrismaProblemHistoryRepository implements ProblemHistoryRepository 
       where: {
         problemId,
       },
+      include: {
+        changes: {
+          orderBy: {
+            position: 'asc',
+          },
+        },
+      },
       orderBy: {
         createdAt: 'desc',
       },
