@@ -72,6 +72,22 @@
         ]
       }
     },
+    "/health": {
+      "get": {
+        "description": "Retorna o status básico da API para uso em health checks",
+        "operationId": "HealthController_handle",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Aplicação saudável"
+          }
+        },
+        "summary": "Verificar saúde da aplicação",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
     "/sessions/logout": {
       "post": {
         "description": "Realiza logout do usuário (token deve ser removido no cliente)",

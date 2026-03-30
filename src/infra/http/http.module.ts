@@ -68,12 +68,14 @@ import { ManageProblemController } from './controllers/manage-problem.controller
 import { ManageProblemUseCase } from '@/domain/maintenance-problems/application/use-cases/manage-problem'
 import { ImportProblemsFromCsvController } from './controllers/import-problems-from-csv.controller'
 import { ImportProblemsFromCsvUseCase } from '@/domain/maintenance-problems/application/use-cases/import-problems-from-csv'
+import { HealthController } from './controllers/health.controller'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, UploadModule],
   controllers: [
     CreateAccountController,
     AuthenticateController,
+    HealthController,
     LogoutController,
     GetUserProfileController,
     FetchUsersController,

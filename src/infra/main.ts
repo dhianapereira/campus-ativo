@@ -15,6 +15,14 @@ async function generateOpenApiSpec(document: OpenAPIObject) {
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
+  const env = app.get(EnvService)
+  const corsOrigin = env.get('CORS_ORIGIN')
+
+  if (corsOrigin) {
+    app.enableCors({
+      origin: corsOrigin.split(',').map((origin) => origin.trim()),
+    })
+  }
 
   const config = new DocumentBuilder()
     .setTitle('Campus Ativo API')
@@ -41,10 +49,9 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, document)
 
-  const env = app.get(EnvService)
   const port = env.get('PORT')
 
-  await app.listen(port)
+  await app.listen(port, '0.0.0.0')
   console.log(`HTTP server running on port ${port}`)
 }
 

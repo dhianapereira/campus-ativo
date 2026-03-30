@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: campus-ativo-api
+    runtime: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_PRIVATE_KEY
+        sync: false
+      - key: JWT_PUBLIC_KEY
+        sync: false
+      - key: AWS_REGION
+        sync: false
+      - key: AWS_ACCESS_KEY_ID
+        sync: false
+      - key: AWS_SECRET_ACCESS_KEY
+        sync: false
+      - key: AWS_S3_BUCKET
+        sync: false
+      - key: AWS_S3_PREFIX
+        value: campus-ativo
+      - key: AWS_S3_SIGNED_URL_TTL
+        value: "900"
+      - key: SYSTEM_USER_EMAIL
+        sync: false
+      - key: SYSTEM_USER_NAME
+        sync: false
+      - key: SYSTEM_USER_POSITION
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false

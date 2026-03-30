@@ -67,6 +67,7 @@ Variáveis obrigatórias para subir a aplicação:
 Variáveis opcionais:
 
 - `PORT` (padrão `3333`)
+- `CORS_ORIGIN` (origens liberadas no CORS, separadas por vírgula)
 - `AWS_S3_PREFIX` (padrão no exemplo: `campus-ativo`)
 - `AWS_S3_SIGNED_URL_TTL` (padrão `900`, em segundos)
 
@@ -152,6 +153,7 @@ Por padrão, a aplicação sobe em `http://localhost:3333`.
 
 Com a aplicação rodando:
 
+- Health check: `http://localhost:3333/health`
 - Swagger UI: `http://localhost:3333/api`
 - OpenAPI JSON servido pela aplicação: `http://localhost:3333/api-json`
 
@@ -173,4 +175,46 @@ npm run format:check
 npm run test
 npm run test:watch
 npm run openapi
+```
+
+## Deploy no Render
+
+O repositório está preparado para deploy com Docker no Render.
+
+### Como criar o serviço
+
+1. Crie um `Web Service` no Render usando este repositório.
+2. Selecione `Docker` como runtime.
+3. Confirme que o `Dockerfile` da raiz será usado.
+4. Configure o health check como `/health`.
+5. Defina as variáveis de ambiente obrigatórias.
+
+O container executa `prisma migrate deploy` antes de subir a API, então as migrations são aplicadas automaticamente a cada deploy.
+
+### Variáveis recomendadas no Render
+
+- `DATABASE_URL`
+- `JWT_PRIVATE_KEY`
+- `JWT_PUBLIC_KEY`
+- `AWS_REGION`
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_S3_BUCKET`
+- `AWS_S3_PREFIX`
+- `AWS_S3_SIGNED_URL_TTL`
+- `SYSTEM_USER_EMAIL`
+- `SYSTEM_USER_NAME`
+- `SYSTEM_USER_POSITION`
+- `CORS_ORIGIN`
+
+Exemplo de `CORS_ORIGIN` para frontend na Vercel:
+
+```bash
+https://seu-app.vercel.app
+```
+
+Se quiser liberar mais de uma origem:
+
+```bash
+https://seu-app.vercel.app,https://www.seu-dominio.com
 ```
