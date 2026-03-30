@@ -43,9 +43,9 @@ export class S3Uploader implements ImageUploader {
           ContentType: fileType,
         }),
       )
-    } catch (error) {
+    } catch {
       throw new InternalServerErrorException(
-        this.formatS3Error('enviar o arquivo para o S3', error),
+        'Não foi possível enviar o arquivo no momento.',
       )
     }
 
@@ -73,23 +73,5 @@ export class S3Uploader implements ImageUploader {
     )
 
     return `${parts.join('/')}/${randomUUID()}-${safeFileName}`
-  }
-
-  private formatS3Error(action: string, error: unknown) {
-    if (
-      error &&
-      typeof error === 'object' &&
-      'name' in error &&
-      typeof error.name === 'string'
-    ) {
-      const details =
-        'message' in error && typeof error.message === 'string'
-          ? ` (${error.message})`
-          : ''
-
-      return `Não foi possível ${action}: ${error.name}${details}`
-    }
-
-    return `Não foi possível ${action}.`
   }
 }

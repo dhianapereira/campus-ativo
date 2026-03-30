@@ -16,6 +16,10 @@ import {
   AuthenticateRequest,
   AuthenticateResponse,
 } from '../dtos/interfaces.dto'
+import {
+  AUTH_INVALID_CREDENTIALS_MESSAGE,
+  GENERIC_INVALID_REQUEST_MESSAGE,
+} from './controller-error-messages'
 
 const authenticateBodySchema = z.object({
   email: z.string().email(),
@@ -57,9 +61,9 @@ export class AuthenticateController {
 
       switch (error.constructor) {
         case WrongCredentialsError:
-          throw new UnauthorizedException(error.message)
+          throw new UnauthorizedException(AUTH_INVALID_CREDENTIALS_MESSAGE)
         default:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(GENERIC_INVALID_REQUEST_MESSAGE)
       }
     }
 

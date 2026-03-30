@@ -20,6 +20,11 @@ import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
+import {
+  ACCOUNT_DELETE_FORBIDDEN_MESSAGE,
+  GENERIC_INVALID_REQUEST_MESSAGE,
+  USER_NOT_FOUND_MESSAGE,
+} from './controller-error-messages'
 
 @Controller('/users/:id')
 @ApiTags('User Profile')
@@ -72,11 +77,11 @@ export class DeleteUserAccountController {
 
       switch (error.constructor) {
         case ResourceNotFoundError:
-          throw new NotFoundException(error.message)
+          throw new NotFoundException(USER_NOT_FOUND_MESSAGE)
         case NotAllowedError:
-          throw new ForbiddenException(error.message)
+          throw new ForbiddenException(ACCOUNT_DELETE_FORBIDDEN_MESSAGE)
         default:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(GENERIC_INVALID_REQUEST_MESSAGE)
       }
     }
 

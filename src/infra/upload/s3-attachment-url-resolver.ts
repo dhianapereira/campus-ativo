@@ -39,28 +39,10 @@ export class S3AttachmentUrlResolver implements AttachmentUrlResolver {
           expiresIn: this.signedUrlTtl,
         },
       )
-    } catch (error) {
+    } catch {
       throw new InternalServerErrorException(
-        this.formatS3Error('gerar a URL assinada do anexo', error),
+        'Não foi possível gerar a URL do anexo no momento.',
       )
     }
-  }
-
-  private formatS3Error(action: string, error: unknown) {
-    if (
-      error &&
-      typeof error === 'object' &&
-      'name' in error &&
-      typeof error.name === 'string'
-    ) {
-      const details =
-        'message' in error && typeof error.message === 'string'
-          ? ` (${error.message})`
-          : ''
-
-      return `Não foi possível ${action}: ${error.name}${details}`
-    }
-
-    return `Não foi possível ${action}.`
   }
 }

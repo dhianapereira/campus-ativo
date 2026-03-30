@@ -15,6 +15,10 @@ import { InvalidEmailDomainError } from '@/domain/accounts/application/use-cases
 import { InvalidPasswordError } from '@/domain/accounts/application/use-cases/errors/invalid-password-error'
 import { Public } from '@/infra/auth/public'
 import { CreateAccountRequest } from '../dtos/interfaces.dto'
+import {
+  ACCOUNT_CREATION_INVALID_MESSAGE,
+  ACCOUNT_CREATION_PASSWORD_MESSAGE,
+} from './controller-error-messages'
 
 const createAccountBodySchema = z.object({
   name: z.string(),
@@ -71,14 +75,13 @@ export class CreateAccountController {
       switch (error.constructor) {
         case UserAlreadyExistsError:
           // Keep the response generic so signup cannot be used for email enumeration.
-          throw new ConflictException(
-            'Não foi possível completar o cadastro. Verifique suas informações.',
-          )
+          throw new ConflictException(ACCOUNT_CREATION_INVALID_MESSAGE)
         case InvalidEmailDomainError:
+          throw new BadRequestException(ACCOUNT_CREATION_INVALID_MESSAGE)
         case InvalidPasswordError:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(ACCOUNT_CREATION_PASSWORD_MESSAGE)
         default:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(ACCOUNT_CREATION_INVALID_MESSAGE)
       }
     }
   }

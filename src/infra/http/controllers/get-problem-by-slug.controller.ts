@@ -22,6 +22,7 @@ import { ProblemPresenter } from '../presenters/problem-presenter'
 import { ProblemResponse } from '../dtos/interfaces.dto'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { AttachmentUrlResolver } from '@/domain/maintenance-problems/application/upload/attachment-url-resolver'
+import { PROBLEM_NOT_FOUND_MESSAGE } from './controller-error-messages'
 
 @Controller('/problems/:slug')
 @ApiTags('Problems')
@@ -68,7 +69,7 @@ export class GetProblemBySlugController {
       const error = result.value
 
       if (error instanceof ResourceNotFoundError) {
-        throw new NotFoundException(error.message)
+        throw new NotFoundException(PROBLEM_NOT_FOUND_MESSAGE)
       }
 
       throw error
@@ -106,19 +107,19 @@ export class GetProblemBySlugController {
 
     if (!location) {
       throw new InternalServerErrorException(
-        'Localização associada ao problema não encontrada',
+        'Não foi possível carregar o problema no momento.',
       )
     }
 
     if (!reporter) {
       throw new InternalServerErrorException(
-        'Autor associado ao problema não encontrado',
+        'Não foi possível carregar o problema no momento.',
       )
     }
 
     if (!category) {
       throw new InternalServerErrorException(
-        'Categoria associada ao problema não encontrada',
+        'Não foi possível carregar o problema no momento.',
       )
     }
 

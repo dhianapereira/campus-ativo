@@ -27,6 +27,12 @@ import { CannotModifyOwnAccountError } from '@/core/errors/cannot-modify-own-acc
 import { RolesGuard } from '@/infra/auth/roles.guard'
 import { Roles } from '@/infra/auth/roles.decorator'
 import { UserRole } from '@/domain/accounts/enterprise/entities/user'
+import {
+  GENERIC_INVALID_REQUEST_MESSAGE,
+  USER_NOT_FOUND_MESSAGE,
+  USER_ROLE_FORBIDDEN_MESSAGE,
+  USER_ROLE_SELF_FORBIDDEN_MESSAGE,
+} from './controller-error-messages'
 
 const changeUserRoleBodySchema = z.object({
   role: z.enum(['REPORTER', 'MANAGER', 'DIRECTOR', 'ADMIN']),
@@ -114,13 +120,13 @@ export class ChangeUserRoleController {
 
       switch (error.constructor) {
         case ResourceNotFoundError:
-          throw new NotFoundException(error.message)
+          throw new NotFoundException(USER_NOT_FOUND_MESSAGE)
         case NotAllowedError:
-          throw new ForbiddenException(error.message)
+          throw new ForbiddenException(USER_ROLE_FORBIDDEN_MESSAGE)
         case CannotModifyOwnAccountError:
-          throw new ForbiddenException(error.message)
+          throw new ForbiddenException(USER_ROLE_SELF_FORBIDDEN_MESSAGE)
         default:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(GENERIC_INVALID_REQUEST_MESSAGE)
       }
     }
 

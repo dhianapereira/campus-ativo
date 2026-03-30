@@ -19,6 +19,11 @@ import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ProblemNotDeletableError } from '@/core/errors/problem-not-deletable-error'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
+import {
+  PROBLEM_NOT_DELETABLE_MESSAGE,
+  PROBLEM_NOT_FOUND_MESSAGE,
+  PROBLEM_TRASH_FORBIDDEN_MESSAGE,
+} from './controller-error-messages'
 
 @Controller('/problems/:id/trash')
 @ApiTags('Problems')
@@ -65,20 +70,18 @@ export class TrashProblemController {
       const error = result.value
 
       if (error instanceof ResourceNotFoundError) {
-        throw new BadRequestException('Problem not found')
+        throw new BadRequestException(PROBLEM_NOT_FOUND_MESSAGE)
       }
 
       if (error instanceof NotAllowedError) {
-        throw new ForbiddenException(
-          'Only the reporter can move the problem to trash',
-        )
+        throw new ForbiddenException(PROBLEM_TRASH_FORBIDDEN_MESSAGE)
       }
 
       if (error instanceof ProblemNotDeletableError) {
-        throw new BadRequestException(error.message)
+        throw new BadRequestException(PROBLEM_NOT_DELETABLE_MESSAGE)
       }
 
-      throw new BadRequestException()
+      throw new BadRequestException(PROBLEM_NOT_DELETABLE_MESSAGE)
     }
   }
 }

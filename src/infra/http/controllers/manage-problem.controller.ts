@@ -29,6 +29,12 @@ import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { ManageProblemRequest } from '../dtos/interfaces.dto'
+import {
+  GENERIC_INVALID_REQUEST_MESSAGE,
+  PROBLEM_MANAGE_FORBIDDEN_MESSAGE,
+  PROBLEM_MANAGE_INVALID_MESSAGE,
+  PROBLEM_NOT_FOUND_MESSAGE,
+} from './controller-error-messages'
 
 const manageProblemBodySchema = z.object({
   status: z.nativeEnum(ProblemStatus).optional(),
@@ -90,11 +96,15 @@ export class ManageProblemController {
 
       switch (error.constructor) {
         case ResourceNotFoundError:
-          throw new NotFoundException(error.message)
+          throw new NotFoundException(PROBLEM_NOT_FOUND_MESSAGE)
         case NotAllowedError:
-          throw new ForbiddenException(error.message)
+          throw new ForbiddenException(PROBLEM_MANAGE_FORBIDDEN_MESSAGE)
         default:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(
+            body.status || body.maintenanceType || body.note
+              ? PROBLEM_MANAGE_INVALID_MESSAGE
+              : GENERIC_INVALID_REQUEST_MESSAGE,
+          )
       }
     }
   }

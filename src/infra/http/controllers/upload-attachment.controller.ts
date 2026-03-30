@@ -19,6 +19,7 @@ import {
 } from '@nestjs/swagger'
 import { UploadAttachmentUseCase } from '@/domain/maintenance-problems/application/use-cases/upload-attachment'
 import { AttachmentUrlResolver } from '@/domain/maintenance-problems/application/upload/attachment-url-resolver'
+import { INVALID_ATTACHMENT_TYPE_MESSAGE } from './controller-error-messages'
 
 interface UploadedFile {
   originalname: string
@@ -96,8 +97,7 @@ export class UploadAttachmentController {
     })
 
     if (result.isLeft()) {
-      const error = result.value
-      throw new BadRequestException(error.message)
+      throw new BadRequestException(INVALID_ATTACHMENT_TYPE_MESSAGE)
     }
 
     const { attachment } = result.value

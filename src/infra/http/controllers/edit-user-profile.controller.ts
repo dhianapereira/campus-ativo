@@ -24,6 +24,11 @@ import { UserPayload } from '@/infra/auth/jwt.strategy'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
+import {
+  GENERIC_INVALID_REQUEST_MESSAGE,
+  PROFILE_UPDATE_FORBIDDEN_MESSAGE,
+  USER_NOT_FOUND_MESSAGE,
+} from './controller-error-messages'
 
 const editUserProfileBodySchema = z.object({
   name: z.string().min(1),
@@ -115,11 +120,11 @@ export class EditUserProfileController {
 
       switch (error.constructor) {
         case ResourceNotFoundError:
-          throw new NotFoundException(error.message)
+          throw new NotFoundException(USER_NOT_FOUND_MESSAGE)
         case NotAllowedError:
-          throw new ForbiddenException(error.message)
+          throw new ForbiddenException(PROFILE_UPDATE_FORBIDDEN_MESSAGE)
         default:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(GENERIC_INVALID_REQUEST_MESSAGE)
       }
     }
 

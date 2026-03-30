@@ -27,6 +27,13 @@ import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { WrongCredentialsError } from '@/domain/accounts/application/use-cases/errors/wrong-credentials-error'
 import { InvalidPasswordError } from '@/domain/accounts/application/use-cases/errors/invalid-password-error'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
+import {
+  AUTH_INVALID_CREDENTIALS_MESSAGE,
+  GENERIC_INVALID_REQUEST_MESSAGE,
+  PASSWORD_CHANGE_FORBIDDEN_MESSAGE,
+  PASSWORD_CHANGE_INVALID_MESSAGE,
+  USER_NOT_FOUND_MESSAGE,
+} from './controller-error-messages'
 
 const changeUserPasswordBodySchema = z.object({
   oldPassword: z.string().min(6),
@@ -124,15 +131,15 @@ export class ChangeUserPasswordController {
 
       switch (error.constructor) {
         case ResourceNotFoundError:
-          throw new NotFoundException(error.message)
+          throw new NotFoundException(USER_NOT_FOUND_MESSAGE)
         case NotAllowedError:
-          throw new ForbiddenException(error.message)
+          throw new ForbiddenException(PASSWORD_CHANGE_FORBIDDEN_MESSAGE)
         case WrongCredentialsError:
-          throw new UnauthorizedException(error.message)
+          throw new UnauthorizedException(AUTH_INVALID_CREDENTIALS_MESSAGE)
         case InvalidPasswordError:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(PASSWORD_CHANGE_INVALID_MESSAGE)
         default:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(GENERIC_INVALID_REQUEST_MESSAGE)
       }
     }
 

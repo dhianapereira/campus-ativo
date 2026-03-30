@@ -16,6 +16,10 @@ import { GetUserProfileUseCase } from '@/domain/accounts/application/use-cases/g
 import { UserProfilePresenter } from '../presenters/user-profile-presenter'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { UserProfileResponse } from '../dtos/interfaces.dto'
+import {
+  GENERIC_INVALID_REQUEST_MESSAGE,
+  USER_NOT_FOUND_MESSAGE,
+} from './controller-error-messages'
 
 @Controller('/profile')
 @ApiTags('User Profile')
@@ -45,9 +49,9 @@ export class GetUserProfileController {
 
       switch (error.constructor) {
         case ResourceNotFoundError:
-          throw new NotFoundException(error.message)
+          throw new NotFoundException(USER_NOT_FOUND_MESSAGE)
         default:
-          throw new BadRequestException(error.message)
+          throw new BadRequestException(GENERIC_INVALID_REQUEST_MESSAGE)
       }
     }
 
