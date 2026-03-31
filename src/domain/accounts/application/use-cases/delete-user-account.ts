@@ -4,6 +4,7 @@ import { UsersRepository } from '../repositories/users-repository'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ProblemsRepository } from '@/domain/maintenance-problems/application/repositories/problems-repository'
+import { AttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/attachments-repository'
 import { RoleHierarchy } from '@/core/utils/role-hierarchy'
 
 interface DeleteUserAccountUseCaseRequest {
@@ -21,6 +22,7 @@ export class DeleteUserAccountUseCase {
   constructor(
     private usersRepository: UsersRepository,
     private problemsRepository: ProblemsRepository,
+    private attachmentsRepository: AttachmentsRepository,
   ) {}
 
   async execute({
@@ -50,6 +52,10 @@ export class DeleteUserAccountUseCase {
     // Reported problems are reassigned instead of deleted so existing records
     // and imports keep a valid reporter reference after account removal.
     await this.problemsRepository.migrateUserProblems(
+      userId,
+      systemUser.id.toValue(),
+    )
+    await this.attachmentsRepository.migrateUserAttachments(
       userId,
       systemUser.id.toValue(),
     )

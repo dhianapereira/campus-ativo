@@ -1,4 +1,5 @@
 import { AttachmentsRepository } from '@/domain/maintenance-problems/application/repositories/attachments-repository'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { Attachment } from '@/domain/maintenance-problems/enterprise/entities/attachment'
 
 export class InMemoryAttachmentsRepository implements AttachmentsRepository {
@@ -42,6 +43,27 @@ export class InMemoryAttachmentsRepository implements AttachmentsRepository {
     )
 
     return attachment ?? null
+  }
+
+  async migrateUserAttachments(
+    fromUserId: string,
+    toUserId: string,
+  ): Promise<void> {
+    this.items = this.items.map((attachment) => {
+      if (attachment.ownerId.toValue() !== fromUserId) {
+        return attachment
+      }
+
+      return Attachment.create(
+        {
+          title: attachment.title,
+          link: attachment.link,
+          ownerId: new UniqueEntityID(toUserId),
+          createdAt: attachment.createdAt,
+        },
+        attachment.id,
+      )
+    })
   }
 
   // Helper method for tests to associate attachments with problems

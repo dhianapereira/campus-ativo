@@ -11,5 +11,9 @@ export abstract class AttachmentsRepository {
     id: string,
     ownerId: string,
   ): Promise<Attachment | null>
+  abstract migrateUserAttachments(
+    fromUserId: string,
+    toUserId: string,
+  ): Promise<void>
   abstract delete(attachment: Attachment): Promise<void>
 }

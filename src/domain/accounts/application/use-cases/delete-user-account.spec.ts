@@ -2,13 +2,17 @@ import { makeSystemUser, makeUser } from 'test/factories/make-user'
 import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repository'
 import { InMemoryProblemsRepository } from 'test/repositories/in-memory-problems-repository'
 import { InMemoryProblemAttachmentLinksStore } from 'test/repositories/in-memory-problem-attachment-links-store'
+import { InMemoryAttachmentsRepository } from 'test/repositories/in-memory-attachments-repository'
 import { DeleteUserAccountUseCase } from './delete-user-account'
 import { NotAllowedError } from '@/core/errors/not-allowed-error'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { UserRole } from '../../enterprise/entities/user'
+import { Attachment } from '@/domain/maintenance-problems/enterprise/entities/attachment'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 let inMemoryUsersRepository: InMemoryUsersRepository
 let inMemoryProblemsRepository: InMemoryProblemsRepository
+let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let sut: DeleteUserAccountUseCase
 
 describe('Delete User Account', () => {
@@ -17,9 +21,11 @@ describe('Delete User Account', () => {
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
       new InMemoryProblemAttachmentLinksStore(),
     )
+    inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     sut = new DeleteUserAccountUseCase(
       inMemoryUsersRepository,
       inMemoryProblemsRepository,
+      inMemoryAttachmentsRepository,
     )
   })
 
@@ -134,6 +140,35 @@ describe('Delete User Account', () => {
     expect(result.isRight()).toBe(true)
     expect(inMemoryUsersRepository.items).toHaveLength(1)
     expect(inMemoryUsersRepository.items[0].id.toValue()).toBe(
+      systemUser.id.toValue(),
+    )
+  })
+
+  it('should migrate user attachments to system user when deleting account', async () => {
+    const user = makeUser({}, new UniqueEntityID('user-1'))
+    const systemUser = makeSystemUser({}, new UniqueEntityID('system-1'))
+
+    inMemoryUsersRepository.items.push(user)
+    inMemoryUsersRepository.items.push(systemUser)
+    inMemoryAttachmentsRepository.items.push(
+      Attachment.create(
+        {
+          title: 'evidence.png',
+          link: 'https://example.com/evidence.png',
+          ownerId: user.id,
+        },
+        new UniqueEntityID('attachment-1'),
+      ),
+    )
+
+    const result = await sut.execute({
+      userId: user.id.toValue(),
+      executorId: user.id.toValue(),
+    })
+
+    expect(result.isRight()).toBe(true)
+    expect(inMemoryAttachmentsRepository.items).toHaveLength(1)
+    expect(inMemoryAttachmentsRepository.items[0].ownerId.toValue()).toBe(
       systemUser.id.toValue(),
     )
   })

@@ -62,6 +62,20 @@ export class PrismaAttachmentsRepository implements AttachmentsRepository {
     return PrismaAttachmentMapper.toDomain(attachment)
   }
 
+  async migrateUserAttachments(
+    fromUserId: string,
+    toUserId: string,
+  ): Promise<void> {
+    await this.prisma.attachment.updateMany({
+      where: {
+        ownerId: fromUserId,
+      },
+      data: {
+        ownerId: toUserId,
+      },
+    })
+  }
+
   async delete(attachment: Attachment): Promise<void> {
     await this.prisma.attachment.delete({
       where: {
