@@ -33,6 +33,7 @@ model User {
 
   problems Problem[]
   history  ProblemHistory[]
+  attachments Attachment[]
 
   @@map("users")
 }
@@ -118,11 +119,14 @@ model ProblemHistoryChange {
 }
 
 model Attachment {
-  id        String  @id @default(uuid())
+  id        String   @id @default(uuid())
   title     String
   url       String
-  problemId String? @map("problem_id")
+  ownerId   String   @map("owner_id")
+  problemId String?  @map("problem_id")
+  createdAt DateTime @default(now()) @map("created_at")
 
+  owner   User     @relation(fields: [ownerId], references: [id], onDelete: Restrict)
   problem Problem? @relation(fields: [problemId], references: [id])
 
   @@map("attachments")

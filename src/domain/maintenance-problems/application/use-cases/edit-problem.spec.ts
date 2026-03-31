@@ -14,14 +14,12 @@ import { makeCategory } from 'test/factories/make-category'
 import { makeLocation } from 'test/factories/make-location'
 import { ResourceNotFoundError } from '@/core/errors/resource-not-found-error'
 import { Attachment } from '../../enterprise/entities/attachment'
-import { FakeUploader } from 'test/upload/fake-uploader'
 
 let inMemoryProblemsRepository: InMemoryProblemsRepository
 let inMemoryProblemAttachmentLinksStore: InMemoryProblemAttachmentLinksStore
 let inMemoryAttachmentsRepository: InMemoryAttachmentsRepository
 let inMemoryCategoriesRepository: InMemoryCategoriesRepository
 let inMemoryLocationsRepository: InMemoryLocationsRepository
-let fakeUploader: FakeUploader
 let sut: EditProblemUseCase
 
 describe('Edit Problem', () => {
@@ -31,7 +29,6 @@ describe('Edit Problem', () => {
     inMemoryAttachmentsRepository = new InMemoryAttachmentsRepository()
     inMemoryCategoriesRepository = new InMemoryCategoriesRepository()
     inMemoryLocationsRepository = new InMemoryLocationsRepository()
-    fakeUploader = new FakeUploader()
     inMemoryProblemsRepository = new InMemoryProblemsRepository(
       inMemoryProblemAttachmentLinksStore,
     )
@@ -40,7 +37,6 @@ describe('Edit Problem', () => {
       inMemoryAttachmentsRepository,
       inMemoryLocationsRepository,
       inMemoryCategoriesRepository,
-      fakeUploader,
     )
   })
 
@@ -81,6 +77,7 @@ describe('Edit Problem', () => {
         {
           title: 'attachment-1',
           link: 'https://example.com/1.png',
+          ownerId: new UniqueEntityID('reporter-1'),
         },
         new UniqueEntityID('1'),
       ),
@@ -88,6 +85,7 @@ describe('Edit Problem', () => {
         {
           title: 'attachment-2',
           link: 'https://example.com/2.png',
+          ownerId: new UniqueEntityID('reporter-1'),
         },
         new UniqueEntityID('2'),
       ),
@@ -135,9 +133,6 @@ describe('Edit Problem', () => {
         attachment.id.toValue(),
       ),
     ).toEqual(['1'])
-    expect(fakeUploader.deletedStorageKeys).toEqual([
-      'https://example.com/2.png',
-    ])
   })
 
   it('should not be able to edit a problem from another user', async () => {

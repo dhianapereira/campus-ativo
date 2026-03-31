@@ -70,6 +70,8 @@ import { ImportProblemsFromCsvController } from './controllers/import-problems-f
 import { ImportProblemsFromCsvUseCase } from '@/domain/maintenance-problems/application/use-cases/import-problems-from-csv'
 import { HealthController } from './controllers/health.controller'
 import { RateLimitGuard } from './rate-limit/rate-limit.guard'
+import { DeleteOrphanAttachmentController } from './controllers/delete-orphan-attachment.controller'
+import { DeleteOrphanAttachmentUseCase } from '@/domain/maintenance-problems/application/use-cases/delete-orphan-attachment'
 
 @Module({
   imports: [DatabaseModule, CryptographyModule, UploadModule],
@@ -107,6 +109,7 @@ import { RateLimitGuard } from './rate-limit/rate-limit.guard'
     ManageProblemController,
     ImportProblemsFromCsvController,
     UploadAttachmentController,
+    DeleteOrphanAttachmentController,
     GetDashboardMetricsController,
     GetDashboardReportController,
   ],
@@ -142,6 +145,7 @@ import { RateLimitGuard } from './rate-limit/rate-limit.guard'
     ManageProblemUseCase,
     ImportProblemsFromCsvUseCase,
     UploadAttachmentUseCase,
+    DeleteOrphanAttachmentUseCase,
     GetDashboardMetricsUseCase,
     RateLimitGuard,
   ],

@@ -329,6 +329,7 @@ export class ImportProblemsFromCsvUseCase {
       if (normalizedRow.imageUrl) {
         const attachmentResult = await this.uploadRemoteImage(
           normalizedRow.imageUrl,
+          reporterId,
         )
 
         if ('error' in attachmentResult) {
@@ -534,6 +535,7 @@ export class ImportProblemsFromCsvUseCase {
 
   private async uploadRemoteImage(
     imageUrl: string,
+    ownerId: string,
   ): Promise<{ attachmentId: string } | { error: string }> {
     const safetyCheck = await this.validateRemoteImageUrl(imageUrl)
 
@@ -602,6 +604,7 @@ export class ImportProblemsFromCsvUseCase {
     }
 
     const uploadResult = await this.uploadAttachmentUseCase.execute({
+      ownerId,
       fileName: this.buildImageFileName(imageUrl, fileType),
       fileType,
       body,

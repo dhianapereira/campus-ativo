@@ -33,6 +33,17 @@ export class InMemoryAttachmentsRepository implements AttachmentsRepository {
     )
   }
 
+  async findOrphanByIdAndOwner(
+    id: string,
+    ownerId: string,
+  ): Promise<Attachment | null> {
+    const attachment = this.items.find(
+      (item) => item.id.toValue() === id && item.ownerId.toValue() === ownerId,
+    )
+
+    return attachment ?? null
+  }
+
   // Helper method for tests to associate attachments with problems
   linkAttachmentToProblem(attachmentId: string, problemId: string): void {
     const existing = this.problemAttachmentMap.get(problemId) ?? []

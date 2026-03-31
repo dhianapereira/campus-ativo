@@ -19,6 +19,7 @@ describe('Upload Attachment', () => {
 
   it('should be able to upload an image', async () => {
     const result = await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'test-image.png',
       fileType: 'image/png',
       body: Buffer.from('fake image content'),
@@ -30,10 +31,14 @@ describe('Upload Attachment', () => {
     expect(inMemoryAttachmentsRepository.items[0].link).toMatch(
       /^fake-uploads\//,
     )
+    expect(inMemoryAttachmentsRepository.items[0].ownerId.toValue()).toBe(
+      'reporter-1',
+    )
   })
 
   it('should upload file to image uploader', async () => {
     await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'test-image.jpg',
       fileType: 'image/jpeg',
       body: Buffer.from('fake image content'),
@@ -46,6 +51,7 @@ describe('Upload Attachment', () => {
 
   it('should accept jpeg images', async () => {
     const result = await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'photo.jpeg',
       fileType: 'image/jpeg',
       body: Buffer.from('fake image'),
@@ -56,6 +62,7 @@ describe('Upload Attachment', () => {
 
   it('should accept jpg images', async () => {
     const result = await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'photo.jpg',
       fileType: 'image/jpg',
       body: Buffer.from('fake image'),
@@ -66,6 +73,7 @@ describe('Upload Attachment', () => {
 
   it('should accept png images', async () => {
     const result = await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'screenshot.png',
       fileType: 'image/png',
       body: Buffer.from('fake image'),
@@ -76,6 +84,7 @@ describe('Upload Attachment', () => {
 
   it('should accept gif images', async () => {
     const result = await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'animation.gif',
       fileType: 'image/gif',
       body: Buffer.from('fake image'),
@@ -86,6 +95,7 @@ describe('Upload Attachment', () => {
 
   it('should accept webp images', async () => {
     const result = await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'modern-image.webp',
       fileType: 'image/webp',
       body: Buffer.from('fake image'),
@@ -96,6 +106,7 @@ describe('Upload Attachment', () => {
 
   it('should not accept non-image files', async () => {
     const result = await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'document.pdf',
       fileType: 'application/pdf',
       body: Buffer.from('fake pdf'),
@@ -107,6 +118,7 @@ describe('Upload Attachment', () => {
 
   it('should not accept video files', async () => {
     const result = await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'video.mp4',
       fileType: 'video/mp4',
       body: Buffer.from('fake video'),
@@ -118,6 +130,7 @@ describe('Upload Attachment', () => {
 
   it('should not accept text files', async () => {
     const result = await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'text.txt',
       fileType: 'text/plain',
       body: Buffer.from('fake text'),
@@ -129,6 +142,7 @@ describe('Upload Attachment', () => {
 
   it('should create attachment with correct data', async () => {
     const result = await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'important-image.png',
       fileType: 'image/png',
       body: Buffer.from('fake image content'),
@@ -143,18 +157,21 @@ describe('Upload Attachment', () => {
 
   it('should handle multiple uploads', async () => {
     await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'image1.png',
       fileType: 'image/png',
       body: Buffer.from('image 1'),
     })
 
     await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'image2.jpg',
       fileType: 'image/jpeg',
       body: Buffer.from('image 2'),
     })
 
     await sut.execute({
+      ownerId: 'reporter-1',
       fileName: 'image3.gif',
       fileType: 'image/gif',
       body: Buffer.from('image 3'),

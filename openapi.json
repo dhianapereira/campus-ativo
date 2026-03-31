@@ -1807,6 +1807,39 @@
         ]
       }
     },
+    "/attachments/{id}/orphan": {
+      "delete": {
+        "operationId": "DeleteOrphanAttachmentController_handle",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "ID do attachment órfão",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Attachment órfão removido."
+          },
+          "404": {
+            "description": "Attachment órfão não encontrado."
+          }
+        },
+        "security": [
+          {
+            "JWT-auth": []
+          }
+        ],
+        "summary": "Excluir attachment órfão",
+        "tags": [
+          "Attachments"
+        ]
+      }
+    },
     "/dashboard/metrics": {
       "get": {
         "description": "Retorna métricas para o dashboard: contagens por status, top 3 setores, top 3 categorias e manutenção preventiva vs corretiva por mês.",

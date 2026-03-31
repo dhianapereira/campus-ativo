@@ -23,6 +23,8 @@ import { AttachmentUrlResolver } from '@/domain/maintenance-problems/application
 import { INVALID_ATTACHMENT_TYPE_MESSAGE } from './controller-error-messages'
 import { RateLimit } from '../rate-limit/rate-limit.decorator'
 import { RateLimitGuard } from '../rate-limit/rate-limit.guard'
+import { CurrentUser } from '@/infra/auth/current-user-decorator'
+import { UserPayload } from '@/infra/auth/jwt.strategy'
 
 const MAX_ATTACHMENT_SIZE_BYTES = 5 * 1024 * 1024
 
@@ -100,8 +102,10 @@ export class UploadAttachmentController {
       }),
     )
     file: UploadedFile,
+    @CurrentUser() user: UserPayload,
   ) {
     const result = await this.uploadAttachment.execute({
+      ownerId: user.sub,
       fileName: file.originalname,
       fileType: file.mimetype,
       body: file.buffer,

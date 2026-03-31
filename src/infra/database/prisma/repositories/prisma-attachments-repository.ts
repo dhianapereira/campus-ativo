@@ -43,6 +43,25 @@ export class PrismaAttachmentsRepository implements AttachmentsRepository {
     return attachments.map(PrismaAttachmentMapper.toDomain)
   }
 
+  async findOrphanByIdAndOwner(
+    id: string,
+    ownerId: string,
+  ): Promise<Attachment | null> {
+    const attachment = await this.prisma.attachment.findFirst({
+      where: {
+        id,
+        ownerId,
+        problemId: null,
+      },
+    })
+
+    if (!attachment) {
+      return null
+    }
+
+    return PrismaAttachmentMapper.toDomain(attachment)
+  }
+
   async delete(attachment: Attachment): Promise<void> {
     await this.prisma.attachment.delete({
       where: {

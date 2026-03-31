@@ -4,8 +4,10 @@ import { ImageUploader } from '../upload/image-uploader'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
 import { Attachment } from '../../enterprise/entities/attachment'
 import { InvalidAttachmentTypeError } from './errors/invalid-attachment-type-error'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 interface UploadAttachmentUseCaseRequest {
+  ownerId: string
   fileName: string
   fileType: string
   body: Buffer
@@ -26,6 +28,7 @@ export class UploadAttachmentUseCase {
   ) {}
 
   async execute({
+    ownerId,
     fileName,
     fileType,
     body,
@@ -44,6 +47,7 @@ export class UploadAttachmentUseCase {
     const attachment = Attachment.create({
       title: fileName,
       link: storageKey,
+      ownerId: new UniqueEntityID(ownerId),
     })
 
     await this.attachmentsRepository.create(attachment)

@@ -14,7 +14,6 @@ import { Injectable } from '@nestjs/common'
 import { CategoriesRepository } from '../repositories/categories-repository'
 import { LocationsRepository } from '../repositories/locations-repository'
 import { AttachmentsRepository } from '../repositories/attachments-repository'
-import { ImageUploader } from '../upload/image-uploader'
 
 interface EditProblemUseCaseRequest {
   reporterId: string
@@ -40,7 +39,6 @@ export class EditProblemUseCase {
     private attachmentsRepository: AttachmentsRepository,
     private locationsRepository: LocationsRepository,
     private categoriesRepository: CategoriesRepository,
-    private imageUploader: ImageUploader,
   ) {}
 
   async execute({
@@ -125,7 +123,6 @@ export class EditProblemUseCase {
     await this.problemsRepository.save(problem)
     await Promise.all(
       removedAttachments.map(async (attachment) => {
-        await this.imageUploader.delete(attachment.link)
         await this.attachmentsRepository.delete(attachment)
       }),
     )
