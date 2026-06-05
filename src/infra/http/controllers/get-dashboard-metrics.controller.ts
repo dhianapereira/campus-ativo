@@ -7,11 +7,14 @@ import {
 } from '@nestjs/swagger'
 import { GetDashboardMetricsUseCase } from '@/domain/maintenance-problems/application/use-cases/get-dashboard-metrics'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
+import { Roles } from '@/infra/auth/roles.decorator'
+import { RolesGuard } from '@/infra/auth/roles.guard'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 @Controller('/dashboard/metrics')
 @ApiTags('Dashboard')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth('JWT-auth')
 export class GetDashboardMetricsController {
   constructor(
@@ -25,6 +28,7 @@ export class GetDashboardMetricsController {
   }
 
   @Get()
+  @Roles(UserRole.MANAGER)
   @ApiOperation({
     summary: 'Métricas do dashboard',
     description:

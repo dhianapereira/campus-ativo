@@ -13,7 +13,10 @@ import {
   ApiQuery,
 } from '@nestjs/swagger'
 import { JwtAuthGuard } from '@/infra/auth/jwt-auth.guard'
+import { Roles } from '@/infra/auth/roles.decorator'
+import { RolesGuard } from '@/infra/auth/roles.guard'
 import { PrismaService } from '@/infra/database/prisma/prisma.service'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 
 type ReportCategorySummary = {
   name: string
@@ -28,12 +31,13 @@ type ReportLocationSummary = {
 
 @Controller('/dashboard/report')
 @ApiTags('Dashboard')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth('JWT-auth')
 export class GetDashboardReportController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
+  @Roles(UserRole.MANAGER)
   @ApiOperation({
     summary: 'Dados para relatório em PDF',
     description:
