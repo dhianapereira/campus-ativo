@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common'
+import { Body, Controller, Post, UseGuards } from '@nestjs/common'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -9,8 +9,11 @@ import {
 import { z } from 'zod'
 import { CurrentUser } from '@/infra/auth/current-user-decorator'
 import { UserPayload } from '@/infra/auth/jwt.strategy'
+import { Roles } from '@/infra/auth/roles.decorator'
+import { RolesGuard } from '@/infra/auth/roles.guard'
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe'
 import { ImportProblemsFromCsvUseCase } from '@/domain/maintenance-problems/application/use-cases/import-problems-from-csv'
+import { UserRole } from '@/domain/accounts/enterprise/entities/user'
 import {
   ImportProblemsCsvRequest,
   ImportProblemsCsvResponse,
@@ -44,16 +47,18 @@ type ImportProblemsFromCsvBodySchema = z.infer<
 @Controller('/problems')
 @ApiTags('Problems')
 @ApiBearerAuth('JWT-auth')
+@UseGuards(RolesGuard)
 export class ImportProblemsFromCsvController {
   constructor(
     private readonly importProblemsFromCsv: ImportProblemsFromCsvUseCase,
   ) {}
 
   @Post('import')
+  @Roles(UserRole.MANAGER)
   @ApiOperation({
     summary: 'Importar problemas via CSV',
     description:
-      'Recebe linhas já extraídas de um CSV, valida os dados e importa apenas os problemas válidos e não duplicados.',
+      'Recebe linhas já extraídas de um CSV, valida os dados e importa apenas os problemas válidos e não duplicados (requer role MANAGER+).',
   })
   @ApiBody({ type: ImportProblemsCsvRequest })
   @ApiResponse({
@@ -63,6 +68,10 @@ export class ImportProblemsFromCsvController {
   })
   @ApiResponse({ status: 400, description: 'Dados inválidos' })
   @ApiResponse({ status: 401, description: 'Token JWT inválido ou expirado' })
+  @ApiResponse({
+    status: 403,
+    description: 'Usuário não tem permissão (requer MANAGER+)',
+  })
   async handle(
     @Body(bodyValidationPipe) body: ImportProblemsFromCsvBodySchema,
     @CurrentUser() user: UserPayload,

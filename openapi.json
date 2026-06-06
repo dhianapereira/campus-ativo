@@ -1704,7 +1704,7 @@
     },
     "/problems/import": {
       "post": {
-        "description": "Recebe linhas já extraídas de um CSV, valida os dados e importa apenas os problemas válidos e não duplicados.",
+        "description": "Recebe linhas já extraídas de um CSV, valida os dados e importa apenas os problemas válidos e não duplicados (requer role MANAGER+).",
         "operationId": "ImportProblemsFromCsvController_handle",
         "parameters": [],
         "requestBody": {
@@ -1733,6 +1733,9 @@
           },
           "401": {
             "description": "Token JWT inválido ou expirado"
+          },
+          "403": {
+            "description": "Usuário não tem permissão (requer MANAGER+)"
           }
         },
         "security": [
