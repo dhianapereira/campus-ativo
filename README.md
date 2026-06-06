@@ -4,6 +4,15 @@ API em NestJS do Campus Ativo para gestão de problemas de infraestrutura.
 
 Se você vai contribuir com o projeto, consulte o [guia de contribuição](./.github/docs/CONTRIBUTING.md).
 
+## Projetos relacionados
+
+O Campus Ativo é dividido em dois repositórios:
+
+- [`campus-ativo`](https://github.com/dhianapereira/campus-ativo): API em NestJS, documentação OpenAPI, banco de dados e integrações.
+- [`campus-ativo-platform`](https://github.com/dhianapereira/campus-ativo-platform): aplicação web em Next.js consumindo esta API.
+
+Para rodar o projeto completo localmente, suba primeiro esta API e depois o frontend. O frontend espera a API disponível em `http://localhost:3333` por padrão.
+
 ## Stack
 
 - Node.js `22.18.0` via `.nvmrc` (`>=22.14.0 <23` em `package.json`)
@@ -164,6 +173,8 @@ npm run openapi
 ```
 
 Esse comando compila o projeto e executa a aplicação em modo de geração de spec.
+
+Quando contratos ou endpoints mudarem, regenere este arquivo e copie a versão atualizada para o frontend em `campus-ativo-platform/openapi/openapi.json`. Depois disso, rode `npm run generate:api` no frontend para atualizar o cliente gerado pelo Orval.
 
 ## Scripts
 

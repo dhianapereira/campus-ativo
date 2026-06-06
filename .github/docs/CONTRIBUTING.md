@@ -28,7 +28,7 @@
 - [Docker](https://www.docker.com/);
 - Editor de código (ex.: [Visual Studio Code](https://code.visualstudio.com/Download)).
 
-## 2. Siga os passos do [Guia de Instalação](../../README.md#guia-de-instalação)
+## 2. Siga os passos de [Rodando localmente](../../README.md#rodando-localmente)
 
 Com isso, você terá tudo o que é necessário para executar a aplicação.
 
