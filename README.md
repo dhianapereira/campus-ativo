@@ -1,8 +1,14 @@
 # Campus Ativo
 
+**Trabalho de Conclusão de Curso (TCC)** desenvolvido por **Dhiana Pereira**. O Campus Ativo foi criado exclusivamente como projeto acadêmico de TCC e **não é um sistema oficial do Instituto Federal de Alagoas (IFAL)**. Projeto com manutenção encerrada, preservado para consulta e estudo. Não haverá novas funcionalidades, correções de bugs ou atualizações de segurança, nem suporte ou revisão de issues e pull requests.
+
+**Licença e identidade visual:** o código-fonte é disponibilizado sob a [licença MIT](./LICENSE), respeitadas as licenças de dependências e materiais de terceiros. O nome **Campus Ativo** e sua identidade visual pertencem a **Dhiana Pereira**; os elementos autorais dessa identidade estão sujeitos a **Copyright (c) 2026 Dhiana Pereira — todos os direitos reservados**. O nome, os logotipos e os elementos da identidade visual do Campus Ativo não estão incluídos na licença MIT; sua reutilização depende de autorização da titular.
+
+**Marcas do IFAL:** o nome, as logos e os demais sinais institucionais do **Instituto Federal de Alagoas (IFAL)** pertencem à instituição e **não estão cobertos pela licença MIT**. Sua presença neste trabalho acadêmico não concede autorização de reutilização nem implica endosso institucional. Esses elementos não integram a identidade visual cuja titularidade é atribuída a Dhiana Pereira.
+
 API em NestJS do Campus Ativo para gestão de problemas de infraestrutura.
 
-Se você vai contribuir com o projeto, consulte o [guia de contribuição](./.github/docs/CONTRIBUTING.md).
+Para continuar o desenvolvimento por conta própria, crie um fork e observe os avisos de licença e identidade visual acima. O [guia de contribuição](./.github/docs/CONTRIBUTING.md) foi preservado como documentação histórica.
 
 ## Projetos relacionados
 

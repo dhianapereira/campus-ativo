@@ -1,6 +1,6 @@
 # Como contribuir
 
-> Siga os passos abaixo para contribuir com código ou sugestões de melhorias/correções no projeto.
+> **Documento histórico:** a manutenção deste projeto foi encerrada. Não há suporte ou revisão de issues e pull requests. As instruções abaixo registram o fluxo utilizado durante o desenvolvimento do TCC e podem servir de referência para forks. Consulte os [avisos de licença e identidade visual](../../README.md) antes de reutilizar o projeto.
 
 ## Conteúdo:
 

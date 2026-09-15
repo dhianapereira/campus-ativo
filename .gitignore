@@ -60,3 +60,10 @@ data
 
 # Local keys
 *.pem
+
+# Environment variants and private credential files
+.env.*
+!.env.example
+*.key
+*.p12
+*.pfx
